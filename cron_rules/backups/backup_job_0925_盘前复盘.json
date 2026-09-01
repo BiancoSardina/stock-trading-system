@@ -1,0 +1,48 @@
+{
+  "id": "820648f680cc",
+  "name": "ETF盘前复盘 0925",
+  "prompt": "你是ETF投资分析助手。现在是交易日早上9:25，盘前时间（集合竞价已结束）。\n\n【重要：严禁输出[SILENT]】每天盘前都有新的市场数据（外盘行情、财经日历、持仓分析），你的任务是每天输出完整分析报告，绝对禁止输出[SILENT]或空回复。必须访问金十数据获取实时信息后给出完整报告。\n\n请访问金十数据网站获取所有分析所需的数据，严禁使用其他新闻来源。\n\n**数据获取步骤：**\n\n1️⃣ **重要事件（核心）**\n- 打开 https://www.jin10.com/ 首页\n- 找到「重要事件」或「今日重点数据」区域\n- 列出今天所有重要经济数据/事件（时间+事件名称+前值/预期值）\n- 注意：金十首页有反爬，如果直接访问失败，尝试浏览器工具（browser_navigate）打开页面并读取快照\n\n2️⃣ **市场快讯**\n- 在首页寻找「市场快讯」或快讯列表\n- 获取最新的5-8条市场快讯，特别是与A股、港股、美股、汇率、大宗商品相关的\n\n3️⃣ **昨夜外盘**\n- 美股三大指数表现（道指、纳指、标普）\n- 亚太市场（日经、韩股）表现\n- 大宗商品（原油、黄金）走势\n- 汇率（美元指数、人民币）\n\n**分析框架：**\n\n### 一、昨夜外盘回顾\n- 美股/亚太/大宗商品表现\n- 影响A股开盘的关键信息\n\n### 二、今日重大事件提醒\n- 按重要性排序今天的经济数据/事件\n- 重点关注与A股相关的政策、行业消息\n\n### 三、A股盘前展望\n结合外盘和消息面，预判今日：\n- 大盘大概率走势方向\n- 需要警惕的风险点\n\n### 四、持仓分析\n当前持仓（请用实时行情工具查询最新价格）：\n- 北方稀土(600111) 100股/3948元，成本39.48，止损37.51\n剩余现金约1.8万元（半导体设备ETF和通信ETF已于2026-08-03清仓回笼）。\n观察清单：科创50ETF(588000)、医疗ETF、恒生科技ETF、红利ETF、游戏传媒ETF、中证1000ETF(512100)\n\n### 五、今日交易策略\n- 整体仓位建议\n- 注意量化收割时段（10:00-11:00）避免此时买入\n- 最佳买入窗口：11:00后或14:00后\n- 计划方向：科创50ETF回踩买入、医疗ETF回踩0.32买、恒生科技回踩0.60-0.616买、红利回踩3.25-3.30买\n- 回避科技杀跌板块\n\n### 六、操作清单（必须输出）\n最后单独列出「🎯 操作清单」，对每个建议操作的品种给出：\n- 买入点位（具体价格区间，如 1.64-1.67）\n- 卖出点位（具体价格区间）\n- 止损点位（具体价格）\n- 建议仓位金额\n格式：\n```\n🎯 【操作清单】\n────────────────────\n🟢 买入：科创50ETF(588000)\n   买入点位：1.640 - 1.670\n   卖出点位：1.800 - 1.850\n   止损点位：1.590\n   仓位：3,000 - 5,000元\n\n🔴 减仓：北方稀土(600111)\n   卖出点位：40.50 - 41.00\n   止损点位：37.51\n```\n如果没有操作建议，就明确写\"今日无操作，观望\"。\n\n⚠️ 输出要求：必须是完整的中文分析报告，禁止输出[SILENT]，禁止只输出\"我将获取数据\"之类的半截话，必须真正获取数据并完成分析后再输出。",
+  "skills": [],
+  "skill": null,
+  "model": "deepseek-v4-flash",
+  "provider": "deepseek",
+  "provider_snapshot": null,
+  "model_snapshot": null,
+  "base_url": null,
+  "script": null,
+  "no_agent": false,
+  "context_from": null,
+  "schedule": {
+    "kind": "cron",
+    "expr": "25 9 * * 1-5",
+    "display": "25 9 * * 1-5"
+  },
+  "schedule_display": "25 9 * * 1-5",
+  "repeat": {
+    "times": null,
+    "completed": 13
+  },
+  "enabled": true,
+  "state": "scheduled",
+  "paused_at": null,
+  "paused_reason": null,
+  "created_at": "2026-07-23T15:01:00.976282+08:00",
+  "next_run_at": "2026-08-05T09:25:00+08:00",
+  "last_run_at": "2026-08-04T10:12:31.808549+08:00",
+  "last_status": "error",
+  "last_error": "TimeoutError: Cron job 'ETF盘前复盘 0925' idle for 600s (limit 600s) — last activity: waiting for non-streaming API response",
+  "last_delivery_error": null,
+  "deliver": "weixin:o9cq800bHGk5BeQSlT5jOo46n1KY@im.wechat",
+  "origin": {
+    "platform": "weixin",
+    "chat_id": "o9cq800bHGk5BeQSlT5jOo46n1KY@im.wechat",
+    "chat_name": null,
+    "thread_id": null,
+    "user_id": "o9cq800bHGk5BeQSlT5jOo46n1KY@im.wechat"
+  },
+  "enabled_toolsets": [
+    "web"
+  ],
+  "workdir": null,
+  "fire_claim": null
+}
