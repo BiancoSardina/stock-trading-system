@@ -1,0 +1,9 @@
+{
+  "date": "2026-08-26",
+  "market_status": "D",
+  "market_score": 0,
+  "candidates": [],
+  "failed_kline": [],
+  "error": "全市场仅0只(<3000)，数据拉取失败",
+  "all_count": 0
+}

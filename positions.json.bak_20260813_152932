@@ -1,0 +1,60 @@
+{
+  "etf": [
+    {
+      "code": "159516",
+      "name": "半导体设备ETF",
+      "buy_price": 0.841,
+      "amount": 26000,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-07-15",
+      "type": "etf",
+      "shares": 30900,
+      "no_sell": true,
+      "t_config": {
+        "enable": true,
+        "t_ratio": 0.2,
+        "t_position": 5200,
+        "min_profit": 0.008,
+        "max_sell_ratio": 0.5
+      }
+    },
+    {
+      "code": "159858",
+      "name": "创新药指ETF",
+      "buy_price": 0.712,
+      "amount": 6052.5,
+      "stop_loss": 0.66,
+      "take_profit": 0.71,
+      "buy_date": "2026-08-07",
+      "type": "etf",
+      "shares": 8500,
+      "t_config": {
+        "enable": true,
+        "t_ratio": 0.2,
+        "t_position": 1200,
+        "min_profit": 0.008,
+        "max_sell_ratio": 0.5
+      }
+    },
+    {
+      "code": "562800",
+      "name": "稀有金属ETF",
+      "buy_price": 1.009,
+      "amount": 5045,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-08-10",
+      "type": "etf",
+      "shares": 5000,
+      "t_config": {
+        "enable": true,
+        "t_ratio": 0.2,
+        "t_position": 1000,
+        "min_profit": 0.008,
+        "max_sell_ratio": 0.5
+      }
+    }
+  ],
+  "stock": []
+}

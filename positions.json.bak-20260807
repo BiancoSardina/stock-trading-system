@@ -1,0 +1,38 @@
+{
+  "etf": [
+    {
+      "code": "159516",
+      "name": "半导体设备ETF",
+      "buy_price": 0.841,
+      "amount": 26000,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-07-15",
+      "type": "etf",
+      "shares": 30900
+    },
+    {
+      "code": "515880",
+      "name": "通信ETF",
+      "buy_price": 0.913,
+      "amount": 5000,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-07-15",
+      "type": "etf",
+      "shares": 5475
+    },
+    {
+      "code": "159858",
+      "name": "创新药指ETF",
+      "buy_price": 0.685,
+      "amount": 3768,
+      "stop_loss": 0.66,
+      "take_profit": 0.71,
+      "buy_date": "2026-08-06",
+      "type": "etf",
+      "shares": 5500
+    }
+  ],
+  "stock": []
+}

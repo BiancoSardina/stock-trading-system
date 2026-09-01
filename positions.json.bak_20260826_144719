@@ -1,0 +1,41 @@
+{
+  "etf": [
+    {
+      "code": "159858",
+      "name": "创新药指ETF",
+      "buy_price": 0.645,
+      "amount": 1612.5,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-08-21",
+      "type": "etf",
+      "shares": 2500,
+      "t_config": {
+        "enable": true,
+        "t_ratio": 0.2,
+        "t_position": 700,
+        "min_profit": 0.008,
+        "max_sell_ratio": 0.5
+      }
+    },
+    {
+      "code": "588750",
+      "name": "科创芯片ETF汇添富",
+      "buy_price": 2.679,
+      "amount": 7769.1,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-08-21",
+      "type": "etf",
+      "shares": 2900,
+      "t_config": {
+        "enable": true,
+        "t_ratio": 0.2,
+        "t_position": 900,
+        "min_profit": 0.008,
+        "max_sell_ratio": 0.5
+      }
+    }
+  ],
+  "stock": []
+}

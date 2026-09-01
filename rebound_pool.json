@@ -1,0 +1,223 @@
+{
+  "date": "2026-08-26",
+  "generated_at": "2026-08-26 10:05:59",
+  "market_status": "D",
+  "market_score": 40,
+  "trend_pool_core": 0,
+  "pool": [
+    {
+      "code": "000533",
+      "name": "顺钠股份",
+      "price": 10.73,
+      "score": 68,
+      "level": "B",
+      "factor": {
+        "oversold": 19,
+        "prior": 12,
+        "decay": 17,
+        "stabilize": 12,
+        "risk": 8
+      },
+      "detail": {
+        "dd20": -20.52,
+        "rise30": 61.1,
+        "rise20": 11.29,
+        "rsi": 34.1,
+        "atr_pct": 7.16,
+        "decay_signals": [
+          "不创新低",
+          "近3日跌幅收窄",
+          "今日跌幅收窄"
+        ],
+        "stabilize_signals": [
+          "收复MA5",
+          "阳线",
+          "破昨日高"
+        ]
+      },
+      "stabilize_ok": true,
+      "trigger": {
+        "watch": 10.6,
+        "ma5": 10.68,
+        "stop_low": 10.29
+      }
+    },
+    {
+      "code": "601611",
+      "name": "中国核建",
+      "price": 11.05,
+      "score": 66,
+      "level": "B",
+      "factor": {
+        "oversold": 9,
+        "prior": 8,
+        "decay": 17,
+        "stabilize": 20,
+        "risk": 12
+      },
+      "detail": {
+        "dd20": -14.8,
+        "rise30": 31.54,
+        "rise20": 23.29,
+        "rsi": 32.8,
+        "atr_pct": 3.01,
+        "decay_signals": [
+          "不创新低",
+          "近3日跌幅收窄",
+          "今日跌幅收窄"
+        ],
+        "stabilize_signals": [
+          "收复MA5",
+          "阳线",
+          "放量",
+          "破昨日高",
+          "连2日止跌"
+        ]
+      },
+      "stabilize_ok": true,
+      "trigger": {
+        "watch": 10.68,
+        "ma5": 10.73,
+        "stop_low": 10.46
+      }
+    },
+    {
+      "code": "600418",
+      "name": "江淮汽车",
+      "price": 21.25,
+      "score": 57,
+      "level": "C",
+      "factor": {
+        "oversold": 15,
+        "prior": 8,
+        "decay": 14,
+        "stabilize": 12,
+        "risk": 8
+      },
+      "detail": {
+        "dd20": -19.96,
+        "rise30": 18.0,
+        "rise20": 19.76,
+        "rsi": 33.4,
+        "atr_pct": 5.87,
+        "decay_signals": [
+          "不创新低",
+          "近3日跌幅收窄"
+        ],
+        "stabilize_signals": [
+          "收复MA5",
+          "阳线",
+          "破昨日高"
+        ]
+      },
+      "stabilize_ok": true,
+      "trigger": {
+        "watch": 21.52,
+        "ma5": 20.91,
+        "stop_low": 19.85
+      }
+    },
+    {
+      "code": "600580",
+      "name": "卧龙电驱",
+      "price": 29.56,
+      "score": 57,
+      "level": "C",
+      "factor": {
+        "oversold": 19,
+        "prior": 12,
+        "decay": 14,
+        "stabilize": 4,
+        "risk": 8
+      },
+      "detail": {
+        "dd20": -24.36,
+        "rise30": 24.3,
+        "rise20": 31.89,
+        "rsi": 30.3,
+        "atr_pct": 6.0,
+        "decay_signals": [
+          "不创新低",
+          "近3日跌幅收窄"
+        ],
+        "stabilize_signals": [
+          "破昨日高"
+        ]
+      },
+      "stabilize_ok": true,
+      "trigger": {
+        "watch": 29.93,
+        "ma5": 30.15,
+        "stop_low": 29.02
+      }
+    },
+    {
+      "code": "002354",
+      "name": "天娱数科",
+      "price": 6.91,
+      "score": 55,
+      "level": "C",
+      "factor": {
+        "oversold": 21,
+        "prior": 12,
+        "decay": 14,
+        "stabilize": 0,
+        "risk": 8
+      },
+      "detail": {
+        "dd20": -22.97,
+        "rise30": 16.64,
+        "rise20": 44.91,
+        "rsi": 27.9,
+        "atr_pct": 6.83,
+        "decay_signals": [
+          "不创新低",
+          "近3日跌幅收窄"
+        ],
+        "stabilize_signals": []
+      },
+      "stabilize_ok": false,
+      "trigger": {
+        "watch": 7.08,
+        "ma5": 7.09,
+        "stop_low": 6.79
+      }
+    },
+    {
+      "code": "000779",
+      "name": "甘咨询",
+      "price": 9.99,
+      "score": 53,
+      "level": "C",
+      "factor": {
+        "oversold": 15,
+        "prior": 8,
+        "decay": 17,
+        "stabilize": 9,
+        "risk": 4
+      },
+      "detail": {
+        "dd20": -31.9,
+        "rise30": 31.22,
+        "rise20": 20.25,
+        "rsi": 31.3,
+        "atr_pct": 10.69,
+        "decay_signals": [
+          "不创新低",
+          "近3日跌幅收窄",
+          "下影线"
+        ],
+        "stabilize_signals": [
+          "收复MA5",
+          "破昨日高"
+        ]
+      },
+      "stabilize_ok": true,
+      "trigger": {
+        "watch": 10.01,
+        "ma5": 9.68,
+        "stop_low": 8.85
+      }
+    }
+  ]
+}

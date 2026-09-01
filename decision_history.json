@@ -1,0 +1,1570 @@
+[
+ {
+  "code": "518880",
+  "name": "黄金ETF",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 8.892,
+  "quality": "A",
+  "score": 67,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "159858",
+  "name": "创新药ETF",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 0.733,
+  "quality": "S",
+  "score": 85,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "515220",
+  "name": "煤炭ETF",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 1.234,
+  "quality": "A",
+  "score": 69,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "512170",
+  "name": "医疗ETF",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 0.346,
+  "quality": "S",
+  "score": 85,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "510880",
+  "name": "红利ETF",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 3.282,
+  "quality": "A",
+  "score": 73,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600276",
+  "name": "恒瑞医药",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 54.62,
+  "quality": "A",
+  "score": 65,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600535",
+  "name": "天士力",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 15.72,
+  "quality": "A",
+  "score": 77,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002317",
+  "name": "众生药业",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 28.58,
+  "quality": "A",
+  "score": 66,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "603456",
+  "name": "九洲药业",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 16.45,
+  "quality": "S",
+  "score": 87,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600488",
+  "name": "津药药业",
+  "time": "2026-08-07 15:41",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 5.91,
+  "quality": "A",
+  "score": 74,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601233",
+  "name": "桐昆股份",
+  "time": "2026-08-07 18:34",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 23.56,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600985",
+  "name": "淮北矿业",
+  "time": "2026-08-07 18:34",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 16.52,
+  "quality": "S",
+  "score": 82,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000989",
+  "name": "九芝堂",
+  "time": "2026-08-07 18:34",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 9.48,
+  "quality": "S",
+  "score": 84,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "513180",
+  "name": "恒生科技ETF",
+  "time": "2026-08-10 13:30",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 0.614,
+  "quality": "A",
+  "score": 66,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002842",
+  "name": "翔鹭钨业",
+  "time": "2026-08-10 13:30",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 38.5,
+  "quality": "A",
+  "score": 65,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "159858",
+  "name": "创新药指ETF",
+  "time": "2026-08-10 14:14",
+  "old_action": "买入",
+  "new_action": "加仓",
+  "price": 0.74,
+  "quality": "S",
+  "score": 86,
+  "state": "HOLD",
+  "change_reason": [
+   "S级盈利加仓信号成立"
+  ]
+ },
+ {
+  "code": "512400",
+  "name": "有色金属ETF",
+  "time": "2026-08-10 14:14",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 2.022,
+  "quality": "A",
+  "score": 66,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600352",
+  "name": "浙江龙盛",
+  "time": "2026-08-11 09:51",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 13.9,
+  "quality": "S",
+  "score": 80,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002250",
+  "name": "联化科技",
+  "time": "2026-08-11 09:51",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 17.49,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600089",
+  "name": "特变电工",
+  "time": "2026-08-11 14:23",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 21.4,
+  "quality": "A",
+  "score": 65,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600048",
+  "name": "保利发展",
+  "time": "2026-08-12 18:08",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 5.45,
+  "quality": "S",
+  "score": 82,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600422",
+  "name": "昆药集团",
+  "time": "2026-08-12 18:08",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 9.4,
+  "quality": "S",
+  "score": 85,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "159858",
+  "name": "创新药指ETF",
+  "time": "2026-08-13 09:24",
+  "old_action": "加仓",
+  "new_action": "减仓",
+  "price": 0.0,
+  "quality": "C",
+  "score": 37,
+  "state": "HOLD",
+  "change_reason": [
+   "信号降至C级（减仓）"
+  ]
+ },
+ {
+  "code": "562800",
+  "name": "稀有金属ETF",
+  "time": "2026-08-13 09:24",
+  "old_action": "持有",
+  "new_action": "清仓",
+  "price": 0.0,
+  "quality": "D",
+  "score": 28,
+  "state": "HOLD",
+  "change_reason": [
+   "信号降至D级（减仓）"
+  ]
+ },
+ {
+  "code": "159858",
+  "name": "创新药指ETF",
+  "time": "2026-08-13 12:29",
+  "old_action": "减仓",
+  "new_action": "加仓",
+  "price": 0.762,
+  "quality": "A",
+  "score": 71,
+  "state": "HOLD",
+  "change_reason": [
+   "A级盈利加仓信号成立"
+  ]
+ },
+ {
+  "code": "600105",
+  "name": "永鼎股份",
+  "time": "2026-08-14 09:26",
+  "old_action": "持有",
+  "new_action": "减仓",
+  "price": 41.55,
+  "quality": "C",
+  "score": 37,
+  "state": "HOLD",
+  "change_reason": [
+   "信号降至C级（减仓）"
+  ]
+ },
+ {
+  "code": "000783",
+  "name": "长江证券",
+  "time": "2026-08-14 09:26",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 9.14,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600129",
+  "name": "太极集团",
+  "time": "2026-08-14 09:26",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 16.4,
+  "quality": "A",
+  "score": 71,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600422",
+  "name": "昆药集团",
+  "time": "2026-08-14 09:42",
+  "old_action": "买入",
+  "new_action": "清仓",
+  "price": 8.96,
+  "quality": "B",
+  "score": 52,
+  "state": "EXIT",
+  "change_reason": [
+   "止损退出触发（P0强制退出）"
+  ]
+ },
+ {
+  "code": "512170",
+  "name": "医疗ETF",
+  "time": "2026-08-14 09:59",
+  "old_action": "买入",
+  "new_action": "加仓",
+  "price": 0.357,
+  "quality": "A",
+  "score": 75,
+  "state": "HOLD",
+  "change_reason": [
+   "A级盈利加仓信号成立"
+  ]
+ },
+ {
+  "code": "600105",
+  "name": "永鼎股份",
+  "time": "2026-08-14 11:10",
+  "old_action": "减仓",
+  "new_action": "清仓",
+  "price": 40.53,
+  "quality": "D",
+  "score": 32,
+  "state": "HOLD",
+  "change_reason": [
+   "信号降至D级（减仓）"
+  ]
+ },
+ {
+  "code": "600422",
+  "name": "昆药集团",
+  "time": "2026-08-14 11:10",
+  "old_action": "持有",
+  "new_action": "清仓",
+  "price": 8.91,
+  "quality": "B",
+  "score": 52,
+  "state": "EXIT",
+  "change_reason": [
+   "止损退出触发（P0强制退出）"
+  ]
+ },
+ {
+  "code": "600105",
+  "name": "永鼎股份",
+  "time": "2026-08-14 14:45",
+  "old_action": "持有",
+  "new_action": "减仓",
+  "price": 41.2,
+  "quality": "C",
+  "score": 38,
+  "state": "HOLD",
+  "change_reason": [
+   "信号降至C级（减仓）"
+  ]
+ },
+ {
+  "code": "512100",
+  "name": "中证1000ETF",
+  "time": "2026-08-17 14:45",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 3.221,
+  "quality": "A",
+  "score": 71,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002156",
+  "name": "通富微电",
+  "time": "2026-08-18 09:26",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 71.2,
+  "quality": "A",
+  "score": 70,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002041",
+  "name": "登海种业",
+  "time": "2026-08-18 09:26",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 8.91,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000049",
+  "name": "德赛电池",
+  "time": "2026-08-18 09:26",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 25.33,
+  "quality": "A",
+  "score": 72,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601919",
+  "name": "中远海控",
+  "time": "2026-08-18 09:26",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 15.97,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002258",
+  "name": "利尔化学",
+  "time": "2026-08-18 09:26",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 14.94,
+  "quality": "S",
+  "score": 81,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002371",
+  "name": "北方华创",
+  "time": "2026-08-18 09:26",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 770.0,
+  "quality": "A",
+  "score": 77,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "588750",
+  "name": "科创芯片ETF汇添富",
+  "time": "2026-08-19 09:26",
+  "old_action": "持有",
+  "new_action": "减仓",
+  "price": 2.47,
+  "quality": "C",
+  "score": 39,
+  "state": "HOLD",
+  "change_reason": [
+   "信号降至C级（减仓）"
+  ]
+ },
+ {
+  "code": "159858",
+  "name": "创新药指ETF",
+  "time": "2026-08-19 11:10",
+  "old_action": "加仓",
+  "new_action": "减仓",
+  "price": 0.727,
+  "quality": "A",
+  "score": 72,
+  "state": "HOLD",
+  "change_reason": [
+   "趋势退出减仓（P1风险降低）"
+  ]
+ },
+ {
+  "code": "588750",
+  "name": "科创芯片ETF汇添富",
+  "time": "2026-08-19 11:10",
+  "old_action": "减仓",
+  "new_action": "清仓",
+  "price": 2.392,
+  "quality": "D",
+  "score": 30,
+  "state": "EXIT",
+  "change_reason": [
+   "止损退出触发（P0强制退出）"
+  ]
+ },
+ {
+  "code": "159858",
+  "name": "创新药指ETF",
+  "time": "2026-08-20 09:26",
+  "old_action": "减仓",
+  "new_action": "加仓",
+  "price": 0.746,
+  "quality": "A",
+  "score": 75,
+  "state": "HOLD",
+  "change_reason": [
+   "A级盈利加仓信号成立"
+  ]
+ },
+ {
+  "code": "588750",
+  "name": "科创芯片ETF汇添富",
+  "time": "2026-08-20 09:59",
+  "old_action": "持有",
+  "new_action": "清仓",
+  "price": 2.393,
+  "quality": "D",
+  "score": 30,
+  "state": "HOLD",
+  "change_reason": [
+   "信号降至D级（减仓）"
+  ]
+ },
+ {
+  "code": "588750",
+  "name": "科创芯片ETF汇添富",
+  "time": "2026-08-20 10:05",
+  "old_action": "持有",
+  "new_action": "清仓",
+  "price": 2.393,
+  "quality": "D",
+  "score": 31,
+  "state": "HOLD",
+  "change_reason": [
+   "信号降至D级（减仓）"
+  ]
+ },
+ {
+  "code": "002493",
+  "name": "荣盛石化",
+  "time": "2026-08-20 10:28",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 13.73,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000756",
+  "name": "新华制药",
+  "time": "2026-08-20 10:28",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 14.41,
+  "quality": "S",
+  "score": 81,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000739",
+  "name": "普洛药业",
+  "time": "2026-08-20 10:28",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 22.11,
+  "quality": "A",
+  "score": 71,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601899",
+  "name": "紫金矿业",
+  "time": "2026-08-20 10:28",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 34.54,
+  "quality": "A",
+  "score": 71,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "512170",
+  "name": "医疗ETF",
+  "time": "2026-08-20 14:14",
+  "old_action": "清仓",
+  "new_action": "买入",
+  "price": 0.359,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "159858",
+  "name": "创新药指ETF",
+  "time": "2026-08-21 09:27",
+  "old_action": "加仓",
+  "new_action": "减仓",
+  "price": 0.731,
+  "quality": "A",
+  "score": 74,
+  "state": "HOLD",
+  "change_reason": [
+   "趋势退出减仓（P1风险降低）"
+  ]
+ },
+ {
+  "code": "002043",
+  "name": "兔 宝 宝",
+  "time": "2026-08-21 10:05",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 13.01,
+  "quality": "A",
+  "score": 74,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "603519",
+  "name": "立霸股份",
+  "time": "2026-08-21 10:05",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 16.48,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601009",
+  "name": "南京银行",
+  "time": "2026-08-21 10:05",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 11.79,
+  "quality": "S",
+  "score": 80,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600196",
+  "name": "复星医药",
+  "time": "2026-08-21 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 23.81,
+  "quality": "A",
+  "score": 73,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "588750",
+  "name": "科创芯片ETF汇添富",
+  "time": "2026-08-24 09:26",
+  "old_action": "持有",
+  "new_action": "清仓",
+  "price": 2.346,
+  "quality": "D",
+  "score": 27,
+  "state": "EXIT",
+  "change_reason": [
+   "止损退出触发（P0强制退出）"
+  ]
+ },
+ {
+  "code": "603519",
+  "name": "立霸股份",
+  "time": "2026-08-24 09:26",
+  "old_action": "买入",
+  "new_action": "加仓",
+  "price": 16.65,
+  "quality": "S",
+  "score": 87,
+  "state": "HOLD",
+  "change_reason": [
+   "S级盈利加仓信号成立"
+  ]
+ },
+ {
+  "code": "159858",
+  "name": "创新药指ETF",
+  "time": "2026-08-24 10:04",
+  "old_action": "减仓",
+  "new_action": "清仓",
+  "price": 0.696,
+  "quality": "B",
+  "score": 65,
+  "state": "EXIT",
+  "change_reason": [
+   "止损退出触发（P0强制退出）"
+  ]
+ },
+ {
+  "code": "603519",
+  "name": "立霸股份",
+  "time": "2026-08-26 10:35",
+  "old_action": "清仓",
+  "new_action": "买入",
+  "price": 16.58,
+  "quality": "S",
+  "score": 84,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600390",
+  "name": "五矿资本",
+  "time": "2026-08-26 10:51",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 5.12,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600155",
+  "name": "华创云信",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 6.13,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002490",
+  "name": "山东墨龙",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 8.04,
+  "quality": "A",
+  "score": 76,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000001",
+  "name": "平安银行",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 11.74,
+  "quality": "S",
+  "score": 81,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000831",
+  "name": "中国稀土",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 56.1,
+  "quality": "A",
+  "score": 76,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002537",
+  "name": "海联金汇",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 6.27,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002215",
+  "name": "诺 普 信",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 10.01,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600795",
+  "name": "国电电力",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 5.23,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002423",
+  "name": "中粮资本",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 9.74,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601318",
+  "name": "中国平安",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 56.21,
+  "quality": "A",
+  "score": 74,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600346",
+  "name": "恒力石化",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 18.3,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600864",
+  "name": "哈投股份",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 5.77,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002714",
+  "name": "牧原股份",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 40.0,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600036",
+  "name": "招商银行",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 39.91,
+  "quality": "A",
+  "score": 72,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002648",
+  "name": "卫星化学",
+  "time": "2026-08-26 14:49",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 26.37,
+  "quality": "A",
+  "score": 74,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601168",
+  "name": "西部矿业",
+  "time": "2026-08-26 18:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 39.26,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002673",
+  "name": "西部证券",
+  "time": "2026-08-26 18:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 6.85,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601198",
+  "name": "东兴证券",
+  "time": "2026-08-26 18:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 14.0,
+  "quality": "S",
+  "score": 80,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000630",
+  "name": "铜陵有色",
+  "time": "2026-08-26 18:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 6.75,
+  "quality": "S",
+  "score": 80,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600497",
+  "name": "驰宏锌锗",
+  "time": "2026-08-26 18:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 10.4,
+  "quality": "S",
+  "score": 82,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002500",
+  "name": "山西证券",
+  "time": "2026-08-26 18:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 5.49,
+  "quality": "S",
+  "score": 82,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000721",
+  "name": "西安饮食",
+  "time": "2026-08-26 18:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 6.97,
+  "quality": "S",
+  "score": 88,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600593",
+  "name": "大连圣亚",
+  "time": "2026-08-26 18:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 41.45,
+  "quality": "S",
+  "score": 86,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600362",
+  "name": "江西铜业",
+  "time": "2026-08-27 12:39",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 49.18,
+  "quality": "S",
+  "score": 83,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600388",
+  "name": "紫金龙净",
+  "time": "2026-08-27 12:39",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 18.36,
+  "quality": "A",
+  "score": 78,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000623",
+  "name": "吉林敖东",
+  "time": "2026-08-27 14:28",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 18.59,
+  "quality": "S",
+  "score": 81,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000878",
+  "name": "云南铜业",
+  "time": "2026-08-27 14:29",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 17.1,
+  "quality": "S",
+  "score": 80,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600698",
+  "name": "湖南天雁",
+  "time": "2026-08-27 14:29",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 7.32,
+  "quality": "S",
+  "score": 85,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000737",
+  "name": "北方铜业",
+  "time": "2026-08-27 14:29",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 15.26,
+  "quality": "S",
+  "score": 84,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000902",
+  "name": "新洋丰",
+  "time": "2026-08-28 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 14.23,
+  "quality": "A",
+  "score": 73,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000977",
+  "name": "浪潮信息",
+  "time": "2026-08-28 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 78.66,
+  "quality": "S",
+  "score": 84,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600562",
+  "name": "国睿科技",
+  "time": "2026-08-28 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 27.41,
+  "quality": "S",
+  "score": 84,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000998",
+  "name": "隆平高科",
+  "time": "2026-08-28 12:34",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 9.33,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600096",
+  "name": "云天化",
+  "time": "2026-08-28 14:31",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 31.73,
+  "quality": "A",
+  "score": 76,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002303",
+  "name": "美盈森",
+  "time": "2026-08-28 14:31",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 5.2,
+  "quality": "S",
+  "score": 84,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600409",
+  "name": "三友化工",
+  "time": "2026-08-31 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 7.36,
+  "quality": "S",
+  "score": 84,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600760",
+  "name": "中航沈飞",
+  "time": "2026-08-31 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 46.7,
+  "quality": "S",
+  "score": 87,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600309",
+  "name": "万华化学",
+  "time": "2026-08-31 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 75.41,
+  "quality": "A",
+  "score": 71,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002064",
+  "name": "华峰化学",
+  "time": "2026-08-31 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 11.62,
+  "quality": "A",
+  "score": 77,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600133",
+  "name": "东湖高新",
+  "time": "2026-08-31 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 8.62,
+  "quality": "A",
+  "score": 74,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600727",
+  "name": "鲁北化工",
+  "time": "2026-08-31 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 7.8,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601058",
+  "name": "赛轮轮胎",
+  "time": "2026-08-31 12:34",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 15.16,
+  "quality": "S",
+  "score": 87,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000938",
+  "name": "紫光股份",
+  "time": "2026-08-31 12:34",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 37.09,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600490",
+  "name": "鹏欣资源",
+  "time": "2026-08-31 12:34",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 7.54,
+  "quality": "S",
+  "score": 81,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002292",
+  "name": "奥飞娱乐",
+  "time": "2026-09-01 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 8.58,
+  "quality": "A",
+  "score": 78,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002354",
+  "name": "天娱数科",
+  "time": "2026-09-01 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 8.01,
+  "quality": "A",
+  "score": 73,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002745",
+  "name": "木林森",
+  "time": "2026-09-01 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 11.61,
+  "quality": "S",
+  "score": 80,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601328",
+  "name": "交通银行",
+  "time": "2026-09-01 12:36",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 7.3,
+  "quality": "A",
+  "score": 78,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002029",
+  "name": "七匹狼",
+  "time": "2026-09-01 12:36",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 9.32,
+  "quality": "S",
+  "score": 82,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600177",
+  "name": "雅戈尔",
+  "time": "2026-09-01 12:36",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 8.17,
+  "quality": "S",
+  "score": 87,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600789",
+  "name": "鲁抗医药",
+  "time": "2026-09-01 14:30",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 7.89,
+  "quality": "S",
+  "score": 80,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600671",
+  "name": "天目药业",
+  "time": "2026-09-01 14:30",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 22.42,
+  "quality": "S",
+  "score": 80,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ }
+]

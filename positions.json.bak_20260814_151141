@@ -1,0 +1,83 @@
+{
+  "etf": [
+    {
+      "code": "159516",
+      "name": "半导体设备ETF",
+      "buy_price": 0.841,
+      "amount": 26000,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-07-15",
+      "type": "etf",
+      "shares": 30900,
+      "no_sell": true,
+      "t_config": {
+        "enable": true,
+        "t_ratio": 0.2,
+        "t_position": 5200,
+        "min_profit": 0.008,
+        "max_sell_ratio": 0.5
+      }
+    },
+    {
+      "code": "159858",
+      "name": "创新药指ETF",
+      "buy_price": 0.712,
+      "amount": 3204.0,
+      "stop_loss": 0.66,
+      "take_profit": 0.71,
+      "buy_date": "2026-08-07",
+      "type": "etf",
+      "shares": 4500.0,
+      "t_config": {
+        "enable": true,
+        "t_ratio": 0.2,
+        "t_position": 1200,
+        "min_profit": 0.008,
+        "max_sell_ratio": 0.5
+      }
+    },
+    {
+      "code": "512170",
+      "name": "医疗ETF",
+      "buy_price": 0.355,
+      "amount": 5325,
+      "shares": 15000,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-08-13",
+      "type": "etf",
+      "t_config": {
+        "enable": true,
+        "t_ratio": 0.2,
+        "t_position": 3000,
+        "min_profit": 0.008,
+        "max_sell_ratio": 0.5
+      }
+    }
+  ],
+  "stock": [
+    {
+      "code": "600105",
+      "name": "永鼎股份",
+      "buy_price": 42.076,
+      "amount": 8415.2,
+      "shares": 200,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-08-13",
+      "type": "stock"
+    },
+    {
+      "code": "600422",
+      "name": "昆药集团",
+      "buy_price": 9.129,
+      "amount": 5477.4,
+      "shares": 600,
+      "stop_loss": null,
+      "take_profit": null,
+      "buy_date": "2026-08-13",
+      "type": "stock"
+    }
+  ]
+}
