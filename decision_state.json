@@ -8,9 +8,9 @@
   "cost": 0,
   "highest_price": 4.794,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "C",
-  "score": 48.0
+  "score": 40.0
  },
  "588000": {
   "code": "588000",
@@ -21,9 +21,9 @@
   "cost": 0,
   "highest_price": 1.893,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 50.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 41.0
  },
  "159732": {
   "code": "159732",
@@ -34,22 +34,22 @@
   "cost": 0,
   "highest_price": 1.487,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 50.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 37.0
  },
  "518880": {
   "code": "518880",
   "name": "黄金ETF",
-  "state": "BUYING",
+  "state": "READY",
   "last_action": "BUY",
   "last_action_time": "2026-09-01 14:30",
   "cost": 0,
   "highest_price": 9.61,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "A",
-  "score": 73.0
+  "date": "2026-09-02",
+  "grade": "B",
+  "score": 63.0
  },
  "159516": {
   "code": "159516",
@@ -60,9 +60,9 @@
   "cost": 0.841,
   "highest_price": 0.841,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 50.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 40.0
  },
  "515880": {
   "code": "515880",
@@ -73,9 +73,9 @@
   "cost": 0.913,
   "highest_price": 0.913,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 54.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 39.0
  },
  "159858": {
   "code": "159858",
@@ -86,9 +86,9 @@
   "cost": 0.645,
   "highest_price": 0.765,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "C",
-  "score": 48.0
+  "score": 41.0
  },
  "512400": {
   "code": "512400",
@@ -99,22 +99,22 @@
   "cost": 0,
   "highest_price": 2.022,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "B",
-  "score": 69.0
+  "score": 57.0
  },
  "515220": {
   "code": "515220",
   "name": "煤炭ETF",
-  "state": "BUYING",
+  "state": "READY",
   "last_action": "BUY",
-  "last_action_time": "2026-09-01 14:30",
+  "last_action_time": "2026-09-02 13:30",
   "cost": 0,
   "highest_price": 1.391,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "A",
-  "score": 71.0
+  "score": 73.0
  },
  "512170": {
   "code": "512170",
@@ -125,9 +125,9 @@
   "cost": 0.355,
   "highest_price": 0.364,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "B",
-  "score": 58.0
+  "score": 56.0
  },
  "513180": {
   "code": "513180",
@@ -138,22 +138,22 @@
   "cost": 0,
   "highest_price": 0.622,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "D",
   "score": 33.0
  },
  "510880": {
   "code": "510880",
   "name": "红利ETF",
-  "state": "BUYING",
+  "state": "READY",
   "last_action": "BUY",
-  "last_action_time": "2026-09-01 14:30",
+  "last_action_time": "2026-09-02 13:30",
   "cost": 0,
   "highest_price": 3.524,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "A",
-  "score": 79.0
+  "score": 74.0
  },
  "512100": {
   "code": "512100",
@@ -164,9 +164,9 @@
   "cost": 0,
   "highest_price": 3.227,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 59.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 46.0
  },
  "159869": {
   "code": "159869",
@@ -177,9 +177,9 @@
   "cost": 0,
   "highest_price": 1.16,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 54.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 40.0
  },
  "002970": {
   "code": "002970",
@@ -190,9 +190,9 @@
   "cost": 0,
   "highest_price": 55.57,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "D",
-  "score": 26.0
+  "score": 18.0
  },
  "600276": {
   "code": "600276",
@@ -216,9 +216,9 @@
   "cost": 0,
   "highest_price": 14.34,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "D",
-  "score": 20.0
+  "score": 18.0
  },
  "600089": {
   "code": "600089",
@@ -242,9 +242,9 @@
   "cost": 0,
   "highest_price": 44.08,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "C",
-  "score": 36.0
+  "date": "2026-09-02",
+  "grade": "D",
+  "score": 24.0
  },
  "601869": {
   "code": "601869",
@@ -281,9 +281,9 @@
   "cost": 0,
   "highest_price": 71.82,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 54.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 41.0
  },
  "603296": {
   "code": "603296",
@@ -294,9 +294,9 @@
   "cost": 0,
   "highest_price": 86.92,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 53.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 47.0
  },
  "002842": {
   "code": "002842",
@@ -307,9 +307,9 @@
   "cost": 0,
   "highest_price": 42.23,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "B",
-  "score": 57.0
+  "score": 52.0
  },
  "002181": {
   "code": "002181",
@@ -318,11 +318,11 @@
   "last_action": "HOLD",
   "last_action_time": "",
   "cost": 0,
-  "highest_price": 9.58,
+  "highest_price": 10.06,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "B",
-  "score": 61.0
+  "score": 63.0
  },
  "600118": {
   "code": "600118",
@@ -333,9 +333,9 @@
   "cost": 0,
   "highest_price": 69.6,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "D",
-  "score": 26.0
+  "score": 20.0
  },
  "600535": {
   "code": "600535",
@@ -463,9 +463,9 @@
   "cost": 1.009,
   "highest_price": 1.009,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "C",
-  "score": 49.0
+  "date": "2026-09-02",
+  "grade": "D",
+  "score": 34.0
  },
  "600048": {
   "code": "600048",
@@ -489,9 +489,9 @@
   "cost": 42.076,
   "highest_price": 43.14,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 53.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 43.0
  },
  "000783": {
   "code": "000783",
@@ -593,9 +593,9 @@
   "cost": 2.679,
   "highest_price": 2.679,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 54.0
+  "date": "2026-09-02",
+  "grade": "C",
+  "score": 47.0
  },
  "600301": {
   "code": "600301",
@@ -606,9 +606,9 @@
   "cost": 51.0,
   "highest_price": 51.0,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "B",
-  "score": 52.0
+  "date": "2026-09-02",
+  "grade": "D",
+  "score": 22.0
  },
  "002493": {
   "code": "002493",
@@ -678,15 +678,15 @@
  "603519": {
   "code": "603519",
   "name": "立霸股份",
-  "state": "BUYING",
+  "state": "READY",
   "last_action": "BUY",
   "last_action_time": "2026-09-01 14:30",
   "cost": 16.437,
   "highest_price": 17.34,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "A",
-  "score": 76.0
+  "date": "2026-09-02",
+  "grade": "B",
+  "score": 64.0
  },
  "600196": {
   "code": "600196",
@@ -886,15 +886,15 @@
  "002714": {
   "code": "002714",
   "name": "牧原股份",
-  "state": "BUYING",
+  "state": "READY",
   "last_action": "BUY",
-  "last_action_time": "2026-09-01 14:30",
+  "last_action_time": "2026-09-02 13:30",
   "cost": 0,
   "highest_price": 42.7,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "S",
-  "score": 88.0
+  "score": 85.0
  },
  "600036": {
   "code": "600036",
@@ -1148,13 +1148,13 @@
   "name": "云天化",
   "state": "BUYING",
   "last_action": "BUY",
-  "last_action_time": "2026-09-01 14:30",
+  "last_action_time": "2026-09-02 11:10",
   "cost": 0,
   "highest_price": 32.06,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "S",
-  "score": 80.0
+  "date": "2026-09-02",
+  "grade": "A",
+  "score": 76.0
  },
  "002303": {
   "code": "002303",
@@ -1213,13 +1213,13 @@
   "name": "华峰化学",
   "state": "BUYING",
   "last_action": "BUY",
-  "last_action_time": "2026-08-31 11:10",
+  "last_action_time": "2026-09-02 11:10",
   "cost": 0,
   "highest_price": 11.85,
   "today_bought": 0,
-  "date": "2026-08-31",
+  "date": "2026-09-02",
   "grade": "A",
-  "score": 77.0
+  "score": 73.0
  },
  "600133": {
   "code": "600133",
@@ -1263,15 +1263,15 @@
  "000938": {
   "code": "000938",
   "name": "紫光股份",
-  "state": "BUYING",
+  "state": "READY",
   "last_action": "BUY",
-  "last_action_time": "2026-09-01 13:30",
+  "last_action_time": "2026-09-02 11:10",
   "cost": 0,
   "highest_price": 39.11,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "S",
-  "score": 81.0
+  "date": "2026-09-02",
+  "grade": "A",
+  "score": 77.0
  },
  "600490": {
   "code": "600490",
@@ -1343,11 +1343,11 @@
   "name": "七匹狼",
   "state": "BUYING",
   "last_action": "BUY",
-  "last_action_time": "2026-09-01 14:30",
+  "last_action_time": "2026-09-02 13:30",
   "cost": 0,
   "highest_price": 9.32,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "S",
   "score": 82.0
  },
@@ -1356,26 +1356,26 @@
   "name": "雅戈尔",
   "state": "BUYING",
   "last_action": "BUY",
-  "last_action_time": "2026-09-01 14:30",
+  "last_action_time": "2026-09-02 13:30",
   "cost": 0,
   "highest_price": 8.23,
   "today_bought": 0,
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "grade": "S",
-  "score": 87.0
+  "score": 83.0
  },
  "600789": {
   "code": "600789",
   "name": "鲁抗医药",
   "state": "BUYING",
   "last_action": "BUY",
-  "last_action_time": "2026-09-01 14:30",
+  "last_action_time": "2026-09-02 11:10",
   "cost": 0,
   "highest_price": 7.89,
   "today_bought": 0,
-  "date": "2026-09-01",
-  "grade": "S",
-  "score": 80.0
+  "date": "2026-09-02",
+  "grade": "A",
+  "score": 72.0
  },
  "600671": {
   "code": "600671",
@@ -1389,5 +1389,109 @@
   "date": "2026-09-01",
   "grade": "S",
   "score": 80.0
+ },
+ "002332": {
+  "code": "002332",
+  "name": "仙琚制药",
+  "state": "BUYING",
+  "last_action": "BUY",
+  "last_action_time": "2026-09-02 11:10",
+  "cost": 0,
+  "highest_price": 8.79,
+  "today_bought": 0,
+  "date": "2026-09-02",
+  "grade": "A",
+  "score": 75.0
+ },
+ "002541": {
+  "code": "002541",
+  "name": "鸿路钢构",
+  "state": "BUYING",
+  "last_action": "BUY",
+  "last_action_time": "2026-09-02 11:10",
+  "cost": 0,
+  "highest_price": 20.72,
+  "today_bought": 0,
+  "date": "2026-09-02",
+  "grade": "A",
+  "score": 79.0
+ },
+ "000876": {
+  "code": "000876",
+  "name": "新 希 望",
+  "state": "BUYING",
+  "last_action": "BUY",
+  "last_action_time": "2026-09-02 11:10",
+  "cost": 0,
+  "highest_price": 7.19,
+  "today_bought": 0,
+  "date": "2026-09-02",
+  "grade": "A",
+  "score": 70.0
+ },
+ "600900": {
+  "code": "600900",
+  "name": "长江电力",
+  "state": "BUYING",
+  "last_action": "BUY",
+  "last_action_time": "2026-09-02 13:30",
+  "cost": 0,
+  "highest_price": 28.77,
+  "today_bought": 0,
+  "date": "2026-09-02",
+  "grade": "A",
+  "score": 79.0
+ },
+ "002262": {
+  "code": "002262",
+  "name": "恩华药业",
+  "state": "BUYING",
+  "last_action": "BUY",
+  "last_action_time": "2026-09-02 13:30",
+  "cost": 0,
+  "highest_price": 22.73,
+  "today_bought": 0,
+  "date": "2026-09-02",
+  "grade": "A",
+  "score": 75.0
+ },
+ "002033": {
+  "code": "002033",
+  "name": "丽江股份",
+  "state": "READY",
+  "last_action": "BUY",
+  "last_action_time": "2026-09-02 13:30",
+  "cost": 0,
+  "highest_price": 9.28,
+  "today_bought": 0,
+  "date": "2026-09-02",
+  "grade": "A",
+  "score": 78.0
+ },
+ "600674": {
+  "code": "600674",
+  "name": "川投能源",
+  "state": "READY",
+  "last_action": "BUY",
+  "last_action_time": "2026-09-02 13:30",
+  "cost": 0,
+  "highest_price": 16.07,
+  "today_bought": 0,
+  "date": "2026-09-02",
+  "grade": "S",
+  "score": 80.0
+ },
+ "000768": {
+  "code": "000768",
+  "name": "中航西飞",
+  "state": "READY",
+  "last_action": "BUY",
+  "last_action_time": "2026-09-02 13:30",
+  "cost": 0,
+  "highest_price": 23.4,
+  "today_bought": 0,
+  "date": "2026-09-02",
+  "grade": "S",
+  "score": 85.0
  }
 }

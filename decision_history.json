@@ -1566,5 +1566,117 @@
   "change_reason": [
    "S级建仓信号成立"
   ]
+ },
+ {
+  "code": "002332",
+  "name": "仙琚制药",
+  "time": "2026-09-02 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 8.72,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002541",
+  "name": "鸿路钢构",
+  "time": "2026-09-02 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 20.72,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000876",
+  "name": "新 希 望",
+  "time": "2026-09-02 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 7.07,
+  "quality": "A",
+  "score": 70,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600900",
+  "name": "长江电力",
+  "time": "2026-09-02 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 28.77,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002262",
+  "name": "恩华药业",
+  "time": "2026-09-02 11:10",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 22.6,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002033",
+  "name": "丽江股份",
+  "time": "2026-09-02 12:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 9.28,
+  "quality": "A",
+  "score": 78,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600674",
+  "name": "川投能源",
+  "time": "2026-09-02 12:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 16.07,
+  "quality": "S",
+  "score": 80,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000768",
+  "name": "中航西飞",
+  "time": "2026-09-02 12:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 23.4,
+  "quality": "S",
+  "score": 87,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
  }
 ]

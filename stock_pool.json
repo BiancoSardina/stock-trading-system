@@ -1,140 +1,26 @@
 {
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "market_status": "C",
-  "market_score": 53,
-  "generated_at": "2026-09-01 18:06:08",
+  "market_score": 50,
+  "generated_at": "2026-09-02 18:06:04",
   "core_pool": [
     {
-      "code": "600177",
-      "name": "雅戈尔",
+      "code": "600674",
+      "name": "川投能源",
       "stock_score": 87,
       "level": "core",
-      "total_score": 86.0,
-      "factor": {
-        "trend": 29,
-        "momentum": 16,
-        "capital": 19,
-        "rs": 13,
-        "risk": 10
-      },
-      "position": {
-        "rise20": 6.89,
-        "distance_ma20": 4.69,
-        "rsi14": 67.2,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 6.89,
-      "price": 8.22,
-      "industry": "服装鞋类",
-      "industry_score": 80,
-      "reason": [
-        "行业强(80分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-08-31",
-      "days_in_pool": 4
-    },
-    {
-      "code": "002332",
-      "name": "仙琚制药",
-      "stock_score": 85,
-      "level": "core",
-      "total_score": 85.9,
-      "factor": {
-        "trend": 29,
-        "momentum": 15,
-        "capital": 20,
-        "rs": 12,
-        "risk": 9
-      },
-      "position": {
-        "rise20": 4.15,
-        "distance_ma20": 5.39,
-        "rsi14": 67.7,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 4.15,
-      "price": 9.04,
-      "industry": "生物制药",
-      "industry_score": 91,
-      "reason": [
-        "行业强(91分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 3
-    },
-    {
-      "code": "002262",
-      "name": "恩华药业",
-      "stock_score": 84,
-      "level": "core",
-      "total_score": 85.0,
-      "factor": {
-        "trend": 30,
-        "momentum": 15,
-        "capital": 20,
-        "rs": 12,
-        "risk": 7
-      },
-      "position": {
-        "rise20": 4.84,
-        "distance_ma20": 3.66,
-        "rsi14": 59.5,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 4.84,
-      "price": 22.97,
-      "industry": "生物制药",
-      "industry_score": 91,
-      "reason": [
-        "行业强(91分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 1
-    },
-    {
-      "code": "600096",
-      "name": "云天化",
-      "stock_score": 83,
-      "level": "core",
-      "total_score": 83.3,
+      "total_score": 83.1,
       "factor": {
         "trend": 28,
         "momentum": 16,
-        "capital": 18,
-        "rs": 13,
-        "risk": 8
+        "capital": 19,
+        "rs": 14,
+        "risk": 10
       },
       "position": {
-        "rise20": 8.71,
-        "distance_ma20": 5.98,
-        "rsi14": 65.6,
+        "rise20": 7.01,
+        "distance_ma20": 4.3,
+        "rsi14": 66.8,
         "deduct": 0,
         "reasons": []
       },
@@ -143,196 +29,78 @@
         "above_ma60": true,
         "ma20_gt_ma60": true
       },
-      "chg20": 8.71,
-      "price": 31.96,
-      "industry": "农药化肥",
+      "chg20": 7.01,
+      "price": 16.03,
+      "industry": "电力行业",
+      "industry_score": 61,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 3
+    },
+    {
+      "code": "000768",
+      "name": "中航西飞",
+      "stock_score": 87,
+      "level": "strong",
+      "total_score": 81.7,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 15,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 10.35,
+        "distance_ma20": 7.99,
+        "rsi14": 69.5,
+        "deduct": 5,
+        "reasons": [
+          "偏离MA20 8.0%>6%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.35,
+      "price": 23.02,
+      "industry": "飞机制造",
       "industry_score": 85,
       "reason": [
         "行业强(85分)",
         "趋势成立",
         "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-08-28",
-      "days_in_pool": 9
-    },
-    {
-      "code": "002714",
-      "name": "牧原股份",
-      "stock_score": 86,
-      "level": "core",
-      "total_score": 82.5,
-      "factor": {
-        "trend": 30,
-        "momentum": 16,
-        "capital": 16,
-        "rs": 15,
-        "risk": 9
-      },
-      "position": {
-        "rise20": 11.52,
-        "distance_ma20": 6.29,
-        "rsi14": 64.8,
-        "deduct": 5,
-        "reasons": [
-          "偏离MA20 6.3%>6%扣5"
-        ]
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 11.52,
-      "price": 42.4,
-      "industry": "农林牧渔",
-      "industry_score": 96,
-      "reason": [
-        "行业强(96分)",
-        "趋势成立",
-        "RS领先",
         "趋势分高",
-        "偏离MA20 6.3%>6%扣5"
+        "偏离MA20 8.0%>6%扣5"
       ],
-      "first_seen": "2026-08-31",
-      "days_in_pool": 4
-    },
-    {
-      "code": "002029",
-      "name": "七 匹 狼",
-      "stock_score": 83,
-      "level": "core",
-      "total_score": 82.5,
-      "factor": {
-        "trend": 29,
-        "momentum": 15,
-        "capital": 20,
-        "rs": 13,
-        "risk": 6
-      },
-      "position": {
-        "rise20": 6.52,
-        "distance_ma20": 5.0,
-        "rsi14": 52.7,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 6.52,
-      "price": 9.31,
-      "industry": "服装鞋类",
-      "industry_score": 80,
-      "reason": [
-        "行业强(80分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
+      "first_seen": "2026-09-02",
       "days_in_pool": 3
-    },
-    {
-      "code": "002541",
-      "name": "鸿路钢构",
-      "stock_score": 86,
-      "level": "strong",
-      "total_score": 79.3,
-      "factor": {
-        "trend": 29,
-        "momentum": 16,
-        "capital": 19,
-        "rs": 15,
-        "risk": 7
-      },
-      "position": {
-        "rise20": 10.42,
-        "distance_ma20": 6.55,
-        "rsi14": 59.9,
-        "deduct": 5,
-        "reasons": [
-          "偏离MA20 6.5%>6%扣5"
-        ]
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 10.42,
-      "price": 21.2,
-      "industry": "钢铁行业",
-      "industry_score": 75,
-      "reason": [
-        "行业强(75分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高",
-        "偏离MA20 6.5%>6%扣5"
-      ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 2
     }
   ],
   "watch_pool": [
     {
-      "code": "600789",
-      "name": "鲁抗医药",
-      "stock_score": 80,
+      "code": "002612",
+      "name": "朗姿股份",
+      "stock_score": 86,
       "level": "S",
-      "total_score": 81.7,
-      "factor": {
-        "trend": 28,
-        "momentum": 16,
-        "capital": 16,
-        "rs": 13,
-        "risk": 7
-      },
-      "position": {
-        "rise20": 5.89,
-        "distance_ma20": 5.28,
-        "rsi14": 59.9,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 5.89,
-      "price": 7.91,
-      "industry": "生物制药",
-      "industry_score": 91,
-      "reason": [
-        "行业强(91分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 2
-    },
-    {
-      "code": "002064",
-      "name": "华峰化学",
-      "stock_score": 81,
-      "level": "S",
-      "total_score": 80.8,
+      "total_score": 81.3,
       "factor": {
         "trend": 30,
-        "momentum": 11,
-        "capital": 19,
+        "momentum": 16,
+        "capital": 20,
         "rs": 15,
-        "risk": 6
+        "risk": 5
       },
       "position": {
-        "rise20": 10.29,
-        "distance_ma20": 3.65,
-        "rsi14": 56.7,
+        "rise20": 10.47,
+        "distance_ma20": 5.65,
+        "rsi14": 57.9,
         "deduct": 0,
         "reasons": []
       },
@@ -341,74 +109,35 @@
         "above_ma60": true,
         "ma20_gt_ma60": true
       },
-      "chg20": 10.29,
-      "price": 12.0,
-      "industry": "化纤行业",
-      "industry_score": 80,
+      "chg20": 10.47,
+      "price": 16.46,
+      "industry": "服装鞋类",
+      "industry_score": 55,
       "reason": [
-        "行业强(80分)",
         "趋势成立",
         "RS领先",
         "趋势分高"
       ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 3
-    },
-    {
-      "code": "000876",
-      "name": "新 希 望",
-      "stock_score": 78,
-      "level": "A",
-      "total_score": 80.7,
-      "factor": {
-        "trend": 24,
-        "momentum": 15,
-        "capital": 18,
-        "rs": 12,
-        "risk": 9
-      },
-      "position": {
-        "rise20": 4.19,
-        "distance_ma20": 2.81,
-        "rsi14": 56.8,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 4.19,
-      "price": 7.21,
-      "industry": "农林牧渔",
-      "industry_score": 96,
-      "reason": [
-        "行业强(96分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
+      "first_seen": "2026-09-02",
       "days_in_pool": 1
     },
     {
       "code": "600900",
       "name": "长江电力",
-      "stock_score": 80,
+      "stock_score": 84,
       "level": "S",
-      "total_score": 80.2,
+      "total_score": 80.5,
       "factor": {
         "trend": 27,
         "momentum": 15,
         "capital": 19,
-        "rs": 9,
+        "rs": 13,
         "risk": 10
       },
       "position": {
-        "rise20": 0.35,
-        "distance_ma20": 1.1,
-        "rsi14": 58.5,
+        "rise20": 3.46,
+        "distance_ma20": 2.06,
+        "rsi14": 60.3,
         "deduct": 0,
         "reasons": []
       },
@@ -417,195 +146,189 @@
         "above_ma60": true,
         "ma20_gt_ma60": true
       },
-      "chg20": 0.35,
-      "price": 28.4,
+      "chg20": 3.46,
+      "price": 28.72,
       "industry": "电力行业",
-      "industry_score": 81,
+      "industry_score": 61,
       "reason": [
-        "行业强(81分)",
         "趋势成立",
+        "RS领先",
         "趋势分高"
       ],
-      "first_seen": "2026-09-01",
+      "first_seen": "2026-09-02",
       "days_in_pool": 1
     },
     {
-      "code": "000938",
-      "name": "紫光股份",
-      "stock_score": 80,
-      "level": "S",
-      "total_score": 80.0,
-      "factor": {
-        "trend": 29,
-        "momentum": 15,
-        "capital": 18,
-        "rs": 15,
-        "risk": 3
-      },
-      "position": {
-        "rise20": 11.66,
-        "distance_ma20": 2.7,
-        "rsi14": 53.4,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 11.66,
-      "price": 38.32,
-      "industry": "电子信息",
-      "industry_score": 80,
-      "reason": [
-        "行业强(80分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-08-31",
-      "days_in_pool": 6
-    },
-    {
-      "code": "601628",
-      "name": "中国人寿",
-      "stock_score": 78,
+      "code": "600893",
+      "name": "航发动力",
+      "stock_score": 79,
       "level": "A",
-      "total_score": 80.0,
+      "total_score": 79.9,
       "factor": {
-        "trend": 27,
-        "momentum": 15,
-        "capital": 18,
-        "rs": 9,
-        "risk": 9
-      },
-      "position": {
-        "rise20": 3.74,
-        "distance_ma20": 3.52,
-        "rsi14": 66.5,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 3.74,
-      "price": 39.07,
-      "industry": "金融行业",
-      "industry_score": 91,
-      "reason": [
-        "行业强(91分)",
-        "趋势成立",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 2
-    },
-    {
-      "code": "002292",
-      "name": "奥飞娱乐",
-      "stock_score": 85,
-      "level": "S",
-      "total_score": 80.0,
-      "factor": {
-        "trend": 30,
-        "momentum": 16,
-        "capital": 20,
-        "rs": 13,
-        "risk": 6
-      },
-      "position": {
-        "rise20": 5.52,
-        "distance_ma20": 7.21,
-        "rsi14": 58.2,
-        "deduct": 5,
-        "reasons": [
-          "偏离MA20 7.2%>6%扣5"
-        ]
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 5.52,
-      "price": 8.8,
-      "industry": "传媒娱乐",
-      "industry_score": 85,
-      "reason": [
-        "行业强(85分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高",
-        "偏离MA20 7.2%>6%扣5"
-      ],
-      "first_seen": "2026-08-31",
-      "days_in_pool": 4
-    },
-    {
-      "code": "000930",
-      "name": "中粮科技",
-      "stock_score": 85,
-      "level": "S",
-      "total_score": 80.0,
-      "factor": {
-        "trend": 28,
+        "trend": 22,
         "momentum": 16,
         "capital": 20,
         "rs": 14,
         "risk": 7
       },
       "position": {
-        "rise20": 9.21,
-        "distance_ma20": 7.32,
-        "rsi14": 61.9,
-        "deduct": 5,
-        "reasons": [
-          "偏离MA20 7.3%>6%扣5"
-        ]
+        "rise20": 8.77,
+        "distance_ma20": 5.2,
+        "rsi14": 66.9,
+        "deduct": 0,
+        "reasons": []
       },
       "trend": {
         "above_ma20": true,
         "above_ma60": true,
         "ma20_gt_ma60": true
       },
-      "chg20": 9.21,
-      "price": 5.22,
-      "industry": "食品行业",
+      "chg20": 8.77,
+      "price": 38.83,
+      "industry": "飞机制造",
       "industry_score": 85,
       "reason": [
         "行业强(85分)",
         "趋势成立",
         "RS领先",
-        "趋势分高",
-        "偏离MA20 7.3%>6%扣5"
+        "趋势分高"
       ],
-      "first_seen": "2026-09-01",
+      "first_seen": "2026-09-02",
       "days_in_pool": 1
     },
     {
-      "code": "600415",
-      "name": "小商品城",
-      "stock_score": 83,
-      "level": "S",
+      "code": "000738",
+      "name": "航发控制",
+      "stock_score": 79,
+      "level": "A",
       "total_score": 79.9,
       "factor": {
-        "trend": 29,
+        "trend": 28,
         "momentum": 15,
-        "capital": 20,
-        "rs": 12,
-        "risk": 7
+        "capital": 15,
+        "rs": 13,
+        "risk": 8
       },
       "position": {
-        "rise20": 4.52,
-        "distance_ma20": 6.14,
-        "rsi14": 68.9,
+        "rise20": 3.43,
+        "distance_ma20": 3.37,
+        "rsi14": 61.3,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 3.43,
+      "price": 19.0,
+      "industry": "飞机制造",
+      "industry_score": 85,
+      "reason": [
+        "行业强(85分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 1
+    },
+    {
+      "code": "601890",
+      "name": "亚星锚链",
+      "stock_score": 80,
+      "level": "S",
+      "total_score": 79.1,
+      "factor": {
+        "trend": 25,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 13,
+        "risk": 6
+      },
+      "position": {
+        "rise20": 5.02,
+        "distance_ma20": 3.64,
+        "rsi14": 59.3,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 5.02,
+      "price": 8.99,
+      "industry": "船舶制造",
+      "industry_score": 74,
+      "reason": [
+        "行业强(74分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 1
+    },
+    {
+      "code": "002033",
+      "name": "丽江股份",
+      "stock_score": 82,
+      "level": "S",
+      "total_score": 78.0,
+      "factor": {
+        "trend": 29,
+        "momentum": 11,
+        "capital": 20,
+        "rs": 13,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 5.83,
+        "distance_ma20": 3.35,
+        "rsi14": 69.3,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 5.83,
+      "price": 9.26,
+      "industry": "酒店旅游",
+      "industry_score": 55,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 3
+    },
+    {
+      "code": "002190",
+      "name": "成飞集成",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 77.9,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 16,
+        "risk": 5
+      },
+      "position": {
+        "rise20": 12.68,
+        "distance_ma20": 9.25,
+        "rsi14": 65.8,
         "deduct": 5,
         "reasons": [
-          "偏离MA20 6.1%>6%扣5"
+          "偏离MA20 9.2%>6%扣5"
         ]
       },
       "trend": {
@@ -613,40 +336,197 @@
         "above_ma60": true,
         "ma20_gt_ma60": true
       },
-      "chg20": 4.52,
-      "price": 12.96,
-      "industry": "商业百货",
-      "industry_score": 96,
+      "chg20": 12.68,
+      "price": 26.4,
+      "industry": "汽车制造",
+      "industry_score": 71,
       "reason": [
-        "行业强(96分)",
+        "行业强(71分)",
         "趋势成立",
         "RS领先",
         "趋势分高",
-        "偏离MA20 6.1%>6%扣5"
+        "偏离MA20 9.2%>6%扣5"
       ],
-      "first_seen": "2026-09-01",
+      "first_seen": "2026-09-02",
       "days_in_pool": 1
     },
     {
-      "code": "603123",
-      "name": "翠微股份",
-      "stock_score": 83,
+      "code": "002389",
+      "name": "航天彩虹",
+      "stock_score": 80,
       "level": "S",
-      "total_score": 79.9,
+      "total_score": 77.8,
+      "factor": {
+        "trend": 25,
+        "momentum": 15,
+        "capital": 20,
+        "rs": 13,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 3.52,
+        "distance_ma20": 4.13,
+        "rsi14": 58.6,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 3.52,
+      "price": 19.12,
+      "industry": "电子器件",
+      "industry_score": 65,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 1
+    },
+    {
+      "code": "600372",
+      "name": "中航机载",
+      "stock_score": 76,
+      "level": "A",
+      "total_score": 77.3,
+      "factor": {
+        "trend": 27,
+        "momentum": 15,
+        "capital": 17,
+        "rs": 8,
+        "risk": 9
+      },
+      "position": {
+        "rise20": -1.99,
+        "distance_ma20": 1.51,
+        "rsi14": 56.3,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": -1.99,
+      "price": 11.32,
+      "industry": "飞机制造",
+      "industry_score": 85,
+      "reason": [
+        "行业强(85分)",
+        "趋势成立",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 1
+    },
+    {
+      "code": "600795",
+      "name": "国电电力",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 76.4,
       "factor": {
         "trend": 28,
+        "momentum": 14,
+        "capital": 20,
+        "rs": 14,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 8.0,
+        "distance_ma20": 5.43,
+        "rsi14": 73.2,
+        "deduct": 5,
+        "reasons": [
+          "RSI73>70扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.0,
+      "price": 5.4,
+      "industry": "电力行业",
+      "industry_score": 61,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "RSI73>70扣5"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 1
+    },
+    {
+      "code": "600760",
+      "name": "中航沈飞",
+      "stock_score": 89,
+      "level": "S",
+      "total_score": 76.3,
+      "factor": {
+        "trend": 30,
+        "momentum": 14,
+        "capital": 20,
+        "rs": 16,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 13.12,
+        "distance_ma20": 7.39,
+        "rsi14": 75.8,
+        "deduct": 10,
+        "reasons": [
+          "偏离MA20 7.4%>6%扣5",
+          "RSI76>70扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 13.12,
+      "price": 48.1,
+      "industry": "汽车制造",
+      "industry_score": 71,
+      "reason": [
+        "行业强(71分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "偏离MA20 7.4%>6%扣5",
+        "RSI76>70扣5"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 1
+    },
+    {
+      "code": "002651",
+      "name": "利君股份",
+      "stock_score": 84,
+      "level": "S",
+      "total_score": 76.1,
+      "factor": {
+        "trend": 29,
         "momentum": 16,
         "capital": 20,
         "rs": 16,
         "risk": 3
       },
       "position": {
-        "rise20": 14.6,
-        "distance_ma20": 9.5,
-        "rsi14": 62.0,
+        "rise20": 14.76,
+        "distance_ma20": 8.9,
+        "rsi14": 64.3,
         "deduct": 5,
         "reasons": [
-          "偏离MA20 9.5%>6%扣5"
+          "偏离MA20 8.9%>6%扣5"
         ]
       },
       "trend": {
@@ -654,116 +534,118 @@
         "above_ma60": true,
         "ma20_gt_ma60": true
       },
-      "chg20": 14.6,
-      "price": 10.44,
-      "industry": "商业百货",
-      "industry_score": 96,
+      "chg20": 14.76,
+      "price": 9.02,
+      "industry": "机械行业",
+      "industry_score": 65,
       "reason": [
-        "行业强(96分)",
         "趋势成立",
         "RS领先",
         "趋势分高",
-        "偏离MA20 9.5%>6%扣5"
+        "偏离MA20 8.9%>6%扣5"
       ],
-      "first_seen": "2026-09-01",
+      "first_seen": "2026-09-02",
       "days_in_pool": 1
     },
     {
-      "code": "002458",
-      "name": "益生股份",
-      "stock_score": 77,
+      "code": "002648",
+      "name": "卫星化学",
+      "stock_score": 78,
       "level": "A",
-      "total_score": 79.8,
+      "total_score": 76.0,
       "factor": {
-        "trend": 28,
+        "trend": 29,
         "momentum": 11,
+        "capital": 16,
+        "rs": 14,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 8.83,
+        "distance_ma20": 2.99,
+        "rsi14": 66.4,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.83,
+      "price": 27.49,
+      "industry": "化工行业",
+      "industry_score": 65,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 1
+    },
+    {
+      "code": "603376",
+      "name": "大明电子",
+      "stock_score": 80,
+      "level": "S",
+      "total_score": 75.9,
+      "factor": {
+        "trend": 25,
+        "momentum": 16,
         "capital": 20,
-        "rs": 13,
+        "rs": 15,
+        "risk": 4
+      },
+      "position": {
+        "rise20": 10.55,
+        "distance_ma20": 9.82,
+        "rsi14": 62.4,
+        "deduct": 5,
+        "reasons": [
+          "偏离MA20 9.8%>6%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.55,
+      "price": 29.24,
+      "industry": "次新股",
+      "industry_score": 86,
+      "reason": [
+        "行业强(86分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "偏离MA20 9.8%>6%扣5"
+      ],
+      "first_seen": "2026-09-02",
+      "days_in_pool": 2
+    },
+    {
+      "code": "600698",
+      "name": "湖南天雁",
+      "stock_score": 88,
+      "level": "S",
+      "total_score": 75.5,
+      "factor": {
+        "trend": 30,
+        "momentum": 17,
+        "capital": 20,
+        "rs": 16,
         "risk": 5
       },
       "position": {
-        "rise20": 6.7,
-        "distance_ma20": 0.46,
-        "rsi14": 31.7,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 6.7,
-      "price": 9.4,
-      "industry": "农林牧渔",
-      "industry_score": 96,
-      "reason": [
-        "行业强(96分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 1
-    },
-    {
-      "code": "603369",
-      "name": "今世缘",
-      "stock_score": 81,
-      "level": "S",
-      "total_score": 79.3,
-      "factor": {
-        "trend": 29,
-        "momentum": 13,
-        "capital": 20,
-        "rs": 13,
-        "risk": 6
-      },
-      "position": {
-        "rise20": 8.15,
-        "distance_ma20": 4.24,
-        "rsi14": 43.1,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 8.15,
-      "price": 29.85,
-      "industry": "酿酒行业",
-      "industry_score": 70,
-      "reason": [
-        "行业强(70分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 1
-    },
-    {
-      "code": "601328",
-      "name": "交通银行",
-      "stock_score": 83,
-      "level": "S",
-      "total_score": 79.2,
-      "factor": {
-        "trend": 29,
-        "momentum": 13,
-        "capital": 19,
-        "rs": 12,
-        "risk": 10
-      },
-      "position": {
-        "rise20": 4.55,
-        "distance_ma20": 4.46,
-        "rsi14": 74.7,
-        "deduct": 5,
+        "rise20": 15.49,
+        "distance_ma20": 8.74,
+        "rsi14": 59.4,
+        "deduct": 10,
         "reasons": [
-          "RSI75>70扣5"
+          "20日涨幅15.5%>15%扣5",
+          "偏离MA20 8.7%>6%扣5"
         ]
       },
       "trend": {
@@ -771,37 +653,38 @@
         "above_ma60": true,
         "ma20_gt_ma60": true
       },
-      "chg20": 4.55,
-      "price": 7.36,
-      "industry": "金融行业",
-      "industry_score": 91,
+      "chg20": 15.49,
+      "price": 7.68,
+      "industry": "汽车制造",
+      "industry_score": 71,
       "reason": [
-        "行业强(91分)",
+        "行业强(71分)",
         "趋势成立",
         "RS领先",
         "趋势分高",
-        "RSI75>70扣5"
+        "20日涨幅15.5%>15%扣5",
+        "偏离MA20 8.7%>6%扣5"
       ],
-      "first_seen": "2026-08-31",
-      "days_in_pool": 4
+      "first_seen": "2026-09-02",
+      "days_in_pool": 1
     },
     {
-      "code": "601766",
-      "name": "中国中车",
-      "stock_score": 80,
-      "level": "S",
-      "total_score": 79.2,
+      "code": "000608",
+      "name": "阳光股份",
+      "stock_score": 78,
+      "level": "A",
+      "total_score": 75.5,
       "factor": {
         "trend": 29,
         "momentum": 10,
-        "capital": 19,
-        "rs": 12,
-        "risk": 10
+        "capital": 20,
+        "rs": 14,
+        "risk": 5
       },
       "position": {
-        "rise20": 4.64,
-        "distance_ma20": 4.14,
-        "rsi14": 65.6,
+        "rise20": 9.68,
+        "distance_ma20": 1.67,
+        "rsi14": 48.8,
         "deduct": 0,
         "reasons": []
       },
@@ -810,92 +693,16 @@
         "above_ma60": true,
         "ma20_gt_ma60": true
       },
-      "chg20": 4.64,
-      "price": 6.31,
-      "industry": "交通运输",
-      "industry_score": 75,
+      "chg20": 9.68,
+      "price": 7.59,
+      "industry": "房地产",
+      "industry_score": 61,
       "reason": [
-        "行业强(75分)",
         "趋势成立",
         "RS领先",
         "趋势分高"
       ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 1
-    },
-    {
-      "code": "000623",
-      "name": "吉林敖东",
-      "stock_score": 77,
-      "level": "A",
-      "total_score": 79.1,
-      "factor": {
-        "trend": 28,
-        "momentum": 15,
-        "capital": 15,
-        "rs": 9,
-        "risk": 10
-      },
-      "position": {
-        "rise20": 2.3,
-        "distance_ma20": 2.74,
-        "rsi14": 62.1,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 2.3,
-      "price": 18.71,
-      "industry": "生物制药",
-      "industry_score": 91,
-      "reason": [
-        "行业强(91分)",
-        "趋势成立",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
-      "days_in_pool": 1
-    },
-    {
-      "code": "603198",
-      "name": "迎驾贡酒",
-      "stock_score": 80,
-      "level": "S",
-      "total_score": 78.5,
-      "factor": {
-        "trend": 30,
-        "momentum": 10,
-        "capital": 18,
-        "rs": 15,
-        "risk": 7
-      },
-      "position": {
-        "rise20": 10.86,
-        "distance_ma20": 3.66,
-        "rsi14": 45.9,
-        "deduct": 0,
-        "reasons": []
-      },
-      "trend": {
-        "above_ma20": true,
-        "above_ma60": true,
-        "ma20_gt_ma60": true
-      },
-      "chg20": 10.86,
-      "price": 41.13,
-      "industry": "其它行业",
-      "industry_score": 70,
-      "reason": [
-        "行业强(70分)",
-        "趋势成立",
-        "RS领先",
-        "趋势分高"
-      ],
-      "first_seen": "2026-09-01",
+      "first_seen": "2026-09-02",
       "days_in_pool": 1
     }
   ]
