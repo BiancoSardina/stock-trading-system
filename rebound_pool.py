@@ -15,7 +15,8 @@
 核心设计（用户 V1.0 方案 + 2026-08-12 确认的 4 点修改）：
   ① 左侧条件：前期强势（30日窗口，压缩自原60日）+ 20日高点回撤≥10% + RSI<35
   ② 右侧确认：止跌信号低延迟化（不创新低优先，不等 MA5 修复完）
-  ③ 评分 100 分：超跌25(回撤20+RSI5) + 前期强势20 + 跌速衰竭20 + 止跌确认20 + 风险15
+  ③ 技术评分 + 行业热度双门槛：个股必须超跌后止跌，所属行业也必须有资金活跃。
+     行业不热不以个股反弹猜资金回流，只保留在后台排除统计。
      （用户第五层给了 RSI 分但第九层总分模型漏列，并入超跌维度补齐，不破100分制）
   ④ A级硬门槛：今日不创新低 + 至少1项其他止跌信号（score≥75 也不破例）
   ⑤ 硬排除：连续3日创新低 / 近3日≥2次跌停 / 回撤<10% / 前期不强势 / RSI≥35 / 数据不足
@@ -40,6 +41,7 @@ sys.path.insert(0, SCRIPT_DIR)
 
 import short_term   # 复用 get_rt / calc_rsi / calc_atr / market_score
 import stock_scanner
+import industry_rank
 
 POOL_PATH = os.path.join(SCRIPT_DIR, "rebound_pool.json")
 TREND_POOL_PATH = os.path.join(SCRIPT_DIR, "stock_pool.json")
@@ -60,6 +62,12 @@ PRIOR_RISE20_MIN = 15.0   # 20日最高/20日前收盘 -1 >= 15%
 # ===== 硬排除 =====
 LIMIT_DOWN_CHG = -9.8     # 跌停判定（主板非ST）
 LIMIT_DOWN_MAX_3D = 1     # 近3日跌停≥2次 → 排除（风险事件释放中）
+
+# ===== 行业热度（底部企稳的资金确认） =====
+# 行业评分沿用主股票池：周期涨幅、成交额、趋势及上涨家数。底部股本身偏弱，
+# 因而要求行业至少中强，且当日广度/短期动量没有转弱，避免只看个股形态猜反转。
+INDUSTRY_MIN_SCORE = 60
+INDUSTRY_MIN_UP_RATIO = 0.50
 
 
 def _get_kline(code, days=120):
@@ -206,8 +214,38 @@ def risk_score(atr_pct, limitdown_3d):
     return max(0, s)
 
 
-def evaluate_stock(code, name, amount):
+def industry_heat(industry):
+    """返回 (是否热, 加分, 原因)。行业数据缺失一律不放行。"""
+    if not isinstance(industry, dict):
+        return False, 0, "行业数据缺失"
+    try:
+        score = float(industry.get("score"))
+        up_ratio = float(industry.get("up_ratio"))
+        avg_chg = float(industry.get("avg_chg"))
+    except (TypeError, ValueError):
+        return False, 0, "行业数据无效"
+    period = industry.get("period") or (None, None)
+    chg5 = period[0] if len(period) >= 1 else None
+    try:
+        short_term_up = float(chg5) >= 0 if chg5 is not None else avg_chg > 0
+    except (TypeError, ValueError):
+        short_term_up = avg_chg > 0
+    if score < INDUSTRY_MIN_SCORE:
+        return False, 0, f"行业分{score:.0f}<{INDUSTRY_MIN_SCORE}"
+    if up_ratio < INDUSTRY_MIN_UP_RATIO:
+        return False, 0, f"行业上涨家数{up_ratio:.0%}<{INDUSTRY_MIN_UP_RATIO:.0%}"
+    if not short_term_up:
+        return False, 0, "行业短期动量未转强"
+    bonus = 15 if score >= 80 else 12 if score >= 70 else 8
+    return True, bonus, f"行业{score:.0f}分/上涨{up_ratio:.0%}/5日{float(chg5):+.1f}%" if chg5 is not None else \
+        f"行业{score:.0f}分/上涨{up_ratio:.0%}/当日{avg_chg:+.1f}%"
+
+
+def evaluate_stock(code, name, amount, industry_name=None, industry_data=None):
     """单只股票精筛评分，返回条目 dict 或 None（数据失败）或 {"_exclude": 原因}"""
+    hot, industry_bonus, industry_reason = industry_heat(industry_data)
+    if not hot:
+        return {"_exclude": f"行业不热：{industry_reason}"}
     kline = _kline_with_today(code)
     if not kline or len(kline) < MIN_KLEN:
         return None
@@ -254,13 +292,15 @@ def evaluate_stock(code, name, amount):
     s_stab, stab_sig, stabilize_ok = stabilize_score(closes, opens, highs, lows, vols, ma5)
     s_risk = risk_score(atr_pct, limitdown_3d)
 
-    total = min(100, s_ov + s_prior + s_decay + s_stab + s_risk)
+    tech_score = min(100, s_ov + s_prior + s_decay + s_stab + s_risk)
+    total = min(100, tech_score + industry_bonus)
 
-    if total >= 75 and stabilize_ok:
+    # 热行业只能确认资金环境，不能挽救技术形态差的个股。
+    if total >= 75 and tech_score >= 65 and stabilize_ok:
         level = "A"
-    elif total >= 60:
+    elif total >= 60 and tech_score >= 55:
         level = "B"
-    elif total >= 50:
+    elif total >= 50 and tech_score >= 50:
         level = "C"
     else:
         return {"_exclude": "评分不足"}
@@ -272,9 +312,12 @@ def evaluate_stock(code, name, amount):
 
     return {
         "code": code, "name": name, "price": round(cur, 2),
-        "score": total, "level": level,
+        "score": total, "tech_score": tech_score, "level": level,
+        "industry": {"name": industry_name, "score": industry_data["score"],
+                     "up_ratio": industry_data["up_ratio"], "period": industry_data.get("period"),
+                     "heat_reason": industry_reason, "bonus": industry_bonus},
         "factor": {"oversold": s_ov, "prior": s_prior, "decay": s_decay,
-                   "stabilize": s_stab, "risk": s_risk},
+                   "stabilize": s_stab, "risk": s_risk, "industry": industry_bonus},
         "detail": {
             "dd20": round(dd, 2), "rise30": round(rise30, 2), "rise20": round(rise20, 2),
             "rsi": round(rsi, 1), "atr_pct": atr_pct,
@@ -321,7 +364,19 @@ def main():
         print("[rebound_pool] ❌ 基础过滤后为空，中止")
         sys.exit(1)
 
-    # ④ 粗筛（实时数据）：当日接近涨停的不是超跌候选；按成交额排序
+    # ④ 行业热度。行业映射或评分不完整时不产生新池，保留旧结果，避免把
+    # “行业未知”误当成“行业不热”或绕过资金确认。
+    industry_map = industry_rank.build_industry_map(force=False)
+    industry_scores = industry_rank.score_industries(all_stocks, industry_map)
+    industry_index = industry_rank.stock_industry_index(industry_map)
+    if len(industry_scores) < 40:
+        print(f"[rebound_pool] ❌ 行业热度数据不完整({len(industry_scores)}个行业)，保留旧池", file=sys.stderr)
+        sys.exit(2)
+    print(f"[rebound_pool] 行业热度可用 {len(industry_scores)}个行业；"
+          f"门槛≥{INDUSTRY_MIN_SCORE}分、上涨家数≥{INDUSTRY_MIN_UP_RATIO:.0%}、短期动量不弱",
+          file=sys.stderr, flush=True)
+
+    # ⑤ 粗筛（实时数据）：当日接近涨停的不是超跌候选；按成交额排序
     candidates = [k for k in kept if k["chg"] < 9.5]
     candidates.sort(key=lambda x: -x["amount"])
     if args.fast:
@@ -331,10 +386,12 @@ def main():
         candidates = candidates[:args.limit]
     print(f"[rebound_pool] 精筛目标 {len(candidates)}只", file=sys.stderr, flush=True)
 
-    # ⑤ 逐只精筛评分
+    # ⑥ 逐只精筛评分
     results, hard_excl = [], Counter()
     for i, c in enumerate(candidates):
-        e = evaluate_stock(c["code"], c["name"], c["amount"])
+        industry_name = industry_index.get(c["code"])
+        e = evaluate_stock(c["code"], c["name"], c["amount"], industry_name,
+                           industry_scores.get(industry_name))
         if e:
             if e.get("_exclude"):
                 hard_excl[e["_exclude"]] += 1
@@ -346,21 +403,23 @@ def main():
         if (i + 1) % 100 == 0:
             print(f"[rebound_pool] 精筛进度 {i+1}/{len(candidates)}", file=sys.stderr, flush=True)
 
-    # ⑥ 分级排序
-    results.sort(key=lambda x: (-x["score"], x["code"]))
+    # ⑦ 分级排序
+    results.sort(key=lambda x: (-x["score"], -x["tech_score"], x["code"]))
     a_lv = [e for e in results if e["level"] == "A"]
     b_lv = [e for e in results if e["level"] == "B"]
     c_lv = [e for e in results if e["level"] == "C"]
     print(f"[rebound_pool] 达标 {len(results)}只 (A{a_lv.__len__()}/B{len(b_lv)}/C{len(c_lv)}) 耗时{time.time()-t0:.0f}s",
           file=sys.stderr, flush=True)
 
-    # ⑦ 落盘（--limit 测试模式不写生产文件）
+    # ⑧ 落盘（--limit 测试模式不写生产文件）
     if not args.limit:
         out = {
             "date": today,
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "market_status": market_status, "market_score": market_score_val,
             "trend_pool_core": trend_core,
+            "industry_gate": {"min_score": INDUSTRY_MIN_SCORE, "min_up_ratio": INDUSTRY_MIN_UP_RATIO,
+                              "score_count": len(industry_scores)},
             "pool": a_lv + b_lv + c_lv,
         }
         tmp = POOL_PATH + ".tmp"
@@ -379,7 +438,7 @@ def main():
         print(f"  ⚠️ D市（禁买）：本池仅记录不交易")
     elif market_status == "C":
         print(f"  ⚠️ C市弱市：只监控 A 级，仓位减半纪律")
-    print(f"候选链路: 全市场{len(all_stocks)} → 主板过滤{len(kept)} → 精筛{len(candidates)} → 达标{len(results)}只")
+    print(f"候选链路: 全市场{len(all_stocks)} → 主板过滤{len(kept)} → 行业热度确认 → 精筛{len(candidates)} → 达标{len(results)}只")
     if hard_excl:
         ex = " ".join(f"{k}{v}" for k, v in hard_excl.most_common())
         print(f"硬排除: {ex}")
@@ -388,8 +447,9 @@ def main():
         print(f"🎯 A级（重点监控，止跌已确认）{len(a_lv)}只:")
         for e in a_lv[:args.top]:
             d = e["detail"]
-            print(f"  {e['code']} {e['name']} {e['score']}分 | 回撤{d['dd20']}% RSI{d['rsi']} "
-                  f"前期30日+{d['rise30']}% | {d['stabilize_signals']} | ATR{d['atr_pct']}%")
+            ind = e['industry']
+            print(f"  {e['code']} {e['name']} {e['score']}分(技术{e['tech_score']}) | {ind['name']} {ind['heat_reason']} "
+                  f"| 回撤{d['dd20']}% RSI{d['rsi']} | {d['stabilize_signals']} | ATR{d['atr_pct']}%")
             print(f"     触发: 突破昨日高点{e['trigger']['watch']}关注 | 站稳MA5 {e['trigger']['ma5']} | "
                   f"跌破止跌低点{e['trigger']['stop_low']}放弃")
     else:
@@ -398,17 +458,20 @@ def main():
         print(f"👀 B级（观察）{len(b_lv)}只:")
         for e in b_lv[:args.top]:
             d = e["detail"]
-            print(f"  {e['code']} {e['name']} {e['score']}分 | 回撤{d['dd20']}% RSI{d['rsi']} "
-                  f"前期30日+{d['rise30']}% | 止跌{'✅' if e['stabilize_ok'] else '❌'}")
+            ind = e['industry']
+            print(f"  {e['code']} {e['name']} {e['score']}分(技术{e['tech_score']}) | {ind['name']} {ind['heat_reason']} "
+                  f"| 回撤{d['dd20']}% RSI{d['rsi']} | 止跌{'✅' if e['stabilize_ok'] else '❌'}")
     else:
         print(f"👀 B级: 无")
     if c_lv:
         print(f"📌 C级（仅记录）{len(c_lv)}只:")
         for e in c_lv[:args.top]:
             d = e["detail"]
-            print(f"  {e['code']} {e['name']} {e['score']}分 | 回撤{d['dd20']}% RSI{d['rsi']}")
+            ind = e['industry']
+            print(f"  {e['code']} {e['name']} {e['score']}分(技术{e['tech_score']}) | {ind['name']} {ind['heat_reason']} "
+                  f"| 回撤{d['dd20']}% RSI{d['rsi']}")
     print("──────────────────────────────")
-    print("纪律: 本池仅提供监控候选；买入需盘中二次确认（突破昨日高点+量能+大盘不弱）")
+    print("纪律: 本池仅提供监控候选；买入需盘中二次确认（突破昨日高点+量能+行业热度未转弱+大盘不弱）")
     print("      止损=买入价-1×ATR 或 止跌低点×0.97 取严格者；3日不弹降级；5日不达标退出")
 
 
