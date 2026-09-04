@@ -2,17 +2,11 @@
 """
 股票池全流程串联（stock_pool_full.py）
 =====================================
-一天三次一条龙（早盘09:30 / 午盘12:30 / 尾盘14:20）：
+一天三次数据采集链路（早盘09:30 / 午盘12:30 / 尾盘14:20）：
   ① stock_pool.py 全量五因子生成 stock_pool.json（详细数据仅写后台）
-  ② stock_pool_ai.py 四角色AI裁决 core → watchlist.json（裁决仅写后台）
-  ③ short_term_ai.py 汇总并只推送一条精简最终决策
-     —— 用户要求"股票池AI裁决过后就进行定时任务分析"（2026-08-26 方案一）
-早盘/午盘（<14点）自动传 SKIP_CLEANUP=1：跳过监测名单清理（昨日监测今天还要跟踪），
-尾盘 14:20 轮次才清理昨日名单。
-下游零改动：short_term.py V1.6 读 stock_pool.json 全量逐只分析（core+watch），
-short_term_ai/manual 自动带上当天新鲜池子。
+  ② decision_bundle.py 运行确定性 Python 分析并生成可上传给外部 AI 的 JSON 数据包。
+本链路不调用任何本地大模型、不写监测名单、不发送交易结论。
 """
-import datetime
 import os
 import subprocess
 import sys
@@ -48,12 +42,8 @@ def run_step(name, script, env_extra=None):
 if __name__ == "__main__":
     t_all = time.time()
     print(f"[stock_pool_full] 🚀 股票池全流程启动 {time.strftime('%Y-%m-%d %H:%M:%S')}", file=sys.stderr, flush=True)
-    # 早盘/午盘跳过监测名单清理；尾盘（14点后）才清理昨日名单
-    skip_cleanup = "1" if datetime.datetime.now().hour < 14 else "0"
     run_step("股票池生成", "stock_pool.py", {"PIPELINE_COMPACT": "1"})
-    run_step("AI裁决", "stock_pool_ai.py", {
-        "SKIP_CLEANUP": skip_cleanup,
-        "PIPELINE_SILENT": "1",
+    run_step("生成外部AI裁决数据包", "decision_bundle.py", {
+        "PIPELINE_COMPACT": "1", "ANALYSIS_ONLY": "1", "BUNDLE_RUN_ANALYSIS": "1",
     })
-    run_step("盘中分析", "short_term_ai.py")
-    print(f"[stock_pool_full] 🎉 全流程完成 总耗时{time.time()-t_all:.0f}s", file=sys.stderr, flush=True)
+    print(f"[stock_pool_full] 🎉 数据包生成完成 总耗时{time.time()-t_all:.0f}s", file=sys.stderr, flush=True)

@@ -60,7 +60,7 @@ def load_watch_stocks():
         WATCH_STOCKS = []
     return WATCH_STOCKS
 
-# 股票池（17:30 stock_pool.py 五因子选股；18:00 stock_pool_ai.py AI裁决 → watchlist）
+# 股票池（stock_pool.py 五因子选股；最终裁决由外部AI根据 decision_bundle 完成）
 STOCK_POOL = {}  # {date, market_status, market_score, core, watch, valid, stale_days}
 def load_stock_pool():
     """读取 stock_pool.json，date 新鲜度校验（V1.1 三路合并第1路）。
@@ -1584,7 +1584,7 @@ def main():
                 _up = "升core需≥85分" if _lvl == "watch" else "core"
                 _tag = (f"  📌 股票池{_up}: 总分{_it.get('total_score','-')} 行业{_it.get('industry','')}"
                         f"({_it.get('industry_score','-')}分) 入池{_it.get('days_in_pool','-')}日 20日{_it.get('chg20','-')}%"
-                        f" | 当日五因子选出,AI裁决进监测")
+                        f" | 当日五因子选出，待外部AI裁决")
                 print(_b + "\n" + _tag)
             if _brief_lines:
                 print("  ── 其余 watch 简略（未逐只展开，可关注明日升core）──")

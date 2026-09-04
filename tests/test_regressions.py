@@ -21,7 +21,6 @@ import etf_t_engine as te
 import paper_trader as pt
 import paper_execution as pe
 import stock_pool as sp
-import stock_pool_ai as sai
 import stock_picker_ai as spa
 import stock_scanner as scanner
 import watchlist
@@ -252,16 +251,6 @@ class RegressionTests(unittest.TestCase):
         verdict["decisions"][0]["entry"] = 10.
         self.assertEqual(validate_verdict(json.dumps(verdict), [candidate], "A")[0][0][0], "600001")
 
-    def test_ai_valid_no_does_not_retry_or_add_conditional_watch(self):
-        now = datetime.now()
-        pool = {"date": now.strftime("%Y-%m-%d"), "generated_at": now.strftime("%Y-%m-%d %H:%M:%S"), "data_ok": True, "market_status": "A", "market_score": 85, "core_pool": [{"code": "600001", "name": "测试"}]}
-        result = {"final": json.dumps({"decisions": [{"code": "600001", "decision": "NO", "reason": "证据不足"}]}), "trend": "", "risk": "", "trader": ""}
-        with patch.object(sai.spm, "load_old_pool", return_value=pool), patch.object(sai, "_run_four_roles", return_value=result) as roles, patch.object(spa, "get_market_brief", return_value=""), patch.object(spa, "cleanup_watchlist", return_value=([], set())), patch.object(spa, "add_cond_monitor") as conditional, patch.object(watchlist, "add_stocks") as add, redirect_stdout(io.StringIO()):
-            sai.main()
-        roles.assert_called_once()
-        add.assert_not_called()
-        conditional.assert_not_called()
-
     def test_paper_rejects_b_entry_and_same_day_sell(self):
         paper = pt.fresh_paper()
         self.assertFalse(pe.buy(paper, signal(grade="B"), 10.))
@@ -376,14 +365,6 @@ class RegressionTests(unittest.TestCase):
         self.assertIn("否决5", rendered)
         self.assertIn("其余2只否决详情留在后台", rendered)
         self.assertNotIn("股票4：不合格", rendered)
-
-    def test_pipeline_silent_ai_report_is_not_sent(self):
-        with patch.dict(os.environ, {"PIPELINE_SILENT": "1"}), \
-             patch.object(sai, "atomic_json") as save, \
-             patch.object(qq_send, "push_or_stdout") as send:
-            sai.publish_report("裁决完成")
-        save.assert_called_once()
-        send.assert_not_called()
 
     def test_ambiguous_qq_response_cannot_automatically_resend(self):
         with patch.object(qq_send, "DEFAULT_OPENID", "test-recipient"), patch.object(qq_send, "get_token", return_value="test-token"), patch.object(qq_send, "_send_chunk", side_effect=TimeoutError) as send:
