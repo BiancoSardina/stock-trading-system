@@ -5,9 +5,10 @@
 """
 import json, os, csv
 from datetime import datetime, date
+from runtime import data_path, atomic_json, read_json, lot_quantity, exclusive, available_quantity, positive
 
-POSITIONS_FILE = os.path.expanduser("~/.hermes/scripts/positions.json")
-TRADE_LOG = os.path.expanduser("~/.hermes/scripts/trade_log.csv")
+POSITIONS_FILE = data_path("positions.json")
+TRADE_LOG = data_path("trade_log.csv")
 # 资金池（2026-08-06 更新：个股已全部清仓，现金约2.4万）
 # 仓位监控口径：总资金 = 持仓投入(约3.1万) + 可用现金(约2.4万) ≈ 5.5万
 #   ETF池：持仓31000 + 现金约4000 ≈ 35000；个股池：现金约20000（8-6卖出回款约4100并入）
@@ -20,27 +21,59 @@ CLOSED_STATUS = ("sold", "closed")
 def load_positions():
     """读取持仓记录（自动过滤已平仓 status=sold/closed 的条目）"""
     if not os.path.isfile(POSITIONS_FILE):
-        return {"etf": [], "stock": []}
+        raise FileNotFoundError("缺少持仓事实文件；请配置STOCK_DATA_DIR，不得推断为空仓")
     try:
-        with open(POSITIONS_FILE, "r") as f:
+        with open(POSITIONS_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
         for grp in ("etf", "stock"):
             data[grp] = [p for p in data.get(grp, []) if p.get("status") not in CLOSED_STATUS]
         return data
-    except:
-        return {"etf": [], "stock": []}
+    except Exception as exc:
+        raise ValueError("持仓文件损坏，停止交易决策") from exc
+
+def aggregate_positions(data=None):
+    """Quantity-weighted position view; original lots remain the settlement facts."""
+    data = load_positions() if data is None else data
+    result = {}
+    for group in ("etf", "stock"):
+        for original in data.get(group, []):
+            if original.get("status") in CLOSED_STATUS:
+                continue
+            lot = dict(original, type=group)
+            qty = lot_quantity(lot)
+            if not qty:
+                continue
+            if not float(lot.get("buy_price") or 0) > 0:
+                raise ValueError("持仓成本缺失")
+            code = lot["code"]
+            if code not in result:
+                result[code] = dict(lot, quantity=0, shares=0, amount=0, lots=[])
+            pos = result[code]
+            pos["lots"].append(lot)
+            pos["no_sell"] = any(bool(item.get("no_sell")) for item in pos["lots"])
+            pos["quantity"] += qty
+            pos["shares"] = pos["quantity"]
+            pos["amount"] += qty * float(lot["buy_price"])
+            pos["buy_price"] = pos["amount"] / pos["quantity"]
+            pos["buy_date"] = min(str(x.get("buy_date", "")) for x in pos["lots"])
+            stops = [float(x["stop_loss"]) for x in pos["lots"] if x.get("stop_loss")]
+            pos["stop_loss"] = max(stops) if stops else None
+    return result
+
 
 def save_positions(data):
     os.makedirs(os.path.dirname(POSITIONS_FILE), exist_ok=True)
-    with open(POSITIONS_FILE, "w") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    atomic_json(POSITIONS_FILE, data)
 
 
 def build_position_context() -> str:
     """从权威持仓文件动态生成持仓描述（供各脚本 prompt 注入，防止硬编码过期）"""
-    data = load_positions()
+    try:
+        data = load_positions()
+    except (OSError, ValueError):
+        return "持仓数据不可用，禁止推断为空仓"
     lines = []
-    for p in data.get("etf", []) + data.get("stock", []):
+    for p in aggregate_positions(data).values():
         name = p.get("name", "")
         code = p.get("code", "")
         buy = p.get("buy_price")
@@ -52,6 +85,7 @@ def build_position_context() -> str:
         return "当前无持仓（ETF与个股均空仓）"
     return "；".join(lines)
 
+@exclusive(lambda: POSITIONS_FILE)
 def add_position(code, name, buy_price, amount, type_s="etf", stop_loss=None, take_profit=None):
     """添加一笔买入记录"""
     data = load_positions()
@@ -66,6 +100,7 @@ def add_position(code, name, buy_price, amount, type_s="etf", stop_loss=None, ta
     save_positions(data)
     return entry
 
+@exclusive(lambda: POSITIONS_FILE)
 def remove_position(code, type_s="etf", all_of_code=False):
     """卖出或删除持仓记录"""
     data = load_positions()
@@ -79,6 +114,7 @@ def remove_position(code, type_s="etf", all_of_code=False):
                 break
     save_positions(data)
 
+@exclusive(lambda: POSITIONS_FILE)
 def close_position(code, type_s="etf", sell_price=None, reason=""):
     """
     平仓：从持仓中移除该代码（含多次建仓的全部条目），可选记录卖出价格并写交易日志。
@@ -119,7 +155,12 @@ def check_stops(current_prices):
     current_prices: {code: current_price}
     返回: (stops_triggered, summary)
     """
-    data = load_positions()
+    positions = aggregate_positions()
+    missing = [code for code in positions if not positive(current_prices.get(code))]
+    if missing:
+        raise ValueError("行情缺失，拒绝生成不完整资产合计：" + ",".join(missing))
+    data = {group: [p for p in positions.values() if p["type"] == group] for group in ("etf", "stock")}
+
     triggered = {"stop_loss": [], "take_profit": []}
     total_invested = 0
     total_current = 0
@@ -138,7 +179,7 @@ def check_stops(current_prices):
             tp = pos.get("take_profit")
             
             total_invested += amount
-            current_value = round(amount / buy_price * cur, 2) if buy_price else amount
+            current_value = round(lot_quantity(pos) * cur, 2)
             total_current += current_value
             
             pnl = round(current_value - amount, 2)
@@ -214,7 +255,7 @@ def generate_risk_report(current_prices):
         lines.append("\n🚨 【止盈止损触发】")
         for t in triggered["stop_loss"]:
             lines.append(f"  🔴 {t['name']}({t['code']}) 触发止损！买入{t['buy']}→现价{t['cur']} 亏损{t['loss']:+.2f}%")
-            lines.append(f"     建议：执行止损卖出")
+            lines.append("     风险触发，执行动作须服从状态机与T+1可卖数量")
         for t in triggered["take_profit"]:
             lines.append(f"  🟢 {t['name']}({t['code']}) 触止盈！买入{t['buy']}→现价{t['cur']} 盈利{t['profit']:+.2f}%")
             lines.append(f"     建议：止盈落袋或上移止损继续持有")
@@ -538,7 +579,9 @@ def build_exit_plan(pos, cur, kline, no_sell=None):
             _started = True
         if _started:
             days_held += 1
-            peak = max(peak, float(_k["high"]))
+            # A daily high on the purchase date may predate the actual entry.
+            if not buy_date or _d[:10] > buy_date[:10]:
+                peak = max(peak, float(_k["high"]))
     if not buy_date:
         peak = max([float(_k["high"]) for _k in kline] + [cur])
         days_held = len(kline)
@@ -551,7 +594,7 @@ def build_exit_plan(pos, cur, kline, no_sell=None):
     # 盘中瞬时击穿止损线但现价已收回线上 → 降级为预警不执行（收盘价跌破才清仓）；
     # 今日最低取日K最后一根（盘中=实时最低，盘后=当日最低），无数据时退化为原逻辑。
     today_low = None
-    if kline:
+    if kline and str(kline[-1].get("day", ""))[:10] == date.today().isoformat():
         try:
             today_low = float(kline[-1].get("low"))
         except (TypeError, ValueError):
@@ -564,7 +607,9 @@ def build_exit_plan(pos, cur, kline, no_sell=None):
     unit = _lot_unit(code)
 
     def _sell(ratio=1.0):
-        return _exit_sell_label(code, amount, cur, ratio, unit, shares=pos.get("shares"))
+        if no_sell:
+            return "持仓禁止卖出，仅风险预警"
+        return _exit_sell_label(code, amount, cur, ratio, unit, shares=lot_quantity(pos))
 
     lines.append("  📤 【退出系统】")
     # ① 止损退出
@@ -585,7 +630,9 @@ def build_exit_plan(pos, cur, kline, no_sell=None):
     if not no_sell and pnl_pct > 0 and ma20 and cur > ma20:
         _fake_ma10 = (today_low is not None and ma10 is not None
                       and today_low <= ma10 and cur > ma10)
-        if ma10 and cur <= ma10:
+        close_confirmed = (datetime.now().hour >= 15
+                           and str(kline[-1].get("day", ""))[:10] == date.today().isoformat())
+        if ma10 and cur <= ma10 and close_confirmed:
             lines.append(f"  📉 趋势退出: 收盘破MA10({ma10:.3f}) → 减仓50% ({_sell(0.5)})")
             triggered.append({"kind": "趋势退出减仓", "severity": "mid", "label": _sell(0.5), "code": code, "name": name})
         elif _fake_ma10:
@@ -596,10 +643,11 @@ def build_exit_plan(pos, cur, kline, no_sell=None):
         lines.append(f"  📉 趋势退出: 已破MA20({ma20:.3f}) → 清仓 ({_sell(1.0)})")
         triggered.append({"kind": "趋势退出清仓", "severity": "high", "label": _sell(1.0), "code": code, "name": name})
     # ③ 盈利保护
-    if pnl_pct >= 10:
+    peak = max(peak, float(pos.get("highest_price") or 0))
+    if pos.get("protect_activated") or peak >= buy_price * 1.10:
         protect_line = round(peak * 0.92, 3)
         if cur <= protect_line:
-            lines.append(f"  🛡️ 盈利保护: 已触发！盈利{pnl_pct:+.1f}%≥10%，自峰值{peak:.3f}回撤8%破{protect_line} → {_sell(1.0)}")
+            lines.append(f"  🛡️ 盈利保护: 已触发！曾达到10%激活线，当前盈利{pnl_pct:+.1f}%，自峰值{peak:.3f}回撤8%破{protect_line} → {_sell(1.0)}")
             triggered.append({"kind": "盈利保护", "severity": "high", "label": _sell(1.0), "code": code, "name": name})
         else:
             lines.append(f"  🛡️ 盈利保护: 盈利{pnl_pct:+.1f}%已激活，峰值{peak:.3f}，回撤8%破{protect_line}卖出（当前安全）")
@@ -612,7 +660,7 @@ def build_exit_plan(pos, cur, kline, no_sell=None):
     else:
         _note = "已盈利不受限" if pnl_pct > 0 else f"再等{max(0,10-days_held)}日"
         lines.append(f"  ⏰ 时间退出: 持有{days_held}日，10日未上涨则卖（当前{_note}）")
-    return lines, triggered
+    return lines, [] if no_sell else triggered
 
 def check_exits(current_prices):
     """
@@ -632,8 +680,7 @@ def check_exits(current_prices):
             if not kline:
                 continue
             elines, etrig = build_exit_plan(pos, cur, kline)
-            if elines:
-                lines.append(f"\n  📤 {pos['name']}({code}) 现价{cur}")
-                lines.extend(elines)
-            all_triggered.extend(etrig)
+            if etrig:
+                kinds = "；".join(t["kind"] for t in etrig)
+                lines.append(f"  📤 {pos['name']}({code}) 风险条件：{kinds}；仅预警，执行以状态机最终动作及可卖数量为准")
     return all_triggered, lines

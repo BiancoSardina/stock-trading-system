@@ -20,6 +20,8 @@ import os
 import sys
 import time
 import uuid
+import hashlib
+from runtime import data_path, atomic_json, read_json, file_lock
 import urllib.request
 import urllib.error
 
@@ -28,10 +30,10 @@ TOKEN_URL = "https://bots.qq.com/app/getAppAccessToken"
 # QQ 官方单条消息上限（UTF-8 字节）为 4000；每段用到 3900（留余量给 [i/N] 标记），
 # 让常规报告落在 2~3 段内（用户 2026-08-06 要求：尽量分 2~3 段，不要刷屏）
 MAX_BYTES = 3900
-TOKEN_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".qq_token_cache.json")
+TOKEN_FILE = data_path(".qq_token_cache.json")
 
 # 目标用户（cron deliver 的 chat_id / openid）
-DEFAULT_OPENID = os.getenv("QQ_TARGET_OPENID", "4280B621120ABAD4D7E837F57EF66187")
+DEFAULT_OPENID = os.getenv("QQ_TARGET_OPENID", "")
 
 
 def _load_env_secrets():
@@ -76,8 +78,7 @@ def get_token(force=False) -> str:
     if not token:
         raise RuntimeError(f"token 接口返回异常: {data}")
     expires_in = int(data.get("expires_in", 7200))
-    json.dump({"token": token, "expires_at": time.time() + expires_in},
-              open(TOKEN_FILE, "w"))
+    atomic_json(TOKEN_FILE, {"token": token, "expires_at": time.time() + expires_in})
     return token
 
 
@@ -147,54 +148,61 @@ def split_report(text: str, max_bytes: int = MAX_BYTES):
     return chunks
 
 
-def send_report(text: str, openid: str = DEFAULT_OPENID, dry_run: bool = False) -> bool:
-    """
-    分段发送报告。返回全部成功 True / 有失败 False。
-    单段消息带 (i/N) 标记；超过 1 段时每段前加序号。
-    """
+class PartialDeliveryError(RuntimeError):
+    """Already-sent or ambiguous chunks must never trigger a whole-report resend."""
+
+
+def send_report(text: str, openid=None, dry_run=False):
     global DEFAULT_OPENID
-    DEFAULT_OPENID = openid
+    openid = openid or DEFAULT_OPENID
     chunks = split_report(text)
     if not chunks:
         return True
-    if len(chunks) == 1:
-        chunks = [chunks[0]]
-    else:
-        total = len(chunks)
-        chunks = [f"[{i}/{total}] {c}" for i, c in enumerate(chunks, 1)]
-    try:
-        token = get_token()
-    except Exception as e:
-        print(f"[qq_send] token 获取失败: {e}", file=sys.stderr)
-        return False
-    ok_all = True
-    seq = (int(time.time()) ^ int(uuid.uuid4().hex[:4], 16)) % 65536  # QQ 要求 0..65535
-    for c in chunks:
-        if dry_run:
-            print(f"--- 段({len(c.encode('utf-8'))}B) ---\n{c[:120]}...", file=sys.stderr)
-            continue
-        sent = False
-        for attempt in range(3):
+    if len(chunks) > 1:
+        chunks = [f"[{i}/{len(chunks)}] {chunk}" for i, chunk in enumerate(chunks, 1)]
+    if dry_run:
+        return True
+    if not openid:
+        raise ValueError("请配置QQ_TARGET_OPENID")
+    path = data_path("delivery_receipts.json")
+    key = hashlib.sha256((openid + "\n" + text).encode()).hexdigest()
+    with file_lock(path):
+        receipts = read_json(path, {})
+        record = receipts.setdefault(key, {"created_at": time.time(), "chunks": chunks,
+                                           "status": ["pending"] * len(chunks)})
+        if any(status == "sending" for status in record["status"]):
+            raise PartialDeliveryError("上次发送结果不确定；先核对回执，禁止自动整份重发")
+        if all(status == "sent" for status in record["status"]):
+            return True
+        DEFAULT_OPENID = openid
+        try:
+            token = get_token()
+        except Exception as exc:
+            if "sent" in record["status"]:
+                raise PartialDeliveryError("已有分段送达，凭据失败；保留回执等待补发") from exc
+            return False
+        seq = int(time.time()) % 65536
+        for i, chunk in enumerate(chunks):
+            if record["status"][i] == "sent":
+                continue
+            record["status"][i] = "sending"
+            atomic_json(path, receipts)
             try:
-                if _send_chunk(c, token, seq):
-                    sent = True
-                    break
-            except urllib.error.HTTPError as e:
-                # token 过期 → 强制刷新重试一次
-                if e.code == 401 and attempt == 0:
-                    try:
-                        token = get_token(force=True)
-                    except Exception:
-                        pass
-                print(f"[qq_send] HTTP {e.code}: {e.read()[:200]}", file=sys.stderr)
-            except Exception as e:
-                print(f"[qq_send] 发送异常: {e}", file=sys.stderr)
-            time.sleep(1.0 * (2 ** attempt))
-        if not sent:
-            ok_all = False
-        seq += 1
-        time.sleep(0.4)  # 段间小间隔，避免 QQ 频率限制
-    return ok_all
+                sent = _send_chunk(chunk, token, (seq + i) % 65536)
+            except urllib.error.HTTPError as exc:
+                record["status"][i] = "failed"
+                record["error"] = f"HTTP {exc.code}"
+                atomic_json(path, receipts)
+                raise PartialDeliveryError("分段发送失败，回执已保存，仅补发未送达段") from exc
+            except Exception as exc:
+                # The server may have received it even if the response was lost.
+                raise PartialDeliveryError("发送结果不确定，回执保留sending；请核对后再处理") from exc
+            record["status"][i] = "sent" if sent else "failed"
+            atomic_json(path, receipts)
+            if not sent:
+                raise PartialDeliveryError("部分报告未送达，回执已保存；禁止整份兜底重发")
+            time.sleep(.4)
+        return True
 
 
 def push_or_stdout(report: str) -> bool:
@@ -209,6 +217,8 @@ def push_or_stdout(report: str) -> bool:
         return False
     try:
         return send_report(report)
+    except PartialDeliveryError:
+        raise
     except Exception as e:
         print(f"[qq_send] 推送失败: {e}", file=sys.stderr)
         return False

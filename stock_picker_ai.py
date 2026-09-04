@@ -76,8 +76,8 @@ def cleanup_watchlist():
     try:
         _data = position_manager.load_positions()
         pos_codes = {p["code"] for grp in ("etf", "stock") for p in _data.get(grp, [])}
-    except Exception:
-        pos_codes = set()
+    except Exception as exc:
+        raise ValueError("持仓事实不可用，保留原监测名单") from exc
     today = datetime.now().strftime("%Y-%m-%d")
     result = watchlist.clean_stale(pos_codes, today)
     lines = []
@@ -107,7 +107,8 @@ def extract_yes_stocks(text: str) -> list:
     items = []
     seen = set()
     for line in text.splitlines():
-        if "YES" not in line.upper():
+        clean = line.replace("*", "")
+        if re.search(r"\bNO\b", clean, re.I) or not (re.search(r"允许交易\s*[:：]\s*YES\b", clean, re.I) or re.search(r"\|\s*YES\s*\|", clean, re.I)):
             continue
         m = re.search(r"([\u4e00-\u9fa5A-Za-z0-9*#]{2,14}?)[（(]?\s*(\d{6})", line)
         if m:
@@ -121,19 +122,18 @@ def extract_yes_stocks(text: str) -> list:
     return items
 
 
-def update_watchlist(final_out: str) -> list:
+def update_watchlist(final_out: str, candidates=None, market_state="UNKNOWN") -> list:
     """解析报告末行监测名单并写入 watchlist.json，返回本次新增条目。
 
     兜底策略：AI 严格输出了【监测名单】行 → 按行解析；
     AI 没输出该行（返回 None）→ 从报告中提取"允许交易: YES"的标的自动写入；
     AI 明确输出"无"（返回 []）→ 不写入。
     """
-    items = parse_watchlist_line(final_out)
-    if items is None:
-        items = extract_yes_stocks(final_out)
-    if not items:
-        return []
-    return watchlist.add_stocks(items)
+    if candidates is None:
+        return []  # Legacy prose has no verifiable candidate identity or price evidence.
+    from ai_decision import validate_verdict
+    items, _ = validate_verdict(final_out, candidates, market_state)
+    return watchlist.add_stocks(items) if items else []
 
 
 def add_cond_monitor(core_pool: list, top_n: int = 5, min_score: float = 75.0) -> list:
@@ -269,7 +269,7 @@ ROLE_RISK_SYSTEM = (
     "  止损距离：买入价到止损位约 -x.x%\n"
     "  20日最大回撤：-xx.x%\n"
     "  市场环境：A/B/C/D级（影响仓位上限）\n"
-    "风险等级：🔴高 / 🟠中 / 🟡低（判断标准：止损距离>-8%或回撤>-20%或市场C/D级→高）\n"
+    "风险等级：🔴高 / 🟠中 / 🟡低（判断标准：止损距离<-8%或回撤<-20%→高；市场D级禁止新增买入，C级仅低吸）\n"
     "一句话风险提示（给交易员看）。"
 )
 

@@ -135,7 +135,7 @@ def score_candidate(code, name, s, kl, ind_score, mkt_score):
     grade = "S" if total >= S_GRADE else ("A" if total >= A_GRADE else "C")
 
     # --- 次日接力预案（高开分档）---
-    plan = build_next_plan(prev_close, zt)
+    plan = build_next_plan(cur, zt)
 
     return {
         "code": code, "name": name,
@@ -267,13 +267,8 @@ def scan():
     try:
         indices = short_term.get_indices()
         mkt_lines = short_term.market_score(indices)
-        for ln in mkt_lines:
-            if "市场评分" in ln and "分" in ln:
-                try:
-                    mkt_score = int("".join(c for c in ln.split("分")[0] if c.isdigit())[-2:])
-                except Exception:
-                    pass
-        mkt_status = "A" if mkt_score >= 80 else ("B" if mkt_score >= 65 else ("C" if mkt_score >= 50 else "D"))
+        mkt_score = short_term.MARKET.get("score") or 0
+        mkt_status = short_term.MARKET.get("state", "UNKNOWN")
     except Exception as e:
         print(f"[first_board] 市场评分失败: {e}", file=sys.stderr)
     print(f"[first_board] 市场评分: {mkt_status}级 {mkt_score}分", file=sys.stderr)

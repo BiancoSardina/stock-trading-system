@@ -27,10 +27,13 @@ decision_manager.py — 交易状态机 + 决策优先级 + 信号稳定（V3.0 
 import json
 import os
 from datetime import datetime
+from copy import deepcopy
+from entry_policy import cooldown_reason
+from runtime import data_path, atomic_json, read_json, lot_quantity, available_quantity, analysis_only, exclusive, position_key
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-STATE_FILE = os.path.join(SCRIPT_DIR, "decision_state.json")
-HISTORY_FILE = os.path.join(SCRIPT_DIR, "decision_history.json")
+STATE_FILE = data_path("decision_state.json")
+HISTORY_FILE = data_path("decision_history.json")
 HISTORY_LIMIT = 500  # 历史最多保留条数（防无限膨胀）
 
 # 状态机六态
@@ -53,49 +56,29 @@ _STATES = None  # 模块级缓存
 # ─────────────────────────── 文件 IO ───────────────────────────
 
 def _atomic_write(path, obj):
-    tmp = path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=1)
-    os.replace(tmp, path)
+    atomic_json(path, obj)
 
 
 def load_states():
-    global _STATES
-    if _STATES is None:
-        try:
-            with open(STATE_FILE, encoding="utf-8") as f:
-                data = json.load(f)
-            _STATES = data if isinstance(data, dict) else {}
-        except Exception:
-            _STATES = {}
-    return _STATES
+    data = read_json(STATE_FILE, {})
+    if not isinstance(data, dict):
+        raise ValueError("决策状态格式错误")
+    return data
 
 
 def save_states(states):
-    global _STATES
-    _STATES = states
-    try:
-        _atomic_write(STATE_FILE, states)
-    except Exception:
-        pass
+    atomic_json(STATE_FILE, states)
 
 
 def load_history():
-    try:
-        with open(HISTORY_FILE, encoding="utf-8") as f:
-            data = json.load(f)
-        return data if isinstance(data, list) else []
-    except Exception:
-        return []
+    data = read_json(HISTORY_FILE, [])
+    if not isinstance(data, list):
+        raise ValueError("决策历史格式错误")
+    return data
 
 
 def append_history(entry):
-    try:
-        hist = load_history()
-        hist.append(entry)
-        _atomic_write(HISTORY_FILE, hist[-HISTORY_LIMIT:])
-    except Exception:
-        pass
+    atomic_json(HISTORY_FILE, (load_history() + [entry])[-HISTORY_LIMIT:])
 
 
 # ─────────────────────────── 状态工具 ───────────────────────────
@@ -151,9 +134,11 @@ def _today_bought_shares(code):
 
 # ─────────────────────────── 核心裁决 ───────────────────────────
 
+@exclusive(lambda: STATE_FILE)
 def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
              hold=0, is_etf=True, market_state="A", exit_triggers=None,
-             can_buy=True, rsi=None, now=None):
+             can_buy=True, rsi=None, now=None, persist=True, no_sell=False, requested_buy_shares=None,
+             entry_check=None, completed_dates=None):
     """V3.0 状态机最终裁决（每标的每次分析调用一次）。
 
     参数：
@@ -174,7 +159,8 @@ def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
     """
     now = now or datetime.now()
     today = now.strftime("%Y-%m-%d")
-    states = load_states()
+    persist = persist and not analysis_only()
+    states = deepcopy(load_states())
     st = states.get(code)
     if not st or not isinstance(st, dict):
         st = _new_state(code, name, pos)
@@ -185,6 +171,12 @@ def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
 
     # ── 0) 持仓事实校准（铁律：决策状态向 positions.json 看齐） ──
     pos_exist = bool(pos and pos.get("buy_price"))
+    cycle = [list(part) for part in position_key(pos)]
+    if st.get("position_key") != cycle:
+        st["highest_price"] = float(pos.get("buy_price") or 0) if pos_exist else 0
+        if st.get("state") == PROTECT:
+            st["state"] = HOLD if pos_exist else WATCH
+    st["position_key"] = cycle
     if pos_exist:
         st["cost"] = float(pos.get("buy_price") or st.get("cost") or 0)
         if st["state"] in (WATCH, READY, BUYING):
@@ -216,6 +208,10 @@ def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
     p0_hard = [t for t in trigs if t.get("kind") in ("止损退出", "趋势退出清仓", "时间退出")]
     p2_profit = [t for t in trigs if t.get("kind") == "盈利保护"]
     p1_trend = [t for t in trigs if t.get("kind") == "趋势退出减仓"]
+    # Record a risk event, not an assumed fill. It survives position calibration.
+    if pos_exist and any(t.get("kind") == "止损退出" for t in trigs):
+        st["last_stop_signal_date"] = today
+    stop_wait = cooldown_reason(st.get("last_stop_signal_date"), completed_dates, today)
 
     notes, reasons = [], []
     prev_action = st.get("last_action") or ACT_HOLD
@@ -256,7 +252,7 @@ def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
         reasons.append("趋势退出减仓（P1风险降低）")
         notes.append("📉 P1风险降低：趋势转弱，按退出系统减仓")
         st["state"] = HOLD if pos_exist else WATCH
-    elif market_state == "D":
+    elif market_state not in ("A", "B", "C"):
         # 市场D级总闸门：只处理减仓/止损
         if raw_down:
             action = ACT_REDUCE
@@ -286,7 +282,13 @@ def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
             reasons.append(f"信号降至{grade}级（减仓）")
     elif raw_up:
         # 向上意图（买入/加仓）—— 资格 + 冷却 + 反转门槛
-        if not can_buy:
+        if stop_wait:
+            reasons.append(stop_wait)
+            notes.append("⏳ " + stop_wait)
+        elif entry_check is not None and not entry_check.get("allowed"):
+            reasons.extend(entry_check.get("reasons") or ["入场点位检查未通过"])
+            notes.append("⚪ 入场资格未通过，评分不直接转为买入")
+        elif not can_buy:
             action = ACT_HOLD
             notes.append("⚪ 趋势未确认/市场闸门关闭：买入/加仓降级为观望")
         elif not pos_exist:
@@ -352,31 +354,32 @@ def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
         notes.append(f"⚠️ 减仓一级提示：RSI{rsi}进入超买区(≥80)，不追高；冲高分批止盈或做T高抛")
 
     # ── 3) T+1 可卖份额（减仓/清仓限定可卖份额；当日买入不可卖） ──
-    today_bought = _today_bought_shares(code) if pos_exist else 0
-    if pos_exist and hold and today_bought:
-        st["today_bought"] = today_bought
-    can_sell = None
-    if pos_exist and hold:
-        tb = today_bought or int(st.get("today_bought") or 0)
-        # 份额优先用持仓记录 quantity（事实），缺失才用金额/现价换算（round 防浮点截断）
-        try:
-            _q = pos.get("shares") or pos.get("quantity")
-            if _q:
-                total_shares = int(float(_q))
-            else:
-                _unit_price = float(cur) if cur else float(pos.get("buy_price") or 1)
-                total_shares = int(round(float(hold) / _unit_price)) if _unit_price else 0
-        except Exception:
-            total_shares = 0
-        can_sell = max(total_shares - tb, 0)
-        if action in (ACT_REDUCE, ACT_SELL) and can_sell <= 0:
+    can_sell = available_quantity(pos, today) if pos_exist else None
+    total_shares = lot_quantity(pos) if pos_exist else 0
+    today_bought = total_shares - (can_sell or 0)
+    sell_quantity = 0
+    if no_sell and action in (ACT_SELL, ACT_REDUCE):
+        action = ACT_HOLD
+        reasons.append("持仓设置禁止卖出，仅保留风险预警")
+        notes = ["⚠️ 退出风险已触发，但该持仓设置禁止卖出，本次仅预警"]
+    if action in (ACT_SELL, ACT_REDUCE):
+        ratio = 0.5 if p1_trend else 0.2
+        desired = total_shares if action == ACT_SELL else int(total_shares * ratio / 100) * 100
+        sell_quantity = min(can_sell or 0, desired)
+        if sell_quantity <= 0:
             action = ACT_HOLD
-            notes.append("⚠️ T+1约束：今日买入份额不可卖，今日无法减仓，明日再处理")
-            reasons.append("T+1当日买入不可卖")
+            reasons.append("T+1当日买入或数量不足，不可执行卖出")
+            notes = ["⚠️ T+1或可卖数量约束：本次仅预警，禁止执行卖出"]
+    st["today_bought"] = today_bought
+    buy_quantity = int(requested_buy_shares or 0)
+    if action in (ACT_BUY, ACT_ADD) and requested_buy_shares is not None and buy_quantity <= 0:
+        action = ACT_HOLD
+        reasons.append("预算不足一手，取消买入")
+        notes = ["⚠️ 预算不足，本次不生成买入动作"]
 
     # ── 4) 变化检测 + 历史记录 ──
     changed = action != prev_action
-    if changed and action != ACT_HOLD:
+    if persist and changed and action != ACT_HOLD:
         append_history({
             "code": code, "name": name, "time": _fmt(now),
             "old_action": _ACTION_LABEL.get(prev_action, prev_action),
@@ -407,7 +410,8 @@ def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
         st["last_action"] = action
         st["last_action_time"] = _fmt(now)
     states[code] = st  # 关键：新标的/更新后的状态必须写回（否则状态永不持久化）
-    save_states(states)
+    if persist:
+        save_states(states)
 
     # ── 6) 输出文本（四段式：当前状态/变化/动作/说明） ──
     _prev_lbl = _ACTION_LABEL.get(prev_action, prev_action)
@@ -416,7 +420,7 @@ def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
     lines = [f"  📋 状态机: {st['state']}{_protect_tag} ｜ 上次动作: {_prev_lbl}{_prev_t} → 本次: {_ACTION_LABEL.get(action, action)}"]
     for _n in notes[:2]:  # 最多2条说明，防报告膨胀
         lines.append(f"  {_n}")
-    if changed and reasons:
+    if reasons:
         lines.append(f"  🔄 变化原因: {'；'.join(reasons[:3])}")
 
     return {
@@ -428,6 +432,9 @@ def finalize(code, name, raw_action, quality="", score=0, cur=0.0, pos=None,
         "lines": lines,
         "can_sell_shares": can_sell,
         "today_bought": today_bought,
+        "quantity": buy_quantity if action in (ACT_BUY, ACT_ADD) else sell_quantity,
+        "reduce_ratio": 0.5 if p1_trend else 0.2,
+        "exit_required": bool(trigs),
     }
 
 

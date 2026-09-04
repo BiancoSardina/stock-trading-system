@@ -268,6 +268,7 @@ def score_industries(all_stocks, industry_map):
         base = next(r["avg_chg"] for r in rows if r["name"] == name)
         return base * 0.5  # 降级：当日涨幅折算
 
+    rows.sort(key=lambda r: period_strength(r["name"]), reverse=True)
     scored = {}
     for i, r in enumerate(rows):
         # ① 涨幅30：周期强度排名

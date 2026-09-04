@@ -9,6 +9,9 @@ from datetime import datetime, timedelta
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import position_manager
 import decision_manager
+import entry_policy
+from paper_execution import fee as planned_fee, SLIPPAGE as PLANNED_SLIPPAGE
+from runtime import macd, data_path, analysis_only, positive, exclusive, quote_is_fresh, weekly_averages, restore_analysis_mode, align_daily_bars, position_key
 
 # ETF配置
 ETFS = [
@@ -70,7 +73,7 @@ def load_stock_pool():
     STOCK_POOL = {"date": "", "market_status": "", "market_score": "",
                   "core": [], "watch": [], "valid": False, "stale_days": 0}
     try:
-        _sp = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stock_pool.json")
+        _sp = data_path("stock_pool.json")
         with open(_sp, encoding="utf-8") as _f:
             _data = json.load(_f)
         _date = str(_data.get("date", ""))[:10]
@@ -99,23 +102,19 @@ def load_stock_pool():
 
 # 资金池（2026-08-05 用户确认：现有可用资金池只有 2万，非原10万假设）
 # 买入建议金额 = total_amount × 等级比例（S/A 2%~5% = 400~1000元，B 2% = 400元）
-TOTAL_ETF = 20000
-TOTAL_STOCK = 20000
+TOTAL_ETF = position_manager.ETF_TOTAL
+TOTAL_STOCK = position_manager.STOCK_TOTAL
 WATCH_DETAIL_TOP = 5  # V1.7 筛选方案A（2026-08-26）：股票池 watch 只逐只分析综合分 top5，其余一行简略
 
 # 策略版本号（v2.31 补丁：每次策略修改递增，写入 signal_log 供按版本复盘）
-STRATEGY_VERSION = "v2.31"
+STRATEGY_VERSION = entry_policy.VERSION
 
 # ===== 持仓映射（权威数据源：position_manager 的 ~/.hermes/scripts/positions.json）=====
 POS_MAP = {}
 def load_positions_map():
     """加载权威持仓 {code: {buy_price, buy_date, amount, stop_loss, ...}}，覆盖旧 /home/ubuntu/positions.json"""
     global POS_MAP
-    try:
-        _data = position_manager.load_positions()
-        POS_MAP = {p["code"]: p for grp in ("etf", "stock") for p in _data.get(grp, [])}
-    except Exception:
-        POS_MAP = {}
+    POS_MAP = position_manager.aggregate_positions()
     return POS_MAP
 
 # 操作清单汇总（供末尾输出）
@@ -124,6 +123,7 @@ ACTION_LIST = []
 FINAL_LIST = []
 # 信号记录（自动写入signal_log.csv，用于复盘胜率）
 SIGNAL_LOG = []
+ENTRY_REVIEWS = []
 # 当前时段（main()设置：早盘/收割后/午后/尾盘），尾盘时买入建议改为"现价直接买"
 CURRENT_PERIOD = "午后"
 # V1.5 输出过滤（2026-08-21 用户要求）："A"=非持仓B级及以下不输出（定时任务开启）
@@ -177,7 +177,9 @@ def get_rt(code):
     parts = data.split(",")
     if len(parts) >= 10:
         return {"open": float(parts[1]), "prev": float(parts[2]), "cur": float(parts[3]),
-                "high": float(parts[4]), "low": float(parts[5]), "vol": int(parts[8])}
+                "high": float(parts[4]), "low": float(parts[5]), "vol": int(parts[8]),
+                "date": parts[30].strip() if len(parts) > 31 else "",
+                "time": parts[31].strip() if len(parts) > 31 else ""}
     return None
 
 # ===== A股手续费硬性规则（2026-08-06 用户要求：所有分析计划必须体现）=====
@@ -210,10 +212,10 @@ def fee_suffix(yuan, is_sell=False):
 
 # ===== A股交易规则：买卖按100股/100份(1手)整数倍 =====
 def round_lot(yuan, price, lot=100):
-    """金额→整手数（100整数倍），最少1手"""
+    """预算内整手数；不足一手返回零，禁止扩大预算。"""
     if not price or price <= 0:
-        return lot
-    return max(lot, int(yuan / price / lot) * lot)
+        return 0
+    return max(0, int(yuan / price / lot) * lot)
 
 def lot_text(yuan, price, unit="股", is_sell=False):
     """金额建议→手数建议文本，如 '100股(约1391元)'；单笔<3000元附手续费提醒"""
@@ -316,7 +318,7 @@ def _position_health_report():
             for _e in (STOCK_POOL.get("core", []) + STOCK_POOL.get("watch", [])):
                 if _e.get("code") == code:
                     try:
-                        s_indu = min(int(float(_e.get("industry_score", 0))), 20)
+                        s_indu = min(max(float(_e.get("industry_score", 0)), 0), 100) / 5
                     except Exception:
                         pass
                     break
@@ -408,6 +410,8 @@ def calc_rsi(prices, n=14):
         if d > 0: g += d
         else: l += abs(d)
     ag, al = g/n, l/n
+    if ag == 0 and al == 0:
+        return 50.0
     return round(100 - 100/(1+ag/al), 1) if al != 0 else 100
 
 def calc_ma(prices, n):
@@ -450,6 +454,8 @@ def _trend_score(indices):
             kl = get_index_kline(sym, 90)
             closes = [float(k["close"]) for k in kl]
             cur = (indices or {}).get(nm, {}).get("price") or closes[-1]
+            if len(closes) < 60:
+                raise ValueError("指数K线不足")
             ma20 = sum(closes[-20:]) / 20
             ma60 = sum(closes[-60:]) / 60
             if cur > ma20:
@@ -478,6 +484,8 @@ def _breadth_score():
             dn += int(it.get("f105", 0) or 0)
             fl += int(it.get("f106", 0) or 0)
         total = up + dn + fl
+        if total <= 0:
+            raise ValueError("涨跌家数缺失")
         ratio = up / total if total else 0
         if ratio >= 0.65: s = 15
         elif ratio >= 0.55: s = 12
@@ -491,7 +499,7 @@ def _breadth_score():
         detail.append("涨跌家数数据缺失(中性8分)")
     # 涨停/跌停家数（东财涨停池/跌停池 data.tc，无数据自动回退前一交易日）
     def pool_count(path):
-        for back in range(8):
+        for back in range(1):
             day = (datetime.now() - timedelta(days=back)).strftime("%Y%m%d")
             try:
                 url = (f"https://push2ex.eastmoney.com/{path}?ut=7eea3edcaed734bea9cbfc24409ed989"
@@ -528,6 +536,8 @@ def _volume_score():
                "&klt=101&fqt=1&end=20500101&lmt=30")
         d = json.loads(em_get(url).decode("utf-8", "ignore"))
         rows = [k.split(",") for k in d["data"]["klines"]]
+        if len(rows) < 6 or rows[-1][0] != datetime.now().strftime("%Y-%m-%d"):
+            raise ValueError("成交量日线过期或不足")
         amts = [float(r[6]) for r in rows]      # 成交额(元)
         chgs = [float(r[7]) for r in rows]      # 涨跌幅%
         now = datetime.now()
@@ -538,7 +548,7 @@ def _volume_score():
             vr = amts[-2] / (sum(amts[-6:-2]) / 4) if amts[-2] else 1
             chg, tag = chgs[-2], "昨日"
         else:
-            prog = min(1.0, max(0.05, (hm - open_t) / (close_t - open_t)))  # 盘中时间进度折算
+            prog = min(1.0, max(0.05, (min(max(hm - open_t, 0), 120) + min(max(hm - 13 * 60, 0), 120)) / 240))  # 盘中时间进度折算
             vr = (amts[-1] / prog) / (sum(amts[-6:-1]) / 5) if amts[-1] else 1
             chg, tag = chgs[-1], "今日"
         amt_now = amts[-1] / 1e8
@@ -555,7 +565,7 @@ def _volume_score():
         return 10, "量能数据缺失(中性10分)"
 
 def _external_score():
-    """④ 外部环境分(20)：隔夜纳指8 + 英伟达6 + 美元6（东财f170=涨跌幅×100）"""
+    """④ 外部环境分(20)：隔夜纳指11 + 英伟达9（东财f170=涨跌幅×100）。"""
     score, detail = 0, []
     def f170(sec):
         url = f"https://push2.eastmoney.com/api/qt/stock/get?secid={sec}&fields=f170,f58"
@@ -563,39 +573,38 @@ def _external_score():
         return d["data"]["f170"] / 100.0
     try:
         ndx = f170("100.NDX")
-        s = 8 if ndx >= 1 else 6 if ndx >= 0 else 2 if ndx >= -1 else 0
+        s = 11 if ndx >= 1 else 8 if ndx >= 0 else 3 if ndx >= -1 else 0
         score += s
         detail.append(f"纳指{ndx:+.2f}%({s}分)")
     except Exception:
-        score += 4
-        detail.append("纳指缺失(中性4分)")
+        score += 6
+        detail.append("纳指缺失(中性6分)")
     try:
         nvda = f170("105.NVDA")
-        s = 6 if nvda >= 1 else 4 if nvda >= 0 else 1 if nvda >= -1 else 0
+        s = 9 if nvda >= 1 else 6 if nvda >= 0 else 2 if nvda >= -1 else 0
         score += s
         detail.append(f"英伟达{nvda:+.2f}%({s}分)")
     except Exception:
-        score += 3
-        detail.append("英伟达缺失(中性3分)")
-    try:
-        usd = f170("100.UDI")
-        s = 6 if usd <= -0.2 else 3 if usd <= 0.2 else 1
-        score += s
-        detail.append(f"美元{usd:+.2f}%({s}分)")
-    except Exception:
-        score += 3
-        detail.append("美元缺失(中性3分)")
+        score += 5
+        detail.append("英伟达缺失(中性5分)")
     return score, detail
 
 def market_score(indices=None):
     """市场环境评分主函数：返回 dict{score,state,position,parts,lines} 并存入全局 MARKET"""
     global MARKET
+    MARKET.clear()
     if indices is None:
-        indices = get_indices()
+        try:
+            indices = get_indices()
+        except Exception:
+            indices = {}
     t, t_d = _trend_score(indices)
     b, b_d = _breadth_score()
     v, v_d = _volume_score()
     e, e_d = _external_score()
+    if not indices or any("缺失" in str(x) for x in (t_d, b_d, v_d, e_d)):
+        MARKET.update({"score": None, "state": "UNKNOWN", "position": 0, "data_ok": False})
+        return ["⚠️ 市场数据缺失：暂停新增买入，持仓风险仍独立检查"]
     total = t + b + v + e
     if total >= 80: state, pos, icon = "A", 80, "🟢"
     elif total >= 65: state, pos, icon = "B", 60, "🟡"
@@ -614,7 +623,7 @@ def market_score(indices=None):
              f"  ③ 成交量   {v}/20 | {v_d}",
              f"  ④ 外部环境 {e}/20 | {' | '.join(e_d)}",
              f"  💡 {state_desc}"]
-    MARKET = {"score": total, "state": state, "position": pos, "parts": {"trend": t, "breadth": b, "volume": v, "external": e}}
+    MARKET = {"data_ok": True, "score": total, "state": state, "position": pos, "parts": {"trend": t, "breadth": b, "volume": v, "external": e}}
     return lines
 
 # ===== 五因子评分模型（0~100） =====
@@ -819,10 +828,14 @@ def _f_risk(atr_pct, max_dd20):
 
 def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_chg20=None, bench300_chg20=None, no_sell=False, pos=None, from_pool=False):
     """分析单个标的，返回结构化文本"""
-    rt = get_rt(code)
+    no_sell = bool(no_sell or (pos or {}).get("no_sell"))
+    try:
+        rt = get_rt(code)
+    except Exception:
+        rt = None
     if not rt: return f"\n❌ {name} 数据获取失败"
     try:
-        kline = get_kline(code, 120)
+        kline = align_daily_bars(get_kline(code, 120), rt)
         closes = [float(k["close"]) for k in kline]
         highs = [float(k["high"]) for k in kline]
         lows = [float(k["low"]) for k in kline]
@@ -830,7 +843,13 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
     except:
         return f"\n❌ {name} K线失败"
 
+    if len(closes) < 60 or not all(positive(x) for x in closes + highs + lows):
+        return f"\n❌ {name} K线不足或价格无效，暂停决策"
     cur, prev = rt["cur"], rt["prev"]
+    if not positive(cur) or not positive(prev):
+        return f"\n❌ {name} 报价无效，暂停决策"
+    if not quote_is_fresh(rt):
+        return f"\n❌ {name} 报价日期缺失或过期，暂停决策"
     chg = round((cur-prev)/prev*100, 2)
     ce = "🟢" if chg >= 0 else "🔴"
     is_watch = hold == 0
@@ -855,15 +874,10 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
     chg20 = round((cur/closes[-21]-1)*100, 2) if len(closes) >= 21 else None
     if chg20 is not None and bench_chg20 is not None:
         rs20 = round(chg20 - bench_chg20, 2)
-    dif = calc_ema(closes,12) and round(closes[-1]-calc_ema(closes,12),3) if len(closes)>=26 else None
-    dea = None
-    if dif and len(closes)>=26:
-        dlist = [round(c-calc_ema(closes[:i+1],26),3) for i,c in enumerate(closes) if calc_ema(closes[:i+1],26)]
-        if dlist: dea = calc_ema(dlist, 9)
-    
+    dif, dea, _macd_hist = macd(closes)
+
     # 周线
-    wma5 = round(sum(closes[-25:])/25, 3) if len(closes)>=25 else None
-    wma10 = round(sum(closes[-50:])/50, 3) if len(closes)>=50 else None
+    wma5, wma10 = weekly_averages(kline)
     
     # 布林
     bm = bt = bb = None
@@ -872,8 +886,12 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         std = (sum((x-bm)**2 for x in closes[-20:])/20)**0.5
         bt = round(bm+2*std, 3); bb = round(bm-2*std, 3)
     
-    avgv = sum(vols[-5:])/5
-    vr = round(vols[-1]/avgv, 2) if avgv>0 else 1
+    # Today's cumulative volume and historical full-day volume need the same clock basis.
+    hm = datetime.now().hour * 60 + datetime.now().minute
+    elapsed = min(max(hm - 570, 0), 120) + min(max(hm - 780, 0), 120)
+    progress = min(1.0, max(elapsed / 240, .05))
+    avgv = sum(vols[-6:-1])/5
+    vr = round(vols[-1]/progress/avgv, 2) if avgv>0 else 1
     
     high20 = round(max(closes[-20:]), 3) if len(closes)>=20 else None
     low20 = round(min(closes[-20:]), 3) if len(closes)>=20 else None
@@ -990,7 +1008,7 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         can_buy = False
     # 仓位缩放系数：允许仓位相对A级(80%)的比例 → A=1.0 B=0.75 C=0.375，买入/加仓金额按此缩放
     pos_factor = max(MARKET.get("position", 80) / 80.0, 0.1)
-    mstate = MARKET.get("state", "A")  # 市场状态，用于追涨限制
+    mstate = MARKET.get("state", "UNKNOWN")  # 市场状态，用于追涨限制
     
     # 计算操作点位（动态支撑：近5日低点与MA10取较高者，防止"买入区永远够不着"）
     # 注：日线接口不含当日K线，需并入实时高低点，否则追涨/卖出位会低于现价
@@ -1004,12 +1022,20 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         dyn_sup = sup5
         if ma10 and ma10 < cur:
             dyn_sup = max(sup5, round(ma10, 3))
-        # 若动态支撑距现价超过7%（起涨点太远=追不上），买入区上移到现价附近（回踩2-3%）
-        if cur and dyn_sup < cur * 0.93:
-            dyn_sup = round(cur * 0.97, 3)
         buy_zone = (round(dyn_sup, 3), round(min(cur, dyn_sup * 1.03), 3))
         sell_zone = (round(res5 * 0.98, 3), round(res5, 3))
         stop_zone = round(dyn_sup * 0.97, 3)
+
+    entry_plan = entry_policy.make_plan(cur, ma10, kline)
+    if entry_plan:
+        buy_zone = (entry_plan['entry_low'], entry_plan['entry_high'])
+        stop_zone = entry_plan['stop']
+        # A resistance below entry is not advertised as a profitable exit.
+        sell_zone = (entry_plan['target'], entry_plan['target']) if entry_plan['target'] > cur else None
+    else:
+        buy_zone = sell_zone = stop_zone = None
+    # Breakouts require a newly validated setup; no unconditional chase-price order.
+    chase_zone = None
 
     # ===== 买点形态闸门（2026-08-14 昆药复盘新增）：评分高≠买点好，情绪高位禁止现价追 =====
     # 触发任一条：S/A级买入/加仓降级为条件单（回踩企稳买/放量站稳再追），不追现价。
@@ -1057,12 +1083,12 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
                 action_type = "watch"
                 amount_advice = ""
             elif is_final:
-                _up_line = f"  ▶ 🟢【{quality}级】{quality_desc}！现价{cur}可直接买入{buy_range_text(amt_min, amt_max, cur, unit)}建仓(吃明日溢价)"
-                buy_zone = (round(cur*0.995, 3), round(cur*1.005, 3))  # 尾盘买入=现价附近
+                _up_line = f"  ▶ 【{quality}级】进入入场资格检查；尾盘不改变结构买入区"
             else:
                 _up_line = f"  ▶ 🟢【{quality}级】{quality_desc}！建议买入{buy_range_text(amt_min, amt_max, cur, unit)}建仓"
-            action_type = "buy"
-            amount_advice = buy_range_text(amt_min, amt_max, cur, unit)
+            if not _gate:
+                action_type = "buy"
+                amount_advice = buy_range_text(amt_min, amt_max, cur, unit)
         elif quality in ("S", "A"):
             if mstate in ("C", "D"):
                 lines.append(f"  ▶ ⚠️ 指标偏多但市场{mstate}级(防守)：观察，站稳MA20({ma20})且市场转好再考虑")
@@ -1074,7 +1100,7 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
             _obs = f"继续观察：回踩{buy_zone[0]:.3f}企稳买" if buy_zone else "继续观察"
             if chase_zone:
                 _obs += f" / 放量突破{chase_zone}再考虑"
-            lines.append(f"  ▶ ⚪【B级】信号中性偏多但历史胜率不足（{quality_desc}），暂不轻仓试探：{_obs}")
+            lines.append(f"  ▶ ⚪【B级】未达到当前建仓资格（{quality_desc}），继续观察：{_obs}")
             action_type = "watch"
         elif quality == "D":
             lines.append(f"  ▶ 🔴【{quality}级】{quality_desc}：观察，企稳信号=缩量止跌+站回MA5({ma5})，破前低{low20}则放弃")
@@ -1134,7 +1160,7 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         amount_advice = lot_text(int(hold*0.15*pos_factor), cur, unit)
     elif quality == "B" and can_buy:
         # V1.4（2026-08-12 体检）：持仓B级5日胜率不足，取消小仓位试探，只维持持有
-        lines.append(f"  ▶ ⚪【B级】{quality_desc}，历史胜率不足（约32-44%）：维持持有不加仓，站稳MA20且转A级再加")
+        lines.append(f"  ▶ ⚪【B级】{quality_desc}：维持持有；转为S/A级后仍须通过独立入场检查")
         action_type = "hold"
     elif quality in ("S", "A", "B"):
         # 修复：S/A级但趋势未确认(现价<MA20/周线偏空)时不再误落 D 级减仓分支
@@ -1153,18 +1179,46 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
     # 四重退出先行计算（P0强制退出/P2盈利保护 的触发输入）
     exit_trig, exit_lines = [], []
     if pos and pos.get("buy_price"):
+        pos = dict(pos)
+        previous = decision_manager.load_states().get(code, {})
+        if previous.get("position_key") == [list(part) for part in position_key(pos)]:
+            pos["highest_price"] = max(float(pos.get("highest_price") or 0), float(previous.get("highest_price") or 0))
         exit_lines, exit_trig = build_exit_plan(code, name, cur, kline, ma10, ma20, atr14, pos, no_sell=no_sell, unit=unit)
         if no_sell:
             # 套牢票禁清仓铁律（用户定死）：P0 强制退出类触发降级为警告——
             # 保留退出系统提示文本（position_manager 已按 no_sell 生成"禁清仓→做T"文案），
             # 但不把触发传给状态机（否则 P0 会输出"清仓"指令，违反禁清仓纪律）
             exit_trig = [t for t in exit_trig if t.get("kind") not in ("止损退出", "趋势退出清仓", "时间退出")]
+    buy_budget = total_amount * .05 * pos_factor if is_watch else hold * (.2 if quality == "S" else .15) * pos_factor
+    buy_quantity = round_lot(buy_budget, cur)
+    while buy_quantity > 0 and buy_quantity * cur * (1 + PLANNED_SLIPPAGE) + planned_fee(buy_quantity * cur * (1 + PLANNED_SLIPPAGE), code) > buy_budget:
+        buy_quantity -= 100
+    if action_type == "buy" and buy_quantity == 0:
+        can_buy = False
+        lines.append("  ⚠️ 本次预算不足一手，取消买入建议")
+    entry_check = entry_policy.assess(code, rt, entry_plan, buy_quantity, quality, is_etf, ma5)
+    if quality in ("S", "A"):
+        econ = entry_check.get('economics', {})
+        if entry_plan:
+            lines.append(f"  📍 结构买入区{entry_plan['entry_low']:.3f}~{entry_plan['entry_high']:.3f}；参考压力{entry_plan['target']:.3f}；新仓止损参考{entry_plan['stop']:.3f}")
+        if econ.get('net_rr') is not None:
+            lines.append(f"  ⚖️ 按{buy_quantity}{unit}估算：净目标收益{econ['net_profit']:.2f}元，风险{econ['risk']:.2f}元，净盈亏比{econ['net_rr']:.2f}（要求≥{entry_policy.MIN_NET_RR:g}）")
+        if not entry_check['allowed']:
+            lines.append("  🚦 入场检查：" + "；".join(entry_check['reasons']))
     dm = decision_manager.finalize(
         code=code, name=name, raw_action=action_type, quality=quality, score=score,
         cur=cur, pos=pos, hold=hold, is_etf=is_etf, market_state=mstate,
-        exit_triggers=exit_trig, can_buy=can_buy, rsi=rsi14,
+        exit_triggers=exit_trig, can_buy=can_buy and not _gate, rsi=rsi14,
+        persist=not analysis_only(), no_sell=no_sell,
+        requested_buy_shares=buy_quantity,
+        entry_check=entry_check, completed_dates=[str(k['day'])[:10] for k in kline],
     )
     final_action = dm["action"]  # BUY / ADD / HOLD / REDUCE / SELL
+    ENTRY_REVIEWS.append({"time": datetime.now().isoformat(), "version": STRATEGY_VERSION,
+        "code": code, "name": name, "grade": quality, "score": score, "market_state": mstate,
+        "price": cur, "quote_time": rt.get('date', '') + ' ' + rt.get('time', ''),
+        "quantity_considered": buy_quantity, "entry_check": entry_check,
+        "final_action": final_action, "final_reasons": dm['change_reason']})
     if final_action in ("BUY", "ADD"):
         action_type = "buy"
     elif final_action in ("REDUCE", "SELL"):
@@ -1174,6 +1228,8 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
 
     # ===== 操作点位 + 动作文本（按状态机最终动作输出，被拦的原始信号不打印） =====
     if action_type == "buy" and _up_line:
+        amount_advice = f"{dm['quantity']}{unit}(约{dm['quantity'] * cur:.2f}元)"
+        _up_line = f"  ▶ 最终动作：{decision_manager._ACTION_LABEL[final_action]} {amount_advice}，按预算和整手数量限制"
         lines.append(_up_line)
         if _up_stop:
             lines.append(_up_stop)
@@ -1197,7 +1253,9 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
                 "sell": f"{sell_zone[0]:.3f}~{sell_zone[1]:.3f}",
                 "stop": f"{stop_zone:.3f}",
             })
-    elif action_type == "sell" and _down_line:
+    elif action_type == "sell":
+        amount_advice = f"{dm['quantity']}{unit}"
+        _down_line = f"  ▶ 最终动作：{decision_manager._ACTION_LABEL[final_action]} {amount_advice}（受可卖数量约束）"
         lines.append(_down_line)
         if sell_zone and stop_zone:
             lines.append(f"  🎯 卖出点位：{sell_zone[0]:.3f} ~ {sell_zone[1]:.3f}")
@@ -1223,7 +1281,7 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
                 _trig_parts.append(f"破{float(pos.get('stop_loss')):.3f}清仓")
     else:
         if buy_zone:
-            _trig_parts.append(f"回踩{buy_zone[0]:.3f}企稳买入")
+            _trig_parts.append(f"进入{buy_zone[0]:.3f}~{buy_zone[1]:.3f}后重新核验入场资格")
         if chase_zone and mstate not in ("C", "D"):
             _trig_parts.append(f"放量突破{chase_zone}追入")
         if buy_zone:
@@ -1233,8 +1291,11 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
 
     # ===== 四重退出系统（第五阶段）：仅对真实持仓输出（有成本价的持仓）=====
     if exit_lines:
-        lines.extend(exit_lines)
-        for _t in exit_trig:
+        if final_action in ("REDUCE", "SELL"):
+            lines.append("  📤 退出原因：" + "；".join(t["kind"] for t in exit_trig))
+        else:
+            lines.append("  📤 退出系统：风险预案仅供参考，本次最终动作为持有；不生成可执行退出指令")
+        for _t in []:
             ACTION_LIST.append({
                 "name": name, "code": code, "action": f"🚨{_t['kind']}", "amount": _t["label"],
                 "buy": f"成本{pos.get('buy_price')}", "sell": "触发即走", "stop": "—",
@@ -1256,13 +1317,14 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         _oa = ""
     if _na not in _VALID_ACTIONS:
         _na = ""
-    exit_signal = bool(exit_trig) and action_type != "buy"
-    if action_type in ("buy", "sell") or exit_signal:
+    if action_type in ("buy", "sell") and not analysis_only():
         SIGNAL_LOG.append({
             "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "code": code, "name": name,
             "action": "买入" if action_type == "buy" else "卖出/减仓",
             "price": cur, "grade": quality, "score": score,
+            "quantity": dm["quantity"], "reduce_ratio": dm["reduce_ratio"],
+            "quote_time": rt.get("date", "") + " " + rt.get("time", ""),
             "industry": _industry_of(name, code),
             "mkt_score": MARKET.get("score"),
             "mkt_state": MARKET.get("state"),
@@ -1271,6 +1333,9 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
             "old_action": _oa,
             "new_action": _na,
             "change_reason": "；".join(dm["change_reason"][:3]) or "",
+            "entry_stop": entry_plan['stop'] if action_type == 'buy' and entry_plan else '',
+            "entry_target": entry_plan['target'] if action_type == 'buy' and entry_plan else '',
+            "net_rr": entry_check.get('economics', {}).get('net_rr') if action_type == 'buy' else '',
         })
 
     # V1.5 输出过滤（2026-08-21 用户要求：4次定时分析输出太多）：
@@ -1281,49 +1346,21 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
     if FILTER_MIN_GRADE == "A" and not pos and quality in ("B", "C", "D") and not from_pool:
         return ""
 
-    # V1.6 尾盘确定性结论收集（2026-08-21 用户要求：尾盘14:45确定性买卖）
-    # 每只标的必须落到六动作之一：建仓/加仓/减仓/清仓/持有/不买，禁止"观望/观察"模糊词。
-    # 判定优先级：①四重退出触发(清仓/减仓) ②套牢no_sell(持有+做T) ③状态机最终动作 ④观察标的(建仓/不买)
-    try:
-        if CURRENT_PERIOD == "尾盘":
-            if pos:  # 持仓：加仓/减仓/清仓/持有
-                if exit_trig and not no_sell:
-                    # 退出触发（止损/趋势/盈利保护/时间）→ 最严格者优先
-                    _sev = max(exit_trig, key=lambda t: 0 if t.get("severity") == "high" else 1)
-                    FINAL_LIST.append({"action": "清仓" if _sev.get("severity") == "high" else "减仓",
-                                       "text": f"{_sev.get('label','')}（{_sev.get('kind','退出')}触发）"})
-                elif no_sell:
-                    FINAL_LIST.append({"action": "持有",
-                                       "text": f"{lot_text(int(hold*0.15), cur, unit)}做T高抛低吸摊成本，禁清仓"})
-                elif final_action in ("BUY", "ADD"):
-                    FINAL_LIST.append({"action": "加仓", "text": (_up_line or f"加仓{amount_advice}")})
-                elif final_action in ("REDUCE", "SELL"):
-                    FINAL_LIST.append({"action": "清仓" if final_action == "SELL" else "减仓",
-                                       "text": (_down_line or f"{sell_text(int(hold*0.2), cur, hold, unit)}")})
-                else:
-                    FINAL_LIST.append({"action": "持有", "text": f"现价{cur}持有不动，破{stop_zone if stop_zone else 'MA20'}再走"})
-            else:  # 观察/候选：建仓或明确不买
-                if quality in ("S", "A") and can_buy and not _gate:
-                    FINAL_LIST.append({"action": "建仓",
-                                       "text": f"现价{cur}买入{amount_advice}（吃明日溢价）"})
-                elif quality in ("S", "A") and _gate:
-                    FINAL_LIST.append({"action": "不买",
-                                       "text": f"买点形态不佳({'；'.join(_gate)})，明日回踩{buy_zone[0] if buy_zone else '支撑'}再考虑"})
-                elif quality in ("S", "A"):
-                    FINAL_LIST.append({"action": "不买", "text": f"趋势未确认(未站稳MA20)，站稳{ma20 if ma20 else 'MA20'}再买"})
-                elif quality == "B":
-                    FINAL_LIST.append({"action": "不买", "text": "B级历史胜率不足(32-44%)，不建仓"})
-                else:
-                    FINAL_LIST.append({"action": "不买", "text": f"{quality}级偏空，破前低{low20}则放弃"})
-    except Exception:
-        pass  # 确定性结论收集失败不影响主流程
+    if CURRENT_PERIOD == "尾盘":
+        label = {"BUY": "建仓", "ADD": "加仓", "REDUCE": "减仓", "SELL": "清仓"}.get(final_action, "持有" if pos else "不买")
+        FINAL_LIST.append({"code": code, "name": name, "action": label,
+                           "quantity": dm["quantity"], "text": "；".join(dm["change_reason"])})
 
     return "\n".join(lines)
 
 
+@exclusive(lambda: data_path("short_term.run"))
+@restore_analysis_mode
 def main():
-    global ACTION_LIST, CURRENT_PERIOD, FILTER_MIN_GRADE, FINAL_LIST
+    global ACTION_LIST, CURRENT_PERIOD, FILTER_MIN_GRADE, FINAL_LIST, SIGNAL_LOG, ENTRY_REVIEWS
     ACTION_LIST = []
+    SIGNAL_LOG = []
+    ENTRY_REVIEWS = []
     FINAL_LIST = []  # V1.6 尾盘确定性结论（每标的六动作之一）
     # V1.5（2026-08-21 用户要求）：FILTER_MIN_GRADE=A 时非持仓B级及以下不输出
     # （short_term_ai.py 4次定时任务开启；手动分析/晚间持仓任务不设置=全量）
@@ -1339,6 +1376,9 @@ def main():
     period = "尾盘"
     for h, p in sorted(period_map.items(), reverse=True):
         if hour >= h: period = p; break
+    if hour < 9 or hour >= 15 or datetime.now().weekday() >= 5:
+        period = "盘后预案"
+        os.environ["ANALYSIS_ONLY"] = "1"
     CURRENT_PERIOD = period
     
     today = datetime.now().strftime("%Y-%m-%d")
@@ -1350,7 +1390,11 @@ def main():
     
     # 大盘
     print("\n📊 【大盘】")
-    indices = get_indices()
+    MARKET.clear()
+    try:
+        indices = get_indices()
+    except Exception:
+        indices = {}
     for name, d in indices.items():
         e = "🟢" if d["chg"]>=0 else "🔴"
         print(f"  {e} {name}: {d['chg']:+.2f}%")
@@ -1381,7 +1425,8 @@ def main():
     
     # ETF 核心池（ETFS 全部输出，含未持仓的观察；hold=0 的按观察标的出信号）
     # HOLD_ONLY 模式：只保留实际持仓的ETF，其余不输出
-    all_etfs = ETFS + EXTRA_ETFS
+    all_etfs = list({e["code"]: e for e in ETFS + EXTRA_ETFS + [p for p in POS_MAP.values() if p["type"] == "etf"]}.values())
+    _analyzed = {e["code"] for e in all_etfs}
     if HOLD_ONLY:
         all_etfs = [e for e in all_etfs if e["code"] in POS_MAP]
     # 批量抓取换手率+主力资金（资金因子用，单次东财请求；含股票池core标的）
@@ -1399,7 +1444,7 @@ def main():
     for etf in all_etfs:
         _pos = POS_MAP.get(etf["code"])
         # 持仓金额以权威 POS_MAP 为准（与个股一致），防止硬编码 hold 过期
-        _hold = _pos.get("amount", etf.get("hold", 0)) if _pos else etf.get("hold", 0)
+        _hold = _pos.get("amount", 0) if _pos else 0
         _r = analyze_item(etf["code"], etf["name"], _hold, total_amount=TOTAL_ETF, is_etf=True, bench_chg20=bench_chg20, bench300_chg20=bench300_chg20, no_sell=position_manager.is_trapped(etf["code"]), pos=_pos)
         if _r:
             _etf_blocks.append(_r)
@@ -1413,8 +1458,11 @@ def main():
     if WATCH_ETFS and not HOLD_ONLY:
         _watch_blocks = []
         for etf in WATCH_ETFS:
+            if etf["code"] in _analyzed:
+                continue
+            _analyzed.add(etf["code"])
             _pos = POS_MAP.get(etf["code"])
-            _hold = _pos.get("amount", etf.get("hold", 0)) if _pos else etf.get("hold", 0)
+            _hold = _pos.get("amount", 0) if _pos else 0
             result = analyze_item(etf["code"], etf["name"], _hold, total_amount=TOTAL_ETF, is_etf=True, bench_chg20=bench_chg20, bench300_chg20=bench300_chg20, pos=_pos)
             if result:
                 _watch_blocks.append((etf, result))
@@ -1424,15 +1472,14 @@ def main():
         for etf, result in _watch_blocks:
             print(result)
             # 如果评分高，额外提示买入机会
-            if "S级" in result or "A级" in result:
-                print(f"  💡 {etf['name']}出现买入信号！可考虑建仓500~1000元")
+            # Buy messages are emitted only by the final decision above.
 
     # ⚡ ETF T策略（持仓ETF日内高抛低吸降成本；引擎输出，AI解读不得改价）
     try:
         import etf_t_engine
         _t_held = [p for p in POS_MAP.values() if p.get("type") == "etf"
                    and (p.get("t_config") or {}).get("enable", True)]
-        if _t_held:
+        if _t_held and not analysis_only():
             print(f"\n⚡ 【ETF T策略】日内做T降成本（高抛低吸，持仓不变）")
             print("=" * 55)
             for _p in _t_held:
@@ -1471,13 +1518,15 @@ def main():
         print(f"  [etf_t_engine 异常] {_e}")
 
     # 个股（HOLD_ONLY 模式：只输出实际持仓的股票）
-    if STOCKS:
-        _stocks = STOCKS
+    if STOCKS or POS_MAP:
+        _stocks = list({x[0]: x for x in STOCKS + [(p["code"], p["name"], get_prefix(p["code"]), p["amount"]) for p in POS_MAP.values() if p["type"] == "stock"]}.values())
         if HOLD_ONLY:
-            _stocks = [s for s in STOCKS if s[0] in POS_MAP]
+            _stocks = [s for s in _stocks if s[0] in POS_MAP]
         _stock_blocks = []
         for code, name, _ex, hold in _stocks:
+            _analyzed.add(code)
             _pos = POS_MAP.get(code)
+            hold = _pos.get("amount", 0) if _pos else 0
             if _pos:
                 hold = _pos.get("amount", hold)  # 以权威持仓金额为准
             _r = analyze_item(code, name, hold, total_amount=TOTAL_STOCK, is_etf=False, bench_chg20=bench_chg20, bench300_chg20=bench300_chg20, pos=_pos)
@@ -1505,12 +1554,13 @@ def main():
         for _lvl, _lst in (("core", _sp_core), ("watch", _sp_watch_detail)):
             for _it in _lst:
                 _code = _it.get("code", "")
-                if not _code or _code in _sp_covered:
+                if not _code or _code in _sp_covered or _code in _analyzed:
                     continue
                 _sp_covered.add(_code)
+                _analyzed.add(_code)
                 _name = _it.get("name", "")
                 _pos = POS_MAP.get(_code)
-                _r = analyze_item(_code, _name, 0, total_amount=TOTAL_STOCK, is_etf=False,
+                _r = analyze_item(_code, _name, _pos.get("amount", 0) if _pos else 0, total_amount=TOTAL_STOCK, is_etf=False,
                                   bench_chg20=bench_chg20, bench300_chg20=bench300_chg20,
                                   pos=_pos, from_pool=True)
                 if _r:
@@ -1519,7 +1569,7 @@ def main():
         # 其余 watch：一行简略（不逐只展开）
         for _it in _sp_watch_brief:
             _code = _it.get("code", "")
-            if not _code or _code in _sp_covered:
+            if not _code or _code in _sp_covered or _code in _analyzed:
                 continue
             _sp_covered.add(_code)
             _brief_lines.append(
@@ -1552,8 +1602,9 @@ def main():
         for w in WATCH_STOCKS:
             _code = w.get("code", "")
             _name = w.get("name", "")
-            if not _code:
+            if not _code or _code in _analyzed:
                 continue
+            _analyzed.add(_code)
             _pos = POS_MAP.get(_code)
             _hold = _pos.get("amount", 0) if _pos else 0  # 已买入则按持仓显示
             _r = analyze_item(_code, _name, _hold, total_amount=TOTAL_STOCK, is_etf=False, bench_chg20=bench_chg20, bench300_chg20=bench300_chg20, pos=_pos)
@@ -1577,7 +1628,7 @@ def main():
             if not _rt:
                 continue
             if _rt["cur"] <= float(_stop):
-                print(f"\n⛔ 【止损警报】{_it['name']}({_code}) 现价{_rt['cur']} 已跌破固定止损{_stop}！按纪律无条件卖出，不得再拖")
+                print(f"\n⛔ 【止损警报】{_it['name']}({_code}) 现价{_rt['cur']} 已跌破固定止损{_stop}！风险已触发；执行动作与数量以状态机最终裁决为准")
     except Exception:
         pass
     
@@ -1586,7 +1637,7 @@ def main():
     print(f"💡 {period}总结")
     if period == "尾盘":
         print(f"  这是今天最后操作窗口，14:55前完成下单")
-        print(f"  尾盘直接操作：看好就现价买吃明日溢价，不挂单不追尾盘急拉")
+        print("  尾盘仍须满足结构买入区、费用后盈亏比和止损观察期；没有合格机会就不买")
     elif period == "收割后":
         print(f"  量化收割结束，可观察捡漏")
         print(f"  但建议尾盘14:45再最终确认")
@@ -1600,7 +1651,7 @@ def main():
     
     # 🧾 手续费硬性规则（用户2026-08-06要求：所有分析计划必须体现）
     print("\n🧾 【手续费硬性规则】佣金万2.5最低5元/笔(买卖双向) + 卖出印花税0.05%(个股) + 过户费万0.1")
-    print("   单笔<3000元：手续费占比≥0.17%不划算 → 建议凑到3000元+整手(资金允许时)")
+    print("   小额交易先核验双边费用和滑点；不为摊薄手续费扩大原定风险预算")
     print("   成本档位(买入): 1000元≈5.1元(0.51%) | 2000元≈5.2元(0.26%) | 3000元≈5.3元(0.18%) | 5000元≈5.5元(0.11%) | 10000元≈6.0元(0.06%)")
     print("   卖出个股另加0.05%印花税；做T一买一卖成本≥10元，价差必须覆盖，否则白做")
 
@@ -1621,56 +1672,16 @@ def main():
         except Exception as e:
             print(f"\n⚠️ 风控报告生成异常: {e}")
     
-    # 信号记录写入 signal_log.csv（自动复盘胜率用；v2.31 12字段 → V3.0 15字段含决策变化原因）
-    # 表头升级独立于本次是否有信号：每次运行检查一次（12列→15列一次性升级，csv.DictReader 兼容旧行）
-    try:
-        import csv
-        _sp = os.path.join(os.path.dirname(os.path.abspath(__file__)), "signal_log.csv")
-        _headers = ["时间", "代码", "名称", "操作", "价格", "信号等级", "评分", "行业",
-                    "市场评分", "市场状态", "状态", "策略版本", "旧动作", "新动作", "变化原因"]
-        _new = not os.path.exists(_sp)
-        if _new:
-            with open(_sp, "w", newline="", encoding="utf-8") as _f:
-                csv.writer(_f).writerow(_headers)
-        else:
-            with open(_sp, "r", newline="", encoding="utf-8") as _f:
-                _all = _f.readlines()
-            if _all and "变化原因" not in _all[0]:
-                _all[0] = ",".join(_headers) + "\n"
-                with open(_sp, "w", newline="", encoding="utf-8") as _f:
-                    _f.writelines(_all)
-    except Exception:
-        pass
-    if SIGNAL_LOG:
-        try:
-            import csv
-            _sp = os.path.join(os.path.dirname(os.path.abspath(__file__)), "signal_log.csv")
-            # V1.4（2026-08-12 体检修复）：同代码+同日期+同价格+同操作 已存在则跳过——
-            # 之前每次运行（含手动/重复触发）都追加，08-04 单日单标的重复22次，
-            # 复盘胜率被重复样本污染（136组重复）。读全量做去重集合。
-            _seen = set()
-            try:
-                with open(_sp, "r", newline="", encoding="utf-8") as _f:
-                    for _row in csv.reader(_f):
-                        if len(_row) >= 5 and _row[0] != "时间":
-                            _seen.add((_row[0], _row[1], _row[3], _row[4]))
-            except Exception:
-                pass
-            _dedup = [_s for _s in SIGNAL_LOG
-                      if (_s["date"], _s["code"], _s["action"], str(_s["price"])) not in _seen]
-            _seen |= {(_s["date"], _s["code"], _s["action"], str(_s["price"])) for _s in _dedup}
-            if _dedup:
-                with open(_sp, "a", newline="", encoding="utf-8") as _f:
-                    _w = csv.writer(_f)
-                    for _s in _dedup:
-                        _w.writerow([_s["date"], _s["code"], _s["name"], _s["action"], _s["price"],
-                                     _s["grade"], _s["score"], _s.get("industry", ""),
-                                     _s.get("mkt_score", ""), _s.get("mkt_state", ""),
-                                     _s.get("status", "待执行"), _s.get("version", STRATEGY_VERSION),
-                                     _s.get("old_action", ""), _s.get("new_action", ""),
-                                     _s.get("change_reason", "")])
-        except Exception:
-            pass
+    if FINAL_LIST:
+        print("\n📋 最终动作汇总（与信号日志同一裁决）")
+        for item in FINAL_LIST:
+            print(f"  {item['name']}({item['code']})：{item['action']} {item['text']}")
+    if not analysis_only():
+        from signal_store import append_signals
+        from runtime import atomic_json
+        atomic_json(data_path('entry_reviews/' + datetime.now().strftime('%Y%m%d_%H%M%S_%f') + '.json'), ENTRY_REVIEWS)
+        append_signals(SIGNAL_LOG)
+
 
 if __name__ == "__main__":
     main()

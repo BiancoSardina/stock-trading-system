@@ -35,9 +35,10 @@ from datetime import datetime, date
 BASE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE)
 import position_manager
+from runtime import data_path, atomic_json, read_json, exclusive, available_quantity, lot_quantity, positive, analysis_only, quote_is_fresh
 
-STATE_FILE = os.path.join(BASE, "t_state.json")
-T_LOG = os.path.join(BASE, "t_trade_log.csv")
+STATE_FILE = data_path("t_state.json")
+T_LOG = data_path("t_trade_log.csv")
 
 # ── T状态机 ──
 NORMAL = "NORMAL"
@@ -334,7 +335,7 @@ def sector_sync(q, code):
 
 def calc_buyback_path(q, kline, sell_price, min_profit):
     """计算预计回补价 + T利润空间。
-    回补路径 = 支撑位参考（MA5/日内低点）与保底空间取最低 → 保证 T_profit 达标。
+    回补路径来自MA5/日内低点，收益要求不得用来制造目标价。
     返回 (est_buyback, t_profit)；无路径（空间<min_profit）返回 (None, 0)"""
     if not sell_price:
         return None, 0
@@ -345,9 +346,11 @@ def calc_buyback_path(q, kline, sell_price, min_profit):
         cands.append(ma5)
     if q.get("low", 0) > 0:
         cands.append(q["low"])
-    cands.append(sell_price * (1 - min_profit - 0.005))  # 保底：min_profit+0.5%缓冲
-    est = min(cands)  # 悲观取最低支撑 → 保证空间
-    if est >= sell_price * 0.99:      # 支撑贴卖价 → 没有回补路径
+    cands = [x for x in cands if positive(x) and x < sell_price]
+    if not cands:
+        return None, 0
+    est = max(cands)  # 最近的可观测支撑，收益要求只作过滤
+    if (sell_price - est) / sell_price < min_profit:      # 支撑贴卖价 → 没有回补路径
         return None, 0
     t_profit = (sell_price - est) / sell_price
     return round(est, 3), round(t_profit, 4)
@@ -662,16 +665,43 @@ def _default_dip():
 # ────────────────────── 状态持久化 ──────────────────────
 
 def load_t_state():
-    try:
-        with open(STATE_FILE) as f:
-            return json.load(f)
-    except Exception:
-        return {}
+    value = read_json(STATE_FILE, {})
+    if not isinstance(value, dict):
+        raise ValueError("T状态数据格式错误")
+    return value
 
 
 def save_t_state(st):
-    with open(STATE_FILE, "w") as f:
-        json.dump(st, f, ensure_ascii=False, indent=2)
+    if not analysis_only():
+        if _FILL_TX is not None:
+            _FILL_TX["state"] = st
+        else:
+            atomic_json(STATE_FILE, st)
+
+
+_FILL_TX = None
+
+
+def fill_transaction(fn):
+    """Commit fill facts and resulting T state in the same atomic JSON write."""
+    from functools import wraps
+
+    @exclusive(lambda: STATE_FILE)
+    @wraps(fn)
+    def wrapped(*args, **kwargs):
+        global _FILL_TX
+        _FILL_TX = {"events": [], "state": None}
+        try:
+            result = fn(*args, **kwargs)
+            state = _FILL_TX["state"]
+            if state is None:
+                raise RuntimeError("成交未产生可保存状态")
+            state.setdefault("__fills__", []).extend(_FILL_TX["events"])
+            atomic_json(STATE_FILE, state)
+            return result
+        finally:
+            _FILL_TX = None
+    return wrapped
 
 
 def _default_state(code, name):
@@ -689,6 +719,7 @@ def _default_state(code, name):
 
 # ────────────────────── 主入口 analyze（V1.1 重构）──────────────────────
 
+@exclusive(lambda: STATE_FILE)
 def analyze(code, name=None, now=None):
     """对单只持仓ETF做日内T分析，推进状态机，返回报告 dict。
 
@@ -697,13 +728,7 @@ def analyze(code, name=None, now=None):
       → 卖T信号(绑定回补路径) / 回补信号 / 观望
     """
     today = date.today().isoformat()
-    pos_map = position_manager.load_positions()
-    pos = None
-    for grp in ("etf", "stock"):
-        for p in pos_map.get(grp, []):
-            if p["code"] == code:
-                pos = p
-                break
+    pos = position_manager.aggregate_positions().get(code)
     if not pos:
         return {"code": code, "error": "非持仓标的，不做T分析"}
     name = name or pos.get("name", code)
@@ -719,6 +744,8 @@ def analyze(code, name=None, now=None):
     q = fetch_quote(code)
     if not q:
         return {"code": code, "name": name, "error": "行情获取失败"}
+    if not quote_is_fresh(q, now) or not positive(q.get("cur")) or not positive(q.get("prev_close")):
+        return {"code": code, "error": "报价过期或价格无效，保留未完成T状态"}
     kline = _kline(code, 120)
     if not kline:
         return {"code": code, "name": name, "error": "日K获取失败"}
@@ -730,7 +757,8 @@ def analyze(code, name=None, now=None):
         # V2.0：低吸T跨日持仓（HOLD_T_BUY/SELL_T）必须保留（T+1 未卖完），其余重置
         dip_keep = st.get("dip") or {}
         keep_dip = dip_keep.get("state") in (HOLD_T_BUY, SELL_T)
-        st = _default_state(code, name)
+        if st.get("state") not in (SELL_DONE, WAIT_BUYBACK):
+            st = _default_state(code, name)
         if keep_dip:
             st["dip"] = dip_keep
         st["date"] = today
@@ -752,7 +780,8 @@ def analyze(code, name=None, now=None):
         cap = min(t_position, amount * max_sell_ratio)
         dip_st = st.get("dip") or {}
         frozen = dip_st.get("buy_shares", 0) if dip_st.get("state") in (HOLD_T_BUY, SELL_T) else 0
-        return max(int((cap / q["cur"] - frozen) / 100) * 100, 0)
+        available = available_quantity(pos, today)
+        return max(int(min(cap / q["cur"], max(available - frozen, 0)) / 100) * 100, 0)
 
     # ── T机会生命周期检查（V1.1 ②）──
     life_note = ""
@@ -845,7 +874,12 @@ def analyze(code, name=None, now=None):
                 if sh < 100:
                     reasons.append("✗ T仓不足一手(<100份)")
     elif state == READY_SELL:
-        action = "等待卖出"
+        ok, checks, _, _ = allow_t_checks(q, kline, win, q["cur"], min_profit, code)
+        if not enable or not ok or _sell_shares() < 100 or t_score < 70:
+            st["state"] = state = NORMAL
+            action = "原卖T机会失效，暂停执行"
+        else:
+            action = "等待卖出"
         if life_note:
             reasons.append(f"⚠️ {life_note}")
         else:
@@ -929,7 +963,7 @@ def analyze(code, name=None, now=None):
         "t_score": t_score, "action": action,
         "sell_zone": sell_zone, "buyback_zone": buyback_zone,
         "risk": risk, "reasons": reasons,
-        "t_position": round(t_position, 0), "shares": st.get("sell_shares", 0),
+        "t_position": round(t_position, 0), "shares": max(0, int(st.get("sell_shares") or 0) - int(st.get("buyback_shares") or 0)),
         "pending_warn": st.get("pending_warn", ""),
         "parts": parts, "meta": meta,
         "cur": q["cur"], "time": q.get("time", ""),
@@ -988,7 +1022,14 @@ def analyze_dip(code, name, q, kline, st, t_position, amount):
         else:
             reasons.append(f"⛔ 低吸窗口 {dwin['name']}：{dwin['note']}")
     elif state == READY_BUY_DIP:
-        action = "等待低吸买入"
+        ok, _ = allow_dip_checks(q, kline, dwin, code, st, t_position, amount)
+        if not dwin["can_buy"] or not ok or score < DIP_SCORE_MIN:
+            dip.clear()
+            dip.update(_default_dip())
+            state = DIP_NORMAL
+            action = "原低吸机会失效，暂停执行"
+        else:
+            action = "等待低吸买入"
         bp = dip.get("buy_price")
         if bp:
             buy_zone = f"{q['low']:.3f}-{bp:.3f}"
@@ -1007,7 +1048,7 @@ def analyze_dip(code, name, q, kline, st, t_position, amount):
             tp2 = buy_price * (1 + DIP_TP2)
             yh = dip.get("yesterday_high") or 0
             buy_date = dip.get("buy_date", "")
-            if buy_date != today:
+            if buy_date and buy_date < today:
                 # T+1 可卖：止损 > 目标2 > 高开兑现 > 突破昨高 > 目标1半仓
                 gap = (q["open"] - q["prev_close"]) / q["prev_close"] * 100 if q["prev_close"] else 0
                 if q["cur"] <= stop:
@@ -1030,10 +1071,11 @@ def analyze_dip(code, name, q, kline, st, t_position, amount):
                     dip["sell_trigger"] = "突破昨高"
                     state = SELL_T
                     action = f"突破昨日高点{yh:.3f}，趋势恢复，卖{shares_h}份"
-                elif pnl_pct >= DIP_TP1 * 100:
+                elif pnl_pct >= DIP_TP1 * 100 and not dip.get("target1_done"):
                     half = max(int(shares_h / 2 / 100) * 100, 100)
                     dip["state"] = SELL_T
                     dip["sell_trigger"] = "目标1半仓"
+                    dip["target_sell_shares"] = half
                     state = SELL_T
                     action = f"达标第一目标：盈利{pnl_pct:.1f}%≥{DIP_TP1*100:.0f}%，卖50%({half}份)"
                 else:
@@ -1044,7 +1086,7 @@ def analyze_dip(code, name, q, kline, st, t_position, amount):
             stop_zone = f"{stop:.3f}"
     elif state == SELL_T:
         action = "等待低吸卖出"
-        reasons.append(f"卖出触发：{dip.get('sell_trigger', '')}，{dip.get('buy_shares', 0)}份待卖；成交后告知我记录")
+        reasons.append(f"卖出触发：{dip.get('sell_trigger', '')}，{dip.get('target_sell_shares', dip.get('buy_shares', 0))}份待卖；成交后告知我记录")
 
     dip["date"] = today
     dip["last_reason"] = dip.get("last_reason") or (reasons[-1] if reasons else action)
@@ -1073,8 +1115,19 @@ def _risk_text(q, meta, st):
 
 # ────────────────────── 手动记录（用户实际成交后调用）──────────────────────
 
+@fill_transaction
 def mark_sell(code, price, shares, reason="", t_score=0):
     """用户实际高抛卖出T仓后调用 → 记日志 + 状态 → WAIT_BUYBACK"""
+    if analysis_only():
+        raise ValueError("预案模式不可记录成交")
+    if not positive(price) or not positive(shares) or int(float(shares)) != float(shares):
+        raise ValueError("成交价格及整数数量必须大于零")
+    current = load_t_state().get(code) or _default_state(code, code)
+    if current.get("state") in (SELL_DONE, WAIT_BUYBACK):
+        raise ValueError("已有未完成回补，禁止覆盖原成交")
+    actual = position_manager.aggregate_positions().get(code)
+    if not actual or int(shares) > available_quantity(actual):
+        raise ValueError("卖出数量超过T+1可卖持仓")
     pos_map = position_manager.load_positions()
     name = code
     for grp in ("etf", "stock"):
@@ -1087,6 +1140,7 @@ def mark_sell(code, price, shares, reason="", t_score=0):
     st["state"] = WAIT_BUYBACK
     st["sell_price"] = float(price)
     st["sell_shares"] = int(shares)
+    st["buyback_shares"] = 0
     st["sell_time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     st["date"] = date.today().isoformat()
     _all = load_t_state()
@@ -1095,8 +1149,17 @@ def mark_sell(code, price, shares, reason="", t_score=0):
     return st
 
 
+@fill_transaction
 def mark_buyback(code, price, shares, reason=""):
     """用户实际低吸回补后调用 → 记日志（含收益） + 状态 → COMPLETE"""
+    if analysis_only():
+        raise ValueError("预案模式不可记录成交")
+    if not positive(price) or not positive(shares) or int(float(shares)) != float(shares):
+        raise ValueError("成交价格及整数数量必须大于零")
+    current = load_t_state().get(code) or _default_state(code, code)
+    remaining = int(current.get("sell_shares") or 0) - int(current.get("buyback_shares") or 0)
+    if current.get("state") not in (SELL_DONE, WAIT_BUYBACK) or int(shares) > remaining:
+        raise ValueError("回补数量超过未完成卖出数量或状态不符")
     pos_map = position_manager.load_positions()
     name = code
     for grp in ("etf", "stock"):
@@ -1110,7 +1173,9 @@ def mark_buyback(code, price, shares, reason=""):
     if sell_price:
         pnl = round((float(sell_price) - float(price)) * int(shares), 2)
     _log_trade(code, name, "BUY_T", sell_price, price, shares, pnl, reason or "回补低吸", st.get("t_score", 0))
-    st["state"] = COMPLETE
+    filled = int(st.get("buyback_shares", 0)) + int(shares)
+    st["buyback_shares"] = filled
+    st["state"] = COMPLETE if filled == int(st["sell_shares"]) else WAIT_BUYBACK
     st["buyback_price"] = float(price)
     st["buyback_time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     st["date"] = date.today().isoformat()
@@ -1121,14 +1186,11 @@ def mark_buyback(code, price, shares, reason=""):
 
 
 def _log_trade(code, name, ttype, sell_price, buy_price, shares, pnl, reason, t_score):
-    new = not os.path.isfile(T_LOG)
-    with open(T_LOG, "a", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        if new:
-            w.writerow(["日期", "代码", "名称", "类型", "卖出价格", "买入价格", "数量", "收益", "原因", "T_SCORE"])
-        w.writerow([date.today().isoformat(), code, name, ttype,
-                    sell_price or 0, buy_price or 0, shares,
-                    pnl if pnl is not None else "", reason, t_score])
+    if _FILL_TX is None:
+        raise RuntimeError("成交日志必须与T状态在同一事务保存")
+    _FILL_TX["events"].append({"日期": date.today().isoformat(), "代码": code, "名称": name,
+        "类型": ttype, "卖出价格": sell_price or 0, "买入价格": buy_price or 0,
+        "数量": shares, "收益": pnl if pnl is not None else "", "原因": reason, "T_SCORE": t_score})
 
 
 # ────────────────────── V2.0 低吸T 成交记录（用户实际成交后必须调用）──────────────────────
@@ -1141,8 +1203,16 @@ def _yesterday_high(code):
     return None
 
 
+@fill_transaction
 def mark_dip_buy(code, price, shares, reason=""):
     """用户实际低吸买入后调用 → 状态 HOLD_T_BUY + 记 DIP_BUY 日志 + 冻结份额"""
+    if analysis_only():
+        raise ValueError("预案模式不可记录成交")
+    if not positive(price) or not positive(shares) or int(float(shares)) != float(shares):
+        raise ValueError("成交价格及整数数量必须大于零")
+    current = load_t_state().get(code) or _default_state(code, code)
+    if (current.get("dip") or {}).get("state") in (HOLD_T_BUY, SELL_T):
+        raise ValueError("已有未完成低吸仓，禁止覆盖")
     pos_map = position_manager.load_positions()
     name = code
     for grp in ("etf", "stock"):
@@ -1172,8 +1242,19 @@ def mark_dip_buy(code, price, shares, reason=""):
     return st
 
 
+@fill_transaction
 def mark_dip_sell(code, price, shares, reason=""):
     """用户实际低吸卖出后调用 → 算收益 + 记 DIP_SELL 日志 + 状态回 DIP_NORMAL"""
+    if analysis_only():
+        raise ValueError("预案模式不可记录成交")
+    if not positive(price) or not positive(shares) or int(float(shares)) != float(shares):
+        raise ValueError("成交价格及整数数量必须大于零")
+    current = load_t_state().get(code) or _default_state(code, code)
+    current_dip = current.get("dip") or {}
+    if current_dip.get("state") not in (HOLD_T_BUY, SELL_T) or int(shares) > int(current_dip.get("buy_shares") or 0):
+        raise ValueError("卖出数量超过低吸持仓或状态不符")
+    if not current_dip.get("buy_date") or current_dip["buy_date"] >= date.today().isoformat():
+        raise ValueError("T+1限制：当日、未来或未知买入日不可卖出")
     pos_map = position_manager.load_positions()
     name = code
     for grp in ("etf", "stock"):
@@ -1187,7 +1268,15 @@ def mark_dip_sell(code, price, shares, reason=""):
     pnl = round((float(price) - float(buy_price)) * int(shares), 2) if buy_price else None
     _log_trade(code, name, "DIP_SELL", price, buy_price, shares, pnl,
                reason or f"低吸T卖出({dip.get('sell_trigger', '')})", st.get("t_score", 0))
-    st["dip"] = _default_dip()  # 本轮低吸完成，重置
+    remaining = int(dip["buy_shares"]) - int(shares)
+    dip["buy_shares"] = remaining
+    if dip.get("sell_trigger") == "目标1半仓":
+        left_target = max(0, int(dip.get("target_sell_shares", shares)) - int(shares))
+        dip["target_sell_shares"] = left_target
+        dip["target1_done"] = left_target == 0
+    dip["state"] = HOLD_T_BUY if not dip.get("target_sell_shares") else SELL_T
+    if remaining == 0:
+        st["dip"] = _default_dip()
     st["date"] = date.today().isoformat()
     _all = load_t_state()
     _all[code] = st
@@ -1198,28 +1287,27 @@ def mark_dip_sell(code, price, shares, reason=""):
 # ────────────────────── 复盘统计（第十三部分）──────────────────────
 
 def review_stats():
-    if not os.path.isfile(T_LOG):
-        return "暂无T交易记录"
     rows = []
-    with open(T_LOG, encoding="utf-8") as f:
-        for r in csv.DictReader(f):
-            rows.append(r)
+    if os.path.isfile(T_LOG):
+        with open(T_LOG, encoding="utf-8") as f:
+            rows.extend(csv.DictReader(f))
+    rows.extend(load_t_state().get("__fills__", []))
     if not rows:
         return "暂无T交易记录"
-    lines = ["\n📊 【ETF T策略复盘】"]
+    lines = ["\n📊 【ETF T策略复盘】已记录成交毛收益，未扣费用；与真实持仓需核对"]
     by_code = {}
     for r in rows:
         by_code.setdefault(r["代码"], []).append(r)
     for code, rs in by_code.items():
         name = rs[0]["名称"]
         sells = [r for r in rs if r["类型"] == "SELL_T"]
-        buys = [r for r in rs if r["类型"] == "BUY_T"]
+        buys = [r for r in rs if r["类型"] in ("BUY_T", "DIP_SELL")]
         done = len(buys)
-        pnls = [float(r["收益"]) for r in buys if r.get("收益")]
+        pnls = [float(r["收益"]) for r in buys if r.get("收益") not in (None, "")]
         ok = [p for p in pnls if p and p > 0]
         rate = f"{len(ok)/done*100:.0f}%" if done else "—"
         avg = f"{sum(pnls)/len(pnls):.2f}元" if pnls else "—"
-        lines.append(f"  {name}({code}): T次数{len(sells)} 完成{done} 成功率{rate} 平均收益{avg}")
+        lines.append(f"  {name}({code}): 卖T记录{len(sells)} 回补/低吸卖出成交{done}笔（含部分成交，非完整轮次） 盈利笔占比{rate} 平均毛收益{avg}")
     return "\n".join(lines)
 
 

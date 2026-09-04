@@ -26,6 +26,8 @@ import watchlist
 import position_manager
 import qq_send
 import stock_pool_manager as spm
+from ai_decision import FINAL_CONTRACT, validate_verdict, render_verdict
+from runtime import exclusive, data_path
 import stock_picker_ai as spa  # 复用四角色prompt/LLM调用/watchlist兜底
 
 CORE_AI_LIMIT = 8  # 只裁决 core 前8只（控制 4-5 分钟耗时）
@@ -48,6 +50,7 @@ def build_pool_data(pool, limit=CORE_AI_LIMIT):
         f"core_pool 共{len(core)}只，以下为评分前{min(limit, len(core))}只：",
     ]
     for i, e in enumerate(core[:limit], 1):
+        lines.append("   价格证据：" + json.dumps({"price": e.get("price"), "levels": e.get("levels"), "quote_time": e.get("quote_time")}, ensure_ascii=False))
         f = e.get("factor", {})
         p = e.get("position", {})
         t = e.get("trend", {})
@@ -79,7 +82,7 @@ def build_pool_data(pool, limit=CORE_AI_LIMIT):
                     f"{h.get('old_action','?')}→{h.get('new_action','?')}" for h in _hist[-3:]
                 )
                 lines.append(f"   决策轨迹: {_trail}")
-    lines.append("\n（以上为收盘后评分数据，次日盘中以实时行情为准。"
+    lines.append("\n（以上为股票池生成时的评分数据，实际交易须重新检查实时行情。"
                  "你的职责：对每只给出允许交易 YES/NO 裁决与次日预案。"
                  "注意每只的【状态机】与【决策轨迹】——若建议与历史动作冲突，"
                  "必须说明理由（是否构成重大变化），禁止无理由推翻上次决策。）")
@@ -150,20 +153,18 @@ def _run_four_roles(data_prompt, final_sys):
     return {"final": final_out, "trend": trend_out, "risk": risk_out, "trader": trader_out}
 
 
+@exclusive(lambda: data_path("stock_pool_ai.run"))
 def main():
     today = datetime.now().strftime("%Y-%m-%d")
     t0 = time.time()
 
-    # 0) 清理昨日监测名单（已买入→转持仓；未买入→移出）
-    # SKIP_CLEANUP=1（早盘/午盘一条龙）：跳过清理——昨日写入的监测今天盘中还要跟踪，
-    # 只在尾盘轮次（14:20 一条龙）清理，避免"次日监测"当天早上就被清空（2026-08-26 体检修复）
-    if os.environ.get("SKIP_CLEANUP") == "1":
-        cleanup_lines = ["（SKIP_CLEANUP 已跳过清理：保留昨日监测供今日盘中跟踪，尾盘轮次将清理）"]
-    else:
-        cleanup_lines, _ = spa.cleanup_watchlist()
-
-    # 1) 读股票池
     pool = spm.load_old_pool()
+    if not pool or pool.get("date") != today or not pool.get("data_ok"):
+        raise ValueError("股票池过期或数据未经完整性校验，停止AI裁决")
+    generated = datetime.strptime(pool.get("generated_at", ""), "%Y-%m-%d %H:%M:%S")
+    if not 0 <= (datetime.now() - generated).total_seconds() <= 1800:
+        raise ValueError("股票池超过30分钟，重新生成后再裁决")
+    cleanup_lines = []
     core = (pool or {}).get("core_pool", []) or []
     market_status = (pool or {}).get("market_status", "?")
     market_score_val = (pool or {}).get("market_score", "?")
@@ -183,46 +184,27 @@ def main():
     data = build_pool_data(pool)
     market_brief = spa.get_market_brief()
     data_prompt = (
-        f"【收盘后AI裁决 · {today}，为次日盘中监控裁决】\n"
-        f"以下是股票池模块(17:30)生成的 core 候选评分数据，请完成裁决并输出次日预案"
+        f"【股票池AI裁决 · {today}，以候选的生成时间为准】\n"
+        f"以下是本轮股票池模块生成的 core 候选评分数据，请完成裁决并输出次日预案"
         f"（中文，结构清晰，信号果断）。\n"
         + (f"\n【市场环境评分】\n{market_brief}\n" if market_brief else "")
         + "\n【股票池候选数据】\n" + data
     )
 
     # 3) 四角色裁决（降级链）
-    final_sys = spa.ROLE_FINAL_SYSTEM.replace("__POSITIONS__", position_manager.build_position_context())
+    final_sys = spa.ROLE_FINAL_SYSTEM.split("【监测名单行")[0].replace("__POSITIONS__", position_manager.build_position_context()) + FINAL_CONTRACT
     r = _run_four_roles(data_prompt, final_sys)
     final_out, trend_out, risk_out, trader_out = r["final"], r["trend"], r["risk"], r["trader"]
 
     # 4) 输出报告：综合裁决优先；失败拼三角色；全失败兜底数据
     if final_out:
-        new_added = spa.update_watchlist(final_out)  # 解析监测名单行/兜底提取YES → watchlist.json
-        # V1.2 增强（2026-08-07 实战：18:05 裁决全 NO 浪费一天监测，重跑却有 3 YES）：
-        # AI 裁决无 YES 标的（LLM 随机性）→ 自动重试一次，重试仍空才接受"无 YES"结论
-        if not new_added:
-            print("[warn] 本次裁决无 YES 标的，自动重试一次（LLM随机性兜底）", file=sys.stderr)
-            r2 = _run_four_roles(data_prompt, final_sys)
-            if r2["final"]:
-                new_added2 = spa.update_watchlist(r2["final"])
-                if new_added2:
-                    report = _with_watchlist(r2["final"], cleanup_lines, new_added2)
-                    report += "\n\n⚠️ 注：首次裁决无 YES 标的，以上为自动重试后的确认结果。"
-                    if not qq_send.push_or_stdout(report):
-                        print(report)
-                    return
-                print("[warn] 重试裁决仍无 YES 标的（AI 保守，接受无新增监测）", file=sys.stderr)
-            # V1.4 增强（2026-08-21 登海教训）：裁决保守无 YES 时，core 中趋势成立的
-            # 标的转【条件单监测】——次日盘中信号≥A级+放量突破前高自动升级可买入，
-            # 不再"仅跟踪"（登海 8-17 裁决NO → 8-18 盘中 A级75 平开低吸点无人衔接）。
-            cond_added = spa.add_cond_monitor(core)
-            if cond_added:
-                report = _with_watchlist(final_out or r2.get("final", ""), cleanup_lines, cond_added)
-                report += "\n\n⚠️ 说明：本次裁决无 YES 标的，已把 core 中趋势成立的高分标的转为【条件单监测】——次日盘中信号≥A级且放量突破前高即可按预案买入，不再'仅跟踪'（2026-08-18 登海种业教训修复）。"
-                if not qq_send.push_or_stdout(report):
-                    print(report)
-                return
-        report = _with_watchlist(final_out, cleanup_lines, new_added)
+        # A valid NO is final; insertion count is never a reason to rerun the model.
+        approved, decisions = validate_verdict(final_out, core[:CORE_AI_LIMIT], market_status)
+        if os.environ.get("SKIP_CLEANUP") != "1":
+            cleanup_lines, _ = spa.cleanup_watchlist()
+        new_added = watchlist.add_stocks(approved, reason="v3.1结构化YES，盘中必须重新确认") if approved else []
+        report = _with_watchlist(render_verdict(decisions, core[:CORE_AI_LIMIT]), cleanup_lines, new_added)
+        report += f"\n本次允许监测{len(approved)}只，新增{len(new_added)}只。"
         if not qq_send.push_or_stdout(report):
             print(report)
         return

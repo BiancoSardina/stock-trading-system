@@ -3,7 +3,7 @@
 paper_trader.py — 虚拟交易跟踪（v2.31 补丁）
 
 用途：不真实下单，仅按 signal_log.csv 的信号自动执行"虚拟买卖"，
-     跟踪虚拟账户表现，验证策略规则是否真的有效（与真实持仓隔离）。
+     检查规则回放的记账结果，不用于证明策略有效（与真实持仓隔离）。
 
 设计：
 - 虚拟账户：初始资金 100,000 元（虚拟，与真实 10 万总资金分开算）
@@ -29,10 +29,13 @@ import os
 import sys
 import urllib.request
 from datetime import datetime
+from runtime import data_path, read_json, atomic_json, exclusive
+from signal_store import read_signals
+from paper_execution import buy as paper_buy, sell as paper_sell
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-SIGNAL_LOG = os.path.join(SCRIPT_DIR, "signal_log.csv")
-PAPER_FILE = os.path.join(SCRIPT_DIR, "paper_positions.json")
+SIGNAL_LOG = data_path("signal_log_v32.csv")
+PAPER_FILE = data_path("paper_positions_v32.json")
 
 VIRTUAL_CAPITAL = 200000   # 虚拟初始资金（2026-08-12 用户要求 10万→20万）
 BUY_RATIO = 0.05           # 每笔虚拟买入 = 虚拟资金的5%
@@ -68,187 +71,73 @@ def get_rt(code):
 
 
 # ─────────────────────────── 虚拟账户持久化 ───────────────────────────
+def fresh_paper():
+    return {"schema": "v3.1", "cash": VIRTUAL_CAPITAL, "positions": {}, "trades": [],
+            "receipts": {}, "last_time": "", "fill_model": "报价±可配置滑点；不保证成交"}
+
+
 def load_paper():
-    """读取虚拟账户：{cash, positions:{code:{...}}, trades:[...], last_index}"""
-    if os.path.isfile(PAPER_FILE):
-        try:
-            with open(PAPER_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
-    return {"cash": VIRTUAL_CAPITAL, "positions": {}, "trades": [], "last_index": 0}
-
-
-def save_paper(paper):
-    with open(PAPER_FILE, "w", encoding="utf-8") as f:
-        json.dump(paper, f, ensure_ascii=False, indent=2)
-
-
-def reset_paper():
-    paper = {"cash": VIRTUAL_CAPITAL, "positions": {}, "trades": [], "last_index": 0}
-    save_paper(paper)
+    paper = read_json(PAPER_FILE, None)
+    if paper is None:
+        return fresh_paper()
+    if not isinstance(paper, dict) or paper.get("schema") != "v3.1":
+        raise ValueError("模拟账户版本不符，禁止覆盖历史账户")
     return paper
 
 
-# ─────────────────────────── 虚拟交易执行 ───────────────────────────
-def paper_buy(paper, sig, price):
-    """虚拟买入：金额 = 当前虚拟总资产5%（动态），单标的≤30%虚拟资产，现金不足则跳过"""
-    code = sig["code"]
-    total_value = paper["cash"] + sum(p["shares"] * p["price"] for p in paper["positions"].values())
-    amount = total_value * BUY_RATIO
-    # 单标的上限：虚拟总资产30%
-    max_pos = total_value * MAX_POS_RATIO
-    cur_pos = paper["positions"].get(code, {}).get("shares", 0) * price
-    if cur_pos + amount > max_pos:
-        amount = max(0, max_pos - cur_pos)
-    if amount < 1000:
-        return False  # 额度不足或已超上限，跳过
-    # 现金不足 → 按可用现金缩量（不足1手跳过）
-    if amount > paper["cash"]:
-        amount = paper["cash"]
-    shares = int(amount / price / 100) * 100
-    if shares <= 0:
-        return False
-    cost = shares * price
-    if cost > paper["cash"]:
-        shares = int(paper["cash"] / price / 100) * 100
-        if shares <= 0:
-            return False
-        cost = shares * price
-    paper["cash"] -= cost
-    pos = paper["positions"].setdefault(code, {
-        "name": sig["name"], "shares": 0, "price": 0.0,
-        "buy_date": sig["date"], "grade": sig["grade"],
-        "version": sig.get("version", "?"),
-    })
-    # 摊薄成本
-    old_cost = pos["shares"] * pos["price"]
-    pos["shares"] += shares
-    pos["price"] = round((old_cost + cost) / pos["shares"], 4) if pos["shares"] else 0
-    pos["buy_date"] = pos.get("buy_date") or sig["date"]
-    pos["grade"] = sig["grade"] if pos["grade"] in ("", "?") else pos["grade"]
-    pos["version"] = sig.get("version", pos.get("version", "?"))
-    paper["trades"].append({
-        "date": sig["date"], "code": code, "name": sig["name"],
-        "action": "虚拟买入", "price": price, "shares": shares,
-        "amount": round(cost, 2), "grade": sig["grade"],
-        "version": sig.get("version", "?"),
-    })
-    return True
+def save_paper(paper):
+    atomic_json(PAPER_FILE, paper)
 
 
-def paper_sell(paper, sig, price):
-    """虚拟卖出：有虚拟持仓才执行，全部卖出"""
-    code = sig["code"]
-    pos = paper["positions"].get(code)
-    if not pos or pos["shares"] <= 0:
-        return False
-    shares = pos["shares"]
-    proceeds = shares * price
-    paper["cash"] += proceeds
-    paper["trades"].append({
-        "date": sig["date"], "code": code, "name": pos["name"],
-        "action": "虚拟卖出", "price": price, "shares": shares,
-        "amount": round(proceeds, 2), "grade": sig["grade"],
-        "version": sig.get("version", pos.get("version", "?")),
-        "pnl": round((price - pos["price"]) * shares, 2),
-        "pnl_pct": round((price / pos["price"] - 1) * 100, 2) if pos["price"] else 0,
-    })
-    paper["positions"].pop(code, None)
-    return True
+def reset_paper():
+    # Explicit --reset affects only the versioned hypothetical account.
+    with __import__("runtime").file_lock(PAPER_FILE):
+        paper = fresh_paper()
+        save_paper(paper)
+        return paper
 
 
-# ─────────────────────────── 信号回放 ───────────────────────────
 def load_signals():
-    if not os.path.isfile(SIGNAL_LOG):
-        return []
-    rows = []
-    with open(SIGNAL_LOG, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for r in reader:
-            rows.append({
-                "date": r.get("时间", ""), "code": r.get("代码", ""),
-                "name": r.get("名称", ""), "action": r.get("操作", ""),
-                "price": float(r.get("价格", 0) or 0),
-                "grade": r.get("信号等级", ""),
-                "score": r.get("评分", ""),
-                "mkt_state": r.get("市场状态", ""),
-                "status": r.get("状态", STATE_PENDING),
-                "version": r.get("策略版本", ""),
-            })
-    return rows
+    return read_signals(SIGNAL_LOG)
 
 
-def update_signal_status(code, date_str, action, new_status):
-    """把 signal_log.csv 中匹配行的状态字段更新（写回）"""
-    if not os.path.isfile(SIGNAL_LOG):
-        return
-    try:
-        with open(SIGNAL_LOG, "r", encoding="utf-8") as f:
-            lines = f.read().splitlines()
-        if not lines:
-            return
-        header = lines[0].split(",")
-        # 找状态列与匹配列索引
-        try:
-            idx_status = header.index("状态")
-        except ValueError:
-            return  # 旧表头无状态列，跳过
-        try:
-            idx_code = header.index("代码")
-            idx_date = header.index("时间")
-            idx_action = header.index("操作")
-        except ValueError:
-            return
-        changed = False
-        for i in range(1, len(lines)):
-            parts = lines[i].split(",")
-            if len(parts) <= idx_status:
-                continue
-            if (parts[idx_code] == code and parts[idx_date].startswith(date_str[:10])
-                    and parts[idx_action] == action and parts[idx_status] == STATE_PENDING):
-                parts[idx_status] = new_status
-                lines[i] = ",".join(parts)
-                changed = True
-        if changed:
-            with open(SIGNAL_LOG, "w", encoding="utf-8", newline="") as f:
-                f.write("\n".join(lines))
-    except Exception:
-        pass
-
-
+@exclusive(lambda: PAPER_FILE)
 def replay(paper):
-    """回放 signal_log 全部信号到虚拟账户（从 last_index 增量，按代码+日期+方向去重）"""
-    signals = load_signals()
-    start = paper.get("last_index", 0)
+    from copy import deepcopy
+    # Refresh inside the lock to avoid overwriting another run's fills.
+    work = load_paper() if os.path.exists(PAPER_FILE) else deepcopy(paper)
+    if work.get("schema") != "v3.1":
+        raise ValueError("旧账户不可用于新规则回放")
     processed = 0
-    seen = set(tuple(k) for k in paper.get("seen_keys", []))  # 已处理的 (code, date, action) 去重键
-    seen_keys_out = set(seen)  # 保持 tuple 集合，序列化时转 list
-    for i in range(start, len(signals)):
-        sig = signals[i]
-        if not sig["code"] or not sig["price"]:
+    for sig in sorted(load_signals(), key=lambda row: (row["date"], row["id"])):
+        sid = sig["id"]
+        if sid in work["receipts"]:
             continue
-        key = (sig["code"], sig["date"][:10], sig["action"])
-        if key in seen:
-            continue  # 同日同标的同方向的重复信号（多时段运行产生）只处理首次
-        seen.add(key)
-        # D级市场闸门：买入信号忽略（禁买），卖出仍执行
-        if sig["action"] in ("买入", "加仓", "买入/加仓"):
-            if sig.get("mkt_state") == "D":
-                update_signal_status(sig["code"], sig["date"], sig["action"], STATE_IGNORED)
+        status = "已忽略"
+        if sig["date"] < work["last_time"]:
+            status = "迟到历史信号，需独立重新回放"
+        else:
+            try:
+                quote_time = datetime.strptime(sig.get("quote_time", ""), "%Y-%m-%d %H:%M:%S")
+                signal_time = datetime.strptime(sig["date"], "%Y-%m-%d %H:%M")
+                # Minute-resolution signal timestamps tolerate the quote's seconds.
+                fresh = -60 < (signal_time - quote_time).total_seconds() <= 300
+            except ValueError:
+                fresh = False
+            if fresh:
+                if sig["new_action"] in ("买入", "加仓"):
+                    if paper_buy(work, sig, sig["price"]):
+                        status = "虚拟买入"
+                elif paper_sell(work, sig, sig["price"]):
+                    status = "虚拟卖出"
             else:
-                ok = paper_buy(paper, sig, sig["price"])
-                if ok:
-                    update_signal_status(sig["code"], sig["date"], sig["action"], STATE_BOUGHT)
-        elif sig["action"] in ("卖出", "减仓", "卖出/减仓"):
-            ok = paper_sell(paper, sig, sig["price"])
-            if ok:
-                update_signal_status(sig["code"], sig["date"], sig["action"], STATE_SOLD)
+                status = "行情时间无效，未模拟成交"
+            work["last_time"] = max(work["last_time"], sig["date"])
+        work["receipts"][sid] = status
         processed += 1
-        seen_keys_out.add(key)
-    paper["last_index"] = len(signals)
-    paper["seen_keys"] = [list(k) for k in seen_keys_out]
-    save_paper(paper)
+    save_paper(work)  # Fills, cash, lots and receipts commit together.
+    paper.clear()
+    paper.update(work)
     return processed
 
 
@@ -277,7 +166,7 @@ def generate_report(paper, recent_only=False):
     total_pnl = total_value - VIRTUAL_CAPITAL
     total_pnl_pct = (total_value / VIRTUAL_CAPITAL - 1) * 100
 
-    lines.append("\n🖥️ 【虚拟交易跟踪】 (独立虚拟账户10万，仅回放信号不真实下单)")
+    lines.append(f"\n🖥️ 【规则模拟 v3.2】初始{VIRTUAL_CAPITAL:,.0f}元；报价±滑点假设成交，含设定费用，不代表真实成交")
     lines.append(f"  虚拟总资产: {total_value:,.0f}元 (现金{cash:,.0f} + 持仓{total_value-cash:,.0f})")
     lines.append(f"  总盈亏: {total_pnl:+,.0f}元 ({total_pnl_pct:+.2f}%) | 已实现: {realized:+,.0f}元 | 浮动: {float_pnl:+,.0f}元")
     if pos_lines:

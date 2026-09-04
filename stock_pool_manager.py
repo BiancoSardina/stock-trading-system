@@ -14,9 +14,10 @@
 import json
 import os
 from datetime import datetime
+from runtime import data_path, atomic_json
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-POOL_PATH = os.path.join(SCRIPT_DIR, "stock_pool.json")
+POOL_PATH = data_path("stock_pool.json")
 
 # 生命周期常量（V1.1 冲突点清单3：三处阈值口径独立，勿混用）
 POOL_LEVEL_S = 85          # watch→core 升级线
@@ -38,10 +39,7 @@ def load_old_pool():
 
 def save_pool(data):
     """写 stock_pool.json（原子写）"""
-    tmp = POOL_PATH + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-    os.replace(tmp, POOL_PATH)
+    atomic_json(POOL_PATH, data)
 
 
 def old_lifecycle_map(old_pool):
@@ -57,6 +55,7 @@ def old_lifecycle_map(old_pool):
                 out[code] = {
                     "first_seen": e.get("first_seen", ""),
                     "days_in_pool": int(e.get("days_in_pool", 1) or 1),
+                    "last_evaluated": e.get("last_evaluated", (old_pool or {}).get("date", "")),
                 }
     return out
 

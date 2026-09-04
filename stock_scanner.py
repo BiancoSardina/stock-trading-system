@@ -19,6 +19,7 @@ MIN_PRICE = 5.0            # 股价门槛
 MIN_AMOUNT = 2e8           # 成交额门槛 ≥2亿（V1.1 修改四：原5亿→2亿，当日近似）
 LIMIT_DOWN = -9.9          # 当天跌停线（ST已剔除，主板非ST跌停=-10%）
 PAGE_SIZE = 100
+LAST_FETCH_COMPLETE = False
 MAX_PAGE = 70              # 全市场 hs_a 约 56 页
 
 
@@ -38,6 +39,8 @@ def _fetch(url, retries=3, timeout=25):
 
 def fetch_all_stocks(max_page=MAX_PAGE):
     """拉取全市场A股（新浪 node=hs_a，含北交所，后续过滤）"""
+    global LAST_FETCH_COMPLETE
+    LAST_FETCH_COMPLETE = False
     out = []
     pn = 1
     while pn <= max_page:
@@ -62,9 +65,15 @@ def fetch_all_stocks(max_page=MAX_PAGE):
             arr = json.loads(raw)
         except json.JSONDecodeError:
             break
+        if not isinstance(arr, list):
+            break
         if not arr:
+            LAST_FETCH_COMPLETE = bool(out)
             break
         out.extend(arr)
+        if len(arr) < PAGE_SIZE:
+            LAST_FETCH_COMPLETE = True
+            break
         pn += 1
         time.sleep(0.2)  # 新浪分页限速（实测 0.2s 稳定）
     return out

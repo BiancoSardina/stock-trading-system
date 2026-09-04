@@ -46,7 +46,8 @@ from datetime import datetime
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
-import short_term  # 复用五因子/指标/市场评分（生产代码，只读复用）
+import short_term
+from runtime import macd, positive, exclusive, data_path, quote_is_fresh, weekly_averages, align_daily_bars
 import stock_scanner
 import industry_rank
 import stock_pool_manager as spm
@@ -136,20 +137,25 @@ def score_stock(code, name, ind_score, bench_chg20, bench300_chg20, amount=None,
     复用 short_term 的 get_rt/calc_*/_f_* 函数，口径与盘中分析一致（K线用抗限流端点）。
     amount/turnover：当日成交额/换手率（来自基础过滤），用于资金因子。
     """
-    rt = short_term.get_rt(code)
+    try:
+        rt = short_term.get_rt(code)
+    except Exception:
+        return None
     if not rt:
         return None
     try:
-        kline = _get_kline(code, 120)
+        kline = align_daily_bars(_get_kline(code, 120), rt)
         closes = [float(k["close"]) for k in kline]
         highs = [float(k["high"]) for k in kline]
         lows = [float(k["low"]) for k in kline]
         vols = [int(k["volume"]) for k in kline]
     except Exception:
         return None
-    if len(closes) < 30:
+    if len(closes) < 60 or not all(positive(x) for x in closes + highs + lows):
         return None
 
+    if not quote_is_fresh(rt) or not positive(rt.get("cur")) or not positive(rt.get("prev")):
+        return None
     cur = rt["cur"]
     chg = round((cur - rt["prev"]) / rt["prev"] * 100, 2) if rt.get("prev") else 0.0
     ma5 = round(sum(closes[-5:]) / 5, 3) if len(closes) >= 5 else None
@@ -167,24 +173,16 @@ def score_stock(code, name, ind_score, bench_chg20, bench300_chg20, amount=None,
     rs20 = round(chg20 - bench_chg20, 2) if chg20 is not None and bench_chg20 is not None else None
     rs20_300 = round(chg20 - bench300_chg20, 2) if chg20 is not None and bench300_chg20 is not None else None
 
-    dif = short_term.calc_ema(closes, 12)
-    dif = round(closes[-1] - dif, 3) if dif else None
-    dea = None
-    if dif is not None and len(closes) >= 26:
-        dlist = []
-        for i, c in enumerate(closes):
-            e26 = short_term.calc_ema(closes[:i + 1], 26)
-            if e26:
-                dlist.append(round(c - e26, 3))
-        if dlist:
-            dea = short_term.calc_ema(dlist, 9)
+    dif, dea, _hist = macd(closes)
 
-    wma5 = round(sum(closes[-25:]) / 25, 3) if len(closes) >= 25 else None
-    wma10 = round(sum(closes[-50:]) / 50, 3) if len(closes) >= 50 else None
+    wma5, wma10 = weekly_averages(kline)
     bm = round(sum(closes[-20:]) / 20, 3) if len(closes) >= 20 else None
 
-    avgv = sum(vols[-5:]) / 5
-    vr = round(vols[-1] / avgv, 2) if avgv > 0 else 1
+    hm = datetime.now().hour * 60 + datetime.now().minute
+    elapsed = min(max(hm - 570, 0), 120) + min(max(hm - 780, 0), 120)
+    progress = min(1., max(elapsed / 240, .05))
+    avgv = sum(vols[-6:-1]) / 5
+    vr = round(vols[-1] / progress / avgv, 2) if avgv > 0 else 1
 
     # 20日最大回撤
     max_dd20 = None
@@ -237,6 +235,11 @@ def score_stock(code, name, ind_score, bench_chg20, bench300_chg20, amount=None,
                   "above_ma60": bool(ma60 and cur > ma60),
                   "ma20_gt_ma60": bool(ma20 and ma60 and ma20 > ma60)},
         "chg20": chg20, "price": cur,
+        "levels": {"ma5": ma5, "ma10": ma10, "ma20": ma20, "ma60": ma60,
+                   "ma60_slope": ma60_slope, "atr14": atr14,
+                   "support": min(lows[-20:]), "resistance": max(highs[-20:]),
+                   "stop": max(ma20 or 0, cur - 2 * (atr14 or 0))},
+        "quote_time": rt.get("date", "") + " " + rt.get("time", ""),
     }
 
 
@@ -279,7 +282,7 @@ def generate_pool(scored, market_status, old_pool, today):
         code = e["code"]
         old_lc = lcmap.get(code)
         if old_lc:
-            days = int(old_lc["days_in_pool"]) + 1
+            days = int(old_lc["days_in_pool"]) + int(old_lc.get("last_evaluated") != today)
             first_seen = old_lc.get("first_seen") or today
             evict, why = spm.evict_check(e["total_score"], e.get("industry_score"),
                                          e["trend"]["above_ma60"])
@@ -294,6 +297,7 @@ def generate_pool(scored, market_status, old_pool, today):
             is_old = False
         e["first_seen"] = first_seen
         e["days_in_pool"] = days
+        e["last_evaluated"] = today
         e["industry_score"] = e.get("industry_score", 0)
         e["_old"] = is_old
         entries.append(e)
@@ -360,6 +364,7 @@ def generate_pool(scored, market_status, old_pool, today):
     return core_pool, watch_pool, stats
 
 
+@exclusive(lambda: data_path("stock_pool.run"))
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=0, help="只评分前N只（测试用）")
@@ -375,14 +380,18 @@ def main():
     try:
         short_term.market_score()
         m = short_term.MARKET or {}
-        market_score_val = m.get("score", 60)
-        market_status = m.get("state", "B")
-    except Exception:
-        market_score_val, market_status = 60, "B"
+        market_score_val = m.get("score")
+        market_status = m.get("state", "UNKNOWN")
+        if market_status not in ("A", "B", "C", "D") or not m.get("data_ok", False):
+            raise ValueError("市场数据不完整")
+    except Exception as exc:
+        raise RuntimeError("市场评分不可用，保留旧股票池并停止后续发布") from exc
     print(f"[stock_pool] 市场状态: {market_status}级({market_score_val}分)", file=sys.stderr, flush=True)
 
     # ② 全市场 + 基础过滤
     all_stocks = stock_scanner.fetch_all_stocks()
+    if not stock_scanner.LAST_FETCH_COMPLETE:
+        raise RuntimeError("全市场数据不完整，保留旧池")
     kept, dropped = stock_scanner.basic_filter(all_stocks)
     print(f"[stock_pool] 全市场{len(all_stocks)} → 基础过滤后{len(kept)}只 "
           f"(剔除:{json.dumps(dropped, ensure_ascii=False)})", file=sys.stderr, flush=True)
@@ -446,6 +455,9 @@ def main():
     print(f"[stock_pool] 评分完成: 成功{len(scored)} 失败{fail} 位置硬排除{len(pos_excluded)}",
           file=sys.stderr, flush=True)
 
+    if fail or bench_chg20 is None or bench300_chg20 is None:
+        raise RuntimeError(f"候选行情或基准缺失（失败{fail}），保留旧池")
+
     # ⑦ V1.2 行业准入（行业"不拖后腿"：<40 排除；40-55 仅 watch 且需个股≥75）
     indu_excluded = []
     after = []
@@ -477,10 +489,14 @@ def main():
         "market_status": market_status,
         "market_score": market_score_val,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "data_ok": True, "source_count": len(all_stocks), "scored_count": len(candidates),
         "core_pool": core_pool,
         "watch_pool": watch_pool,
     }
-    spm.save_pool(out)
+    if args.limit:
+        print("测试范围结果不写入正式股票池")
+    else:
+        spm.save_pool(out)
     print(f"[stock_pool] ✅ stock_pool.json 已生成 耗时{time.time()-t0:.0f}s", file=sys.stderr, flush=True)
 
     # ===== 日报（stdout → no_agent 投递）=====

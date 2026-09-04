@@ -38,6 +38,7 @@ def run_case(level, entries, label):
         if e["total_score"] < 65:
             ok = False; print(f"  ❌ watch 底线: {e['code']} total={e['total_score']}<65")
     print("  ✅ 规则校验通过" if ok else "  ❌ 存在违规")
+    assert ok, f"{level}市场股票池违反门槛或容量规则"
     return core, watch
 
 # ===== A级（门槛75，core12/watch20，无强者通道）=====

@@ -6,7 +6,7 @@ import sys
 import tempfile
 from datetime import datetime, timedelta
 
-sys.path.insert(0, os.path.expanduser("~/.hermes/scripts"))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import decision_manager as dm
 
 # 重定向到临时文件
@@ -49,7 +49,7 @@ check("B级→HOLD", r["action"] == "HOLD", r["action"])
 print("== 3. 冷却期（BUY后10分钟再同信号→维持，不重复喊） ==")
 r = dm.finalize("600113", "测试股3", "buy", quality="S", score=90, cur=10.5, pos=None,
                 hold=0, is_etf=False, market_state="A", exit_triggers=[], can_buy=True,
-                now=now_minus(-1))  # 第一次
+                now=now_minus(1))  # 第一次
 check("首信号→BUY", r["action"] == "BUY", r["action"])
 r = dm.finalize("600113", "测试股3", "buy", quality="S", score=90, cur=10.6, pos=None,
                 hold=0, is_etf=False, market_state="A", exit_triggers=[], can_buy=True,
@@ -105,13 +105,14 @@ def fake_today_bought(code):
 dm._today_bought_shares = fake_today_bought
 pos = base_pos("600118", buy_price=10.0, buy_date=datetime.now().strftime("%Y-%m-%d"))
 pos["quantity"] = 2000  # 总2000股，今日买1100 → 可卖900
+pos["lots"] = [dict(pos, quantity=900, buy_date="2026-08-01"), dict(pos, quantity=1100)]
 r = dm.finalize("600118", "T1股", "sell", quality="C", score=55, cur=9.8, pos=pos,
                 hold=19600, is_etf=False, market_state="A", exit_triggers=[], can_buy=True,
                 now=now_minus(0))
 check("C级减仓→REDUCE", r["action"] == "REDUCE", r["action"])
 check("可卖份额=900", r["can_sell_shares"] == 900, str(r["can_sell_shares"]))
 # 全部当日买入 → 不可减
-pos2 = dict(pos); pos2["quantity"] = 1100
+pos2 = dict(pos); pos2["quantity"] = 1100; pos2.pop("lots", None)
 r = dm.finalize("600118", "T1股", "sell", quality="D", score=40, cur=9.5, pos=pos2,
                 hold=10450, is_etf=False, market_state="A", exit_triggers=[], can_buy=True,
                 now=now_minus(0))
@@ -144,7 +145,7 @@ if hist:
 print("== 14. 减仓重复最小间隔（60分钟防抖） ==")
 r = dm.finalize("600121", "防抖股", "sell", quality="C", score=55, cur=9.8, pos=base_pos("600121"),
                 hold=9800, is_etf=False, market_state="A", exit_triggers=[], can_buy=True,
-                now=now_minus(-1))
+                now=now_minus(1))
 check("首次C级→REDUCE", r["action"] == "REDUCE", r["action"])
 r = dm.finalize("600121", "防抖股", "sell", quality="C", score=54, cur=9.7, pos=base_pos("600121"),
                 hold=9700, is_etf=False, market_state="A", exit_triggers=[], can_buy=True,
@@ -154,7 +155,7 @@ check("10分钟内重复减仓→HOLD", r["action"] == "HOLD", r["action"])
 print("== 15. 减仓后冷静期：120分钟内不加回 ==")
 r = dm.finalize("600122", "冷静股", "sell", quality="C", score=55, cur=9.6, pos=base_pos("600122", buy_price=9.5),
                 hold=9600, is_etf=False, market_state="A", exit_triggers=[], can_buy=True,
-                now=now_minus(-1))
+                now=now_minus(1))
 check("先减仓→REDUCE", r["action"] == "REDUCE", r["action"])
 r = dm.finalize("600122", "冷静股", "buy", quality="A", score=80, cur=10.2, pos=base_pos("600122", buy_price=9.5),
                 hold=10200, is_etf=False, market_state="A", exit_triggers=[], can_buy=True,

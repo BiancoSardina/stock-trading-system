@@ -3,7 +3,7 @@
 review.py — 交易复盘系统（第八阶段）
 
 用途：读取 signal_log.csv（信号日志）+ positions.json（持仓），
-     自动统计各信号等级（S/A/B/C/D）的真实胜率与平均收益，
+     统计v3.1信号后五个完整交易日的毛收益，不代表实际成交收益，
      回答"哪些规则真的有效"。
 
 统计口径：
@@ -23,10 +23,12 @@ import os
 import sys
 import urllib.request
 from datetime import datetime, date
+from runtime import data_path, positive
+from signal_store import read_signals
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-SIGNAL_LOG = os.path.join(SCRIPT_DIR, "signal_log.csv")
-POSITIONS = os.path.join(SCRIPT_DIR, "positions.json")
+SIGNAL_LOG = data_path("signal_log_v32.csv")
+POSITIONS = data_path("positions.json")
 
 
 # ─────────────────────────── 行情工具 ───────────────────────────
@@ -85,39 +87,7 @@ def trading_days_between(d1, d2):
 
 # ─────────────────────────── 数据加载 ───────────────────────────
 def load_signals():
-    """读取 signal_log.csv，兼容新旧表头；剔除旧评分体系（评分<0，旧±10制）的污染行"""
-    if not os.path.isfile(SIGNAL_LOG):
-        return []
-    rows = []
-    with open(SIGNAL_LOG, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for r in reader:
-            try:
-                score = r.get("评分", "")
-                # 旧评分体系（-10~+10）与新五因子（0~100）混存时，评分<0 必为旧体系 → 跳过
-                if score and score.strip():
-                    try:
-                        if float(score) < 0:
-                            continue
-                    except ValueError:
-                        pass
-                rows.append({
-                    "date": r.get("时间", ""),
-                    "code": r.get("代码", ""),
-                    "name": r.get("名称", ""),
-                    "action": r.get("操作", ""),
-                    "price": float(r.get("价格", 0) or 0),
-                    "grade": r.get("信号等级", ""),
-                    "score": score,
-                    "industry": r.get("行业", ""),
-                    "mkt_score": r.get("市场评分", ""),
-                    "mkt_state": r.get("市场状态", ""),
-                    "status": r.get("状态", ""),
-                    "version": r.get("策略版本", ""),
-                })
-            except Exception:
-                continue
-    return rows
+    return read_signals(SIGNAL_LOG)
 
 
 def load_positions():
@@ -160,9 +130,9 @@ def pair_trades(signals, positions):
     """
     信号有效性统计（口径：信号发出后表现，而非真实成交配对）
     对每条买入信号：取信号日之后（不含当日）的K线，
-    - 持有N日结果 = 信号后第5根K线收盘价 vs 信号价（不足5根用最后一根）
-    - 最大盈利 = 信号后至今最高价 vs 信号价
-    - 最大亏损 = 信号后至今最低价 vs 信号价
+    - 持有N日结果 = 信号后第5根完整K线收盘价 vs 信号价（不足5根不计）
+    - 最大盈利 = 信号后五日最高价 vs 信号价
+    - 最大亏损 = 信号后五日最低价 vs 信号价
     - 结果 = 持有N日收益（>0 计为"信号有效"）
     当日刚发出的信号（尚无后续K线）不计入胜率统计（result=None）。
     """
@@ -185,30 +155,22 @@ def pair_trades(signals, positions):
         }
         buy_day = s["date"][:10]
         kline = get_kline(s["code"])
-        # 信号日之后（不含当日）的K线
-        future = [k for k in kline if str(k.get("day", ""))[:10] > buy_day]
-        today = datetime.now().strftime("%Y-%m-%d")
-        if not future:
-            # 信号日之后无日K（接口不含当日）：
-            # 信号日==今天 → 未实现，不计胜率；信号日<今天 → 用实时价算真实收益并计入胜率
-            rt = get_rt(s["code"])
-            if rt:
-                trade["sell_time"] = "现价" if buy_day < today else "当日(现价)"
-                trade["sell_price"] = rt["cur"]
-                trade["max_profit_pct"] = round((rt["high"] / s["price"] - 1) * 100, 2) if s["price"] else None
-                trade["max_loss_pct"] = round((rt["low"] / s["price"] - 1) * 100, 2) if s["price"] else None
-                if buy_day < today:
-                    trade["result"] = round((rt["cur"] / s["price"] - 1) * 100, 2) if s["price"] else None
-                    trade["hold_days"] = trading_days_between(buy_day, today)
-                    trade["closed"] = True
-                else:
-                    trade["result"] = None  # 当日信号不计胜率
-                    trade["hold_days"] = 0
+        # Only completed daily bars, and the same five-session window for all metrics.
+        by_date = {}
+        now = datetime.now()
+        for k in kline or []:
+            day = str(k.get("day", ""))[:10]
+            if day <= buy_day or day > today or (day == today and now.hour < 15):
+                continue
+            if all(positive(k.get(field)) for field in ("close", "high", "low")):
+                by_date[day] = k
+        future = [by_date[day] for day in sorted(by_date)][:5]
+        if len(future) < 5:
+            trade["hold_days"] = len(future)
+            trade["pending_reason"] = "不足五个完整交易日或历史行情缺失"
             trades.append(trade)
             continue
-
-        # 持有5日（不足取最后）
-        n = min(5, len(future))
+        n = 5
         exit_k = future[n - 1]
         trade["sell_time"] = str(exit_k.get("day", ""))[:10]
         trade["sell_price"] = float(exit_k["close"])
@@ -441,7 +403,7 @@ def main():
     p(f"║  {datetime.now().strftime('%Y-%m-%d %H:%M')}                  ║")
     p("╚══════════════════════════════════════╝")
     p(f"\n📥 信号总数: {len(signals)}条 | 配对交易: {len(trades)}笔 "
-      f"({sum(1 for t in trades if t['closed'])}笔已平仓)")
+      f"({sum(1 for t in trades if t['closed'])}笔五日观察完成)")
 
     # 全部交易统计 + 最近N笔统计
     if recent:
@@ -482,7 +444,7 @@ def main():
             if best is None or wr > best[1]:
                 best = (gr, wr, len(ts))
     if best:
-        p(f"  🏆 样本充足(≥3笔)中胜率最高: {best[0]}级 {best[1]:.0f}% ({best[2]}笔) → 该等级信号可优先信任")
+        p(f"  🏆 已观察样本中命中率最高: {best[0]}级 {best[1]:.0f}% ({best[2]}笔) ；仅描述样本，不能据此提高仓位或认定策略有效")
     for gr in ["S", "A", "B", "C", "D"]:
         ts = g.get(gr, [])
         if len(ts) >= 3:

@@ -8,7 +8,12 @@
 #   成功 = 完全静默（exit 0，无 stdout）
 #   失败 = stderr 报错 + 非零退出（cron 自动发错误告警）
 # ============================================================
-set -uo pipefail
+set -euo pipefail
+
+if [ "${PUBLISH_PRIVATE_SNAPSHOTS:-0}" != "1" ]; then
+    echo "财务报告快照发布未启用；如需公开，请显式设置 PUBLISH_PRIVATE_SNAPSHOTS=1" >&2
+    exit 1
+fi
 
 REPO=/home/ubuntu/.hermes/scripts
 CRON_DIR=/home/ubuntu/.hermes/cron
@@ -36,7 +41,11 @@ mkdir -p "$SNAP_DIR/output"
 rsync -a --delete "$CRON_DIR/output/" "$SNAP_DIR/output/" || { echo "output 同步失败" >&2; exit 1; }
 
 # 3. 提交推送（无变化则静默退出）
-git add -A
+if ! git diff --cached --quiet; then
+    echo "暂存区已有变更，停止自动提交" >&2
+    exit 1
+fi
+git add -f -- cron_data/
 if git diff --cached --quiet; then
     exit 0
 fi

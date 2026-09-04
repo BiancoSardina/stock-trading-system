@@ -19,9 +19,12 @@ import sys
 import time
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEADLINE = time.monotonic() + float(os.environ.get("PIPELINE_TIMEOUT", "900"))
 
 
 def run_step(name, script, env_extra=None):
+    if time.monotonic() >= DEADLINE:
+        raise TimeoutError("流程超时，停止后续发布")
     t0 = time.time()
     print(f"[stock_pool_full] ⏱ 开始 {name} {time.strftime('%H:%M:%S')}", flush=True)
     env = dict(os.environ)
@@ -32,6 +35,7 @@ def run_step(name, script, env_extra=None):
         [sys.executable, os.path.join(SCRIPT_DIR, script)],
         cwd=SCRIPT_DIR,
         env=env,
+        timeout=max(1, DEADLINE - time.monotonic()),
     )
     dur = time.time() - t0
     if proc.returncode != 0:

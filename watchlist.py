@@ -14,34 +14,25 @@ watchlist.py — 次日监测名单管理（2026-08-05 用户需求）
 import json
 import os
 from datetime import datetime
+from runtime import data_path, atomic_json, read_json, exclusive
 
-WATCHLIST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "watchlist.json")
+WATCHLIST_PATH = data_path("watchlist.json")
 
 
 def load_watchlist() -> list:
     """读取监测名单，返回 [{code, name, added, reason}]，异常返回空列表"""
-    try:
-        with open(WATCHLIST_PATH, encoding="utf-8") as f:
-            data = json.load(f)
-        return data.get("stocks", []) or []
-    except Exception:
-        return []
+    data = read_json(WATCHLIST_PATH, {"stocks": []})
+    if not isinstance(data, dict) or not isinstance(data.get("stocks"), list):
+        raise ValueError("监测名单格式异常")
+    return data["stocks"]
 
 
-def save_watchlist(entries: list) -> bool:
-    """保存监测名单，成功返回 True"""
-    try:
-        data = {
-            "stocks": entries,
-            "updated": datetime.now().strftime("%Y-%m-%d"),
-        }
-        with open(WATCHLIST_PATH, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        return True
-    except Exception:
-        return False
+def save_watchlist(entries):
+    atomic_json(WATCHLIST_PATH, {"stocks": entries, "updated": datetime.now().strftime("%Y-%m-%d")})
+    return True
 
 
+@exclusive(lambda: WATCHLIST_PATH)
 def clean_stale(positions_codes: set, today: str) -> dict:
     """
     清理过期待监测标的（added < today 即前一天或更早加入的）：
@@ -64,6 +55,7 @@ def clean_stale(positions_codes: set, today: str) -> dict:
     return {"bought": bought, "expired": expired, "kept": kept}
 
 
+@exclusive(lambda: WATCHLIST_PATH)
 def add_stocks(codes_names: list, reason: str = "18:00选股允许交易YES") -> list:
     """
     把新标的加入监测名单（按 code 去重）。
@@ -76,6 +68,9 @@ def add_stocks(codes_names: list, reason: str = "18:00选股允许交易YES") ->
     added = []
     for code, name in codes_names:
         if code in existing:
+            for entry in entries:
+                if entry.get("code") == code:
+                    entry.update(name=name, added=today, reason=reason)
             continue
         item = {"code": code, "name": name, "added": today, "reason": reason}
         entries.append(item)
