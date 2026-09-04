@@ -62,30 +62,7 @@ def get_api_key():
 
 # ─────────────────────────── 个股覆盖兜底 ───────────────────────────
 def ensure_stock_coverage(text: str, data: str) -> str:
-    """AI报告缺失个股时，把脚本里的【个股观察】区块原文补在报告末尾（硬性兜底，不依赖AI自觉）"""
-    import re
-    block, in_block = [], False
-    for ln in data.split("\n"):
-        if "【个股观察" in ln:
-            in_block = True
-        elif in_block and ln.strip().startswith("【") and "】" in ln:
-            break
-        if in_block:
-            block.append(ln)
-    if not block:
-        return text
-    missing = []
-    for ln in block:
-        m = re.search(r"([\u4e00-\u9fa5A-Za-z0-9]{2,10})\((\d{6})\)", ln)
-        if m and m.group(1) not in text:
-            missing.append(m.group(1))
-    if missing:
-        extra = (
-            f"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-            f"📌 【个股数据补全】以下 {len(missing)} 只个股未在报告中解读，附脚本原文：\n"
-            + "\n".join(block)
-        )
-        return text + extra
+    """兼容旧调用；精简报告不再强制逐只覆盖无操作标的。"""
     return text
 
 
@@ -103,7 +80,8 @@ def build_user_prompt(data: str) -> str:
     return (
         f"【手动执行 · 数据采集时间 {now}】\n"
         "以下是脚本刚生成的实时技术分析数据（已算出MA、RSI、MACD、布林带、评分、买卖信号、"
-        "实时行情等，数据为最新价）。请基于此给出当前时刻的交易判断报告（中文，结构清晰，果断明确）。\n\n"
+        "实时行情等，数据为最新价）。请严格按系统提示输出不超过1200字的最终决策摘要；"
+        "只展开持仓风险和脚本批准的最多3个动作，无操作候选不逐只解释。\n\n"
         "【技术分析数据】\n"
         + data
     )
@@ -118,7 +96,7 @@ def call_deepseek(model_name: str, timeout: int, api_key: str, sys_prompt: str, 
             {"role": "user", "content": user_prompt},
         ],
         "temperature": 0.7,
-        "max_tokens": 16384,
+        "max_tokens": 2048,
         "stream": False,
     }
     req = urllib.request.Request(
@@ -204,7 +182,8 @@ def main():
             try:
                 text = call_deepseek(m["name"], m["timeout"], api_key, sys_prompt, user_prompt)
                 print(f"[info] 手动实时分析成功: model={m['name']} 耗时={time.time()-t0:.0f}s", file=sys.stderr)
-                report = ensure_stock_coverage(text, data)
+                from report_contract import compact_report
+                report = compact_report(ensure_stock_coverage(text, data))
                 if not qq_send.push_or_stdout(report):  # 分段直发 QQ，失败才走 stdout 兜底
                     print(report)
                 return
@@ -214,18 +193,18 @@ def main():
             except urllib.error.URLError as e:
                 last_err = f"连接失败: {e.reason}"
                 print(f"[warn] {m['name']} 失败: {last_err}", file=sys.stderr)
+            except qq_send.PartialDeliveryError:
+                raise
             except Exception as e:
                 last_err = str(e)[:200]
                 print(f"[warn] {m['name']} 失败: {last_err}", file=sys.stderr)
-        # 两个模型都失败 → 兜底输出脚本原始数据
-        report = (
-            f"⚠️ 【AI解读暂时不可用】两个模型(deepseek-v4-flash / deepseek-chat)均连接失败或超时"
-            f"（最后错误: {last_err}），以下为脚本原始实时数据（无AI解读，仅供参考）：\n\n{data}"
-        )
+        report = (f"⚠️ {time.strftime('%H:%M')}｜AI解读不可用（{last_err}）｜"
+                  "本轮无可验证操作；完整技术数据已保留在后台，请勿依据旧报告下单。")
         if not qq_send.push_or_stdout(report):
             print(report)
     else:
-        report = f"⚠️ 【配置错误】未找到 deepseek API key，以下为脚本原始实时数据（无AI解读）：\n\n{data}"
+        report = (f"⚠️ {time.strftime('%H:%M')}｜未配置AI密钥｜"
+                  "本轮无可验证操作；完整技术数据已保留在后台。")
         if not qq_send.push_or_stdout(report):
             print(report)
 

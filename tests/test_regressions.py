@@ -28,7 +28,10 @@ import watchlist
 import review
 import signal_store
 import qq_send
-from ai_decision import validate_verdict
+import report_contract
+import short_term_ai
+import short_term_manual
+from ai_decision import render_verdict, validate_verdict
 
 
 def bars(prices, end=None):
@@ -347,6 +350,40 @@ class RegressionTests(unittest.TestCase):
                 self.assertTrue(qq_send.send_report("test-report"))
                 retry.assert_called_once()
                 self.assertIn("second", retry.call_args.args[0])
+
+    def test_user_report_is_hard_capped(self):
+        report = "市场\n" + "无操作候选说明\n" * 1000
+        compact = report_contract.compact_report(report)
+        self.assertLessEqual(len(compact), 1200)
+        self.assertIn("其余无操作详情已省略", compact)
+
+    def test_compact_mode_does_not_restore_full_stock_coverage(self):
+        ai_text = "市场C级｜本轮无操作"
+        raw = "【个股观察】\n测试股票(600001) 长篇分析"
+        self.assertEqual(short_term_ai.ensure_stock_coverage(ai_text, raw), ai_text)
+        self.assertEqual(short_term_manual.ensure_stock_coverage(ai_text, raw), ai_text)
+
+    def test_prompt_limits_actions_and_uses_previous_delta(self):
+        prompt = short_term_ai.build_user_prompt("技术数据", "上一轮摘要")
+        self.assertIn("最多3条", prompt)
+        self.assertIn("上一轮摘要", prompt)
+        self.assertIn("新增、取消、升级、降级和价格失效", prompt)
+
+    def test_ai_verdict_only_expands_three_rejections(self):
+        candidates = [{"code": str(600000 + i), "name": f"股票{i}"} for i in range(5)]
+        decisions = [{"code": item["code"], "decision": "NO", "reason": "不合格"} for item in candidates]
+        rendered = render_verdict(decisions, candidates)
+        self.assertIn("否决5", rendered)
+        self.assertIn("其余2只否决详情留在后台", rendered)
+        self.assertNotIn("股票4：不合格", rendered)
+
+    def test_pipeline_silent_ai_report_is_not_sent(self):
+        with patch.dict(os.environ, {"PIPELINE_SILENT": "1"}), \
+             patch.object(sai, "atomic_json") as save, \
+             patch.object(qq_send, "push_or_stdout") as send:
+            sai.publish_report("裁决完成")
+        save.assert_called_once()
+        send.assert_not_called()
 
     def test_ambiguous_qq_response_cannot_automatically_resend(self):
         with patch.object(qq_send, "DEFAULT_OPENID", "test-recipient"), patch.object(qq_send, "get_token", return_value="test-token"), patch.object(qq_send, "_send_chunk", side_effect=TimeoutError) as send:

@@ -25,6 +25,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 import position_manager
 import qq_send
+from runtime import atomic_json, data_path, read_json
+
+REPORT_STATE_FILE = data_path("last_short_report.json")
 
 # 模型降级链（用户指定，只用这两个）
 MODELS = [
@@ -66,30 +69,7 @@ def get_api_key():
 
 # ─────────────────────────── 个股覆盖兜底 ───────────────────────────
 def ensure_stock_coverage(text: str, data: str) -> str:
-    """AI报告缺失个股时，把脚本里的【个股观察】区块原文补在报告末尾（硬性兜底，不依赖AI自觉）"""
-    import re
-    block, in_block = [], False
-    for ln in data.split("\n"):
-        if "【个股观察" in ln:
-            in_block = True
-        elif in_block and ln.strip().startswith("【") and "】" in ln:
-            break
-        if in_block:
-            block.append(ln)
-    if not block:
-        return text
-    missing = []
-    for ln in block:
-        m = re.search(r"([\u4e00-\u9fa5A-Za-z0-9]{2,10})\((\d{6})\)", ln)
-        if m and m.group(1) not in text:
-            missing.append(m.group(1))
-    if missing:
-        extra = (
-            f"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-            f"📌 【个股数据补全】以下 {len(missing)} 只个股未在报告中解读，附脚本原文：\n"
-            + "\n".join(block)
-        )
-        return text + extra
+    """兼容旧调用；精简报告不再强制逐只覆盖无操作标的。"""
     return text
 
 
@@ -99,15 +79,53 @@ def build_system_prompt(period: str) -> str:
     return build_report_prompt(period, position_manager.build_position_context())
 
 
-def build_user_prompt(data: str) -> str:
+def build_user_prompt(data: str, previous_report: str = "") -> str:
+    previous = previous_report.strip() or "无上一轮报告；只输出本轮最终状态。"
     return (
         "以下是定时任务脚本刚生成的技术分析数据（已算出MA、RSI、MACD、布林带、评分、买卖信号、"
-        "集合竞价信息等）。请结合这些数据完成深度分析并输出报告（中文，结构清晰）。\n"
-        "报告结构建议：大盘定调 → 核心信号解读 → 持仓处理（按当前实际持仓，无持仓则跳过）→ "
-        "各品种操作预案（含买入/卖出价位区间）→ 今日总结。\n\n"
+        "集合竞价信息等）。请严格按系统提示输出不超过1200字的最终决策摘要。"
+        "只列脚本已批准动作，最多3条；不要逐只解释无操作候选。"
+        "将上一轮报告作为差异基线，仅列新增、取消、升级、降级和价格失效。\n\n"
+        "【上一轮已发送摘要】\n" + previous + "\n\n"
         "【技术分析数据】\n"
         + data
     )
+
+
+def load_previous_report() -> str:
+    state = read_json(REPORT_STATE_FILE, {})
+    return state.get("report", "") if isinstance(state, dict) else ""
+
+
+def remember_report(report: str, period: str):
+    atomic_json(REPORT_STATE_FILE, {
+        "date": time.strftime("%Y-%m-%d"),
+        "time": time.strftime("%H:%M:%S"),
+        "period": period,
+        "report": report,
+    })
+
+
+def publish_report(report: str, period: str):
+    from report_contract import compact_report
+    report = compact_report(report)
+    if not qq_send.push_or_stdout(report):
+        print(report)
+    try:
+        remember_report(report, period)
+    except Exception as exc:
+        print(f"[warn] 上一轮摘要保存失败: {exc}", file=sys.stderr)
+
+
+def save_analysis_data(data: str, period: str):
+    try:
+        atomic_json(data_path("short_term_latest.json"), {
+            "generated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "period": period,
+            "technical_data": data,
+        })
+    except Exception as exc:
+        print(f"[warn] 完整技术数据保存失败: {exc}", file=sys.stderr)
 
 
 # ─────────────────────────── LLM 调用 ───────────────────────────
@@ -120,7 +138,7 @@ def call_deepseek(model_name: str, timeout: int, api_key: str, sys_prompt: str, 
             {"role": "user", "content": user_prompt},
         ],
         "temperature": 0.7,
-        "max_tokens": 16384,
+        "max_tokens": 2048,
         "stream": False,
     }
     req = urllib.request.Request(
@@ -152,7 +170,7 @@ def call_deepseek(model_name: str, timeout: int, api_key: str, sys_prompt: str, 
 def main():
     api_key = get_api_key()
     if not api_key:
-        print("⚠️ 【配置错误】未找到 deepseek API key，无法进行AI解读，以下为脚本原始数据：\n", file=sys.stderr)
+        print("[warn] 未找到 deepseek API key，本轮只输出无操作状态", file=sys.stderr)
     period = "早盘"
     try:
         period_map = {9: "早盘", 11: "收割后", 13: "午后", 14: "尾盘"}
@@ -193,11 +211,12 @@ def main():
     if not data:
         print("⚠️ 【脚本输出为空】short_term.py 无输出。")
         sys.exit(1)
+    save_analysis_data(data, period)
 
     # 2) AI 解读（模型降级链）
     if api_key:
         sys_prompt = build_system_prompt(period)
-        user_prompt = build_user_prompt(data)
+        user_prompt = build_user_prompt(data, load_previous_report())
         last_err = None
         for m in MODELS:
             t0 = time.time()
@@ -205,8 +224,7 @@ def main():
                 text = call_deepseek(m["name"], m["timeout"], api_key, sys_prompt, user_prompt)
                 print(f"[info] {period} AI解读成功: model={m['name']} 耗时={time.time()-t0:.0f}s", file=sys.stderr)
                 report = ensure_stock_coverage(text, data)
-                if not qq_send.push_or_stdout(report):  # 分段直发 QQ，失败才走 stdout 兜底
-                    print(report)
+                publish_report(report, period)
                 return
             except urllib.error.HTTPError as e:
                 last_err = f"HTTP {e.code}"
@@ -214,21 +232,19 @@ def main():
             except urllib.error.URLError as e:
                 last_err = f"连接失败: {e.reason}"
                 print(f"[warn] {m['name']} 失败: {last_err}", file=sys.stderr)
+            except qq_send.PartialDeliveryError:
+                raise
             except Exception as e:
                 last_err = str(e)[:200]
                 print(f"[warn] {m['name']} 失败: {last_err}", file=sys.stderr)
         # 两个模型都失败 → 兜底输出脚本原始数据
-        report = (
-            f"⚠️ 【AI解读暂时不可用】两个模型(deepseek-v4-flash / deepseek-chat)均连接失败或超时"
-            f"（最后错误: {last_err}），以下为脚本原始技术数据（无AI解读，仅供参考）：\n\n{data}"
-        )
-        if not qq_send.push_or_stdout(report):
-            print(report)
+        report = (f"⚠️ {time.strftime('%H:%M')}｜AI解读不可用（{last_err}）｜"
+                  "本轮无可验证操作；完整技术数据已保留在后台，请勿依据旧报告下单。")
+        publish_report(report, period)
     else:
-        # 无 key → 直接给原始数据
-        report = f"⚠️ 【配置错误】未找到 deepseek API key，以下为脚本原始技术数据（无AI解读）：\n\n{data}"
-        if not qq_send.push_or_stdout(report):
-            print(report)
+        report = (f"⚠️ {time.strftime('%H:%M')}｜未配置AI密钥｜"
+                  "本轮无可验证操作；完整技术数据已保留在后台。")
+        publish_report(report, period)
 
 
 if __name__ == "__main__":

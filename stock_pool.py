@@ -501,6 +501,10 @@ def main():
 
     # ===== 日报（stdout → no_agent 投递）=====
     cap_core, cap_watch = spm.pool_capacity(market_status)
+    if os.getenv("PIPELINE_COMPACT") == "1":
+        print(f"[stock_pool] 摘要留后台: {market_status}{market_score_val} "
+              f"CORE={len(core_pool)} WATCH={len(watch_pool)}", file=sys.stderr)
+        return
     print(f"📋 股票池日报 {today} | 市场{market_status}级({market_score_val}分)")
     print(f"候选链路: 全市场{len(all_stocks)} → 主板过滤{len(kept)} → 全量五因子评分{total_scored}只"
           f"（位置硬排除{len(pos_excluded)} 行业准入排除{len(indu_excluded)}）")

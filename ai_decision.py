@@ -50,11 +50,16 @@ def validate_verdict(text, candidates, market_state):
 
 def render_verdict(decisions, candidates):
     names = {e["code"]: e.get("name", e["code"]) for e in candidates}
-    lines = ["📋 AI最终裁决（价格已经代码核验；实际动作仍需盘中状态机确认）"]
-    for item in decisions:
-        label = "允许监测" if item["decision"] == "YES" else "不允许交易"
-        line = f"{names[item['code']]}({item['code']})：{label}。{item['reason']}"
-        if item["decision"] == "YES":
-            line += f" 参考价{item['entry']}，止损{item['stop']}。"
-        lines.append(line)
+    yes = [item for item in decisions if item["decision"] == "YES"]
+    no = [item for item in decisions if item["decision"] == "NO"]
+    lines = [f"📋 AI裁决｜允许监测{len(yes)}｜否决{len(no)}"]
+    for item in yes[:3]:
+        lines.append(f"✅ {names[item['code']]}({item['code']})｜参考{item['entry']}｜止损{item['stop']}｜{item['reason']}")
+    if not yes:
+        lines.append("本轮无新增监测。")
+    if no:
+        reasons = "；".join(f"{names[item['code']]}：{item['reason']}" for item in no[:3])
+        lines.append(f"取消/否决：{reasons}")
+        if len(no) > 3:
+            lines.append(f"其余{len(no)-3}只否决详情留在后台。")
     return "\n".join(lines)

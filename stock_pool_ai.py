@@ -27,10 +27,27 @@ import position_manager
 import qq_send
 import stock_pool_manager as spm
 from ai_decision import FINAL_CONTRACT, validate_verdict, render_verdict
-from runtime import exclusive, data_path
+from runtime import atomic_json, exclusive, data_path
 import stock_picker_ai as spa  # 复用四角色prompt/LLM调用/watchlist兜底
 
 CORE_AI_LIMIT = 8  # 只裁决 core 前8只（控制 4-5 分钟耗时）
+
+
+def publish_report(report):
+    """一条龙模式保存裁决但不单独推送，最终由盘中摘要统一发送。"""
+    from report_contract import compact_report
+    raw_report = report
+    report = compact_report(raw_report)
+    atomic_json(data_path("stock_pool_ai_latest.json"), {
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "report": raw_report,
+        "user_summary": report,
+    })
+    if os.environ.get("PIPELINE_SILENT") == "1":
+        print("[stock_pool_ai] 裁决已写入后台，跳过独立推送", file=sys.stderr)
+        return
+    if not qq_send.push_or_stdout(report):
+        print(report)
 
 
 def build_pool_data(pool, limit=CORE_AI_LIMIT):
@@ -116,24 +133,22 @@ def _call_role(role_name, sys_prompt, data_prompt, extra_context=""):
 
 
 def _with_watchlist(report, cleanup_lines, new_added):
-    """报告末尾附加次日监测名单区块"""
-    sep = "=" * 55
-    parts = [f"\n{sep}\n🎯 【次日监测名单】（自动加入明日盘中监测）\n{sep}"]
+    """只附加监测名单变化，不重复输出完整名单。"""
+    parts = ["\n监测变化："]
     if cleanup_lines:
-        parts.append("昨日名单处理：")
-        parts.extend(f"  {l}" for l in cleanup_lines)
+        parts.extend(f"- {line}" for line in cleanup_lines[:3])
+        if len(cleanup_lines) > 3:
+            parts.append(f"- 其余{len(cleanup_lines)-3}项清理记录留在后台")
     if new_added:
-        parts.append("今日新增监测（允许交易YES）：")
-        for i in new_added:
+        for i in new_added[:3]:
             if isinstance(i, dict):
                 c, n = i.get("code", ""), i.get("name", "")
             else:
                 c, n = i
-            parts.append(f"  ➕ {c} {n} 明日盘中重点跟踪")
-    else:
-        parts.append("今日无新增监测标的（无YES或AI未输出名单行）")
-    cur = watchlist.summary()
-    parts.append(f"当前名单：{cur}")
+            parts.append(f"- 新增 {c} {n}")
+    if not cleanup_lines and not new_added:
+        parts.append("- 无变化")
+    parts.append(f"当前监测共{len(watchlist.load_watchlist())}只。")
     return report + "\n" + "\n".join(parts)
 
 
@@ -175,9 +190,8 @@ def main():
                   f"不裁决，无新增监测。\n"
                   f"watch_pool 若存在将由盘中任务按观察处理。")
         report = _with_watchlist(report, cleanup_lines, [])
-        if not qq_send.push_or_stdout(report):
-            print(report)
-        print(f"[stock_pool_ai] 无core候选，报告已发 耗时{time.time()-t0:.0f}s", file=sys.stderr)
+        publish_report(report)
+        print(f"[stock_pool_ai] 无core候选，裁决完成 耗时{time.time()-t0:.0f}s", file=sys.stderr)
         return
 
     # 2) 构造候选数据 + 市场简报
@@ -205,8 +219,7 @@ def main():
         new_added = watchlist.add_stocks(approved, reason="v3.1结构化YES，盘中必须重新确认") if approved else []
         report = _with_watchlist(render_verdict(decisions, core[:CORE_AI_LIMIT]), cleanup_lines, new_added)
         report += f"\n本次允许监测{len(approved)}只，新增{len(new_added)}只。"
-        if not qq_send.push_or_stdout(report):
-            print(report)
+        publish_report(report)
         return
     parts = []
     for tag, out in (("趋势分析师", trend_out), ("风险经理", risk_out), ("交易员", trader_out)):
@@ -215,16 +228,12 @@ def main():
     if parts:
         report = "⚠️ 【综合裁决调用失败，以下为分角色分析（无最终YES/NO裁决）】\n" + "\n\n".join(parts)
         report = _with_watchlist(report, cleanup_lines, [])
-        if not qq_send.push_or_stdout(report):
-            print(report)
+        publish_report(report)
         return
-    report = (
-        f"⚠️ 【AI解读暂时不可用】四角色均连接失败或超时，以下为股票池候选原始数据"
-        f"（无AI解读，仅供参考）：\n{data}"
-    )
+    report = ("⚠️ AI裁决不可用｜本轮无新增监测、无可执行动作。\n"
+              "候选原始数据已保留在后台，请勿依据上一轮价格下单。")
     report = _with_watchlist(report, cleanup_lines, [])
-    if not qq_send.push_or_stdout(report):
-        print(report)
+    publish_report(report)
 
 
 if __name__ == "__main__":
