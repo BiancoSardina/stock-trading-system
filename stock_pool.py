@@ -447,14 +447,22 @@ def main():
             scored.append(e)
         else:
             fail += 1
+            if fail <= 15:
+                print(f"[stock_pool] ⚠️ 评分失败: {c['code']} {c['name']}", file=sys.stderr, flush=True)
         time.sleep(KLINE_SLEEP)  # V1.2 防限流（全量781只连续请求）
         if (i + 1) % 100 == 0:
             print(f"[stock_pool] 评分进度 {i+1}/{len(candidates)}", file=sys.stderr, flush=True)
     print(f"[stock_pool] 评分完成: 成功{len(scored)} 失败{fail} 位置硬排除{len(pos_excluded)}",
           file=sys.stderr, flush=True)
 
-    if fail or bench_chg20 is None or bench300_chg20 is None:
-        raise RuntimeError(f"候选行情或基准缺失（失败{fail}），保留旧池")
+    if bench_chg20 is None or bench300_chg20 is None:
+        raise RuntimeError("基准指数缺失（上证/沪深300 K线不可用），保留旧池")
+    # 失败容忍：停牌/除权/新股等边缘标的单只行情失败属正常（实测967只偶发6只≈0.6%），
+    # 大面积失败（>2% 或 >15只）才视为数据源故障中止；小比例跳过并告警
+    if fail > max(15, int(len(candidates) * 0.02)):
+        raise RuntimeError(f"候选行情失败过多（失败{fail}/{len(candidates)}），保留旧池")
+    if fail:
+        print(f"[stock_pool] ⚠️ 跳过{fail}只行情失败标的（≤2%可容忍），继续发布", file=sys.stderr, flush=True)
 
     # ⑦ V1.2 行业准入（行业"不拖后腿"：<40 排除；40-55 仅 watch 且需个股≥75）
     indu_excluded = []

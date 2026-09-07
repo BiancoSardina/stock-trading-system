@@ -476,7 +476,7 @@ def _breadth_score():
     # 涨跌家数（东财 ulist：沪市000001 + 深市综指399106 一次请求）
     up = dn = fl = 0
     try:
-        url = ("https://push2.eastmoney.com/api/qt/ulist.np/get?fltt=2"
+        url = ("https://push2delay.eastmoney.com/api/qt/ulist.np/get?fltt=2"
                "&secids=1.000001,0.399106&fields=f2,f3,f104,f105,f106")
         d = json.loads(em_get(url).decode("utf-8", "ignore"))
         for it in d["data"]["diff"]:
@@ -529,29 +529,29 @@ def _breadth_score():
     return score, detail
 
 def _volume_score():
-    """③ 成交量分(20)：上证指数成交额 放量涨/缩量涨/放量跌（今日折算 vs 前5日均额）"""
+    """③ 成交量分(20)：上证指数量能 放量涨/缩量涨/放量跌（今日折算 vs 前5日均量）"""
     try:
-        url = ("https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=1.000001"
-               "&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f59"
-               "&klt=101&fqt=1&end=20500101&lmt=30")
-        d = json.loads(em_get(url).decode("utf-8", "ignore"))
-        rows = [k.split(",") for k in d["data"]["klines"]]
-        if len(rows) < 6 or rows[-1][0] != datetime.now().strftime("%Y-%m-%d"):
-            raise ValueError("成交量日线过期或不足")
-        amts = [float(r[6]) for r in rows]      # 成交额(元)
-        chgs = [float(r[7]) for r in rows]      # 涨跌幅%
+        # 新浪K线替代：push2his.eastmoney.com 2026-09-04 起本机路由黑洞(HTTP:000)；
+        # 新浪日K无成交额仅成交量(volume)，量比口径由成交额改成交量属合理近似
+        kl = get_index_kline("sh000001", 30)
+        if len(kl) < 7:
+            raise ValueError("量能日线不足")
+        days = [str(r["day"]) for r in kl]
+        vols = [float(r["volume"]) for r in kl]      # 成交量(股)
+        closes = [float(r["close"]) for r in kl]
+        chgs = [(closes[i] - closes[i - 1]) / closes[i - 1] * 100 for i in range(1, len(closes))]
         now = datetime.now()
         hm = now.hour * 60 + now.minute
-        open_t, close_t = 9 * 60 + 30, 15 * 60
-        if hm < 10 * 60:
-            # 早盘(10:00前)当日累计量无意义：用昨日完整量比
-            vr = amts[-2] / (sum(amts[-6:-2]) / 4) if amts[-2] else 1
-            chg, tag = chgs[-2], "昨日"
+        open_t = 9 * 60 + 30
+        if days[-1] == now.strftime("%Y-%m-%d") and hm >= 10 * 60:
+            # 盘中(10:00后)今日bar已更新：按时间进度折算全日；15:00后 prog=1 即完整日
+            prog = min(1.0, max(0.05, (min(max(hm - open_t, 0), 120) + min(max(hm - 13 * 60, 0), 120)) / 240))
+            vr = (vols[-1] / prog) / (sum(vols[-6:-1]) / 5) if vols[-1] else 1
+            chg, tag, vol_now = chgs[-1], "今日", vols[-1] / 1e8
         else:
-            prog = min(1.0, max(0.05, (min(max(hm - open_t, 0), 120) + min(max(hm - 13 * 60, 0), 120)) / 240))  # 盘中时间进度折算
-            vr = (amts[-1] / prog) / (sum(amts[-6:-1]) / 5) if amts[-1] else 1
-            chg, tag = chgs[-1], "今日"
-        amt_now = amts[-1] / 1e8
+            # 早盘(10:00前)当日累计量无意义 / 今日bar未刷新：用最近完整交易日
+            vr = vols[-2] / (sum(vols[-6:-2]) / 4) if vols[-2] else 1
+            chg, tag, vol_now = chgs[-2], "昨日", vols[-2] / 1e8
         if chg > 0:
             if vr >= 1.2: s, st = 20, "放量上涨"
             elif vr >= 0.9: s, st = 15, "平量上涨"
@@ -560,7 +560,7 @@ def _volume_score():
             if vr >= 1.2: s, st = 0, "放量下跌(恐慌)"
             elif vr >= 0.9: s, st = 6, "平量下跌"
             else: s, st = 10, "缩量下跌(抛压减轻)"
-        return s, f"{st}：{tag}量比{vr:.2f}({amt_now:.0f}亿/折算日均)得{s}分"
+        return s, f"{st}：{tag}量比{vr:.2f}({vol_now:.0f}亿股/折算日均)得{s}分"
     except Exception:
         return 10, "量能数据缺失(中性10分)"
 
@@ -568,7 +568,7 @@ def _external_score():
     """④ 外部环境分(20)：隔夜纳指11 + 英伟达9（东财f170=涨跌幅×100）。"""
     score, detail = 0, []
     def f170(sec):
-        url = f"https://push2.eastmoney.com/api/qt/stock/get?secid={sec}&fields=f170,f58"
+        url = f"https://push2delay.eastmoney.com/api/qt/stock/get?secid={sec}&fields=f170,f58"
         d = json.loads(em_get(url).decode("utf-8", "ignore"))
         return d["data"]["f170"] / 100.0
     try:
@@ -640,7 +640,7 @@ def fetch_em_extra(codes):
         return
     secids = ",".join(_secid(c) for c in codes)
     try:
-        url = ("https://push2.eastmoney.com/api/qt/ulist.np/get?fltt=2"
+        url = ("https://push2delay.eastmoney.com/api/qt/ulist.np/get?fltt=2"
                f"&secids={secids}&fields=f12,f8,f184")
         d = json.loads(em_get(url, timeout=6).decode("utf-8", "ignore"))
         for it in (d.get("data") or {}).get("diff") or []:
