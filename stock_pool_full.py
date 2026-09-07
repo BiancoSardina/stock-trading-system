@@ -16,7 +16,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEADLINE = time.monotonic() + float(os.environ.get("PIPELINE_TIMEOUT", "900"))
 
 
-def run_step(name, script, env_extra=None):
+def run_step(name, script, env_extra=None, args=None):
     if time.monotonic() >= DEADLINE:
         raise TimeoutError("流程超时，停止后续发布")
     t0 = time.time()
@@ -26,7 +26,7 @@ def run_step(name, script, env_extra=None):
         env.update(env_extra)
     # 透传 stdout/stderr：脚本内部 qq_send.push_or_stdout 负责推 QQ（成功静默/失败 stdout）
     proc = subprocess.run(
-        [sys.executable, os.path.join(SCRIPT_DIR, script)],
+        [sys.executable, os.path.join(SCRIPT_DIR, script)] + (args or []),
         cwd=SCRIPT_DIR,
         env=env,
         timeout=max(1, DEADLINE - time.monotonic()),
@@ -46,4 +46,8 @@ if __name__ == "__main__":
     run_step("生成外部AI裁决数据包", "decision_bundle.py", {
         "PIPELINE_COMPACT": "1", "ANALYSIS_ONLY": "1", "BUNDLE_RUN_ANALYSIS": "1",
     })
+    # 2026-09-07 用户需求：数据包归档到 data_packages/(带时间戳) + git push + QQ 提醒
+    # 任务名按运行时段区分（1230 午盘 / 1420 尾盘共用本脚本）
+    _task = "午盘股票池" if time.localtime().tm_hour < 13 else "尾盘股票池"
+    run_step("数据包归档上传git", "data_package_upload.py", args=["--task", _task])
     print(f"[stock_pool_full] 🎉 数据包生成完成 总耗时{time.time()-t_all:.0f}s", file=sys.stderr, flush=True)
