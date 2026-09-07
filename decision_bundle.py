@@ -13,8 +13,9 @@ import stock_pool_manager as spm
 import watchlist
 
 SCHEMA = "external-ai-decision-bundle/v1"
-# 2026-09-07 用户要求：裁决时效 5分钟 → 24小时（数据包生成后一整天内均可完成外部AI裁决）
-MAX_AGE_SECONDS = 86400
+# 2026-09-07 用户要求：裁决时效 5分钟 → 24小时。股票池是候选质量输入，不承担逐笔下单，
+# 外部AI裁决可在生成后 24 小时内完成（数据包 valid_until 同步 +24h）
+MAX_AGE_SECONDS = 24 * 60 * 60
 
 
 def _now():
@@ -74,12 +75,11 @@ def build_bundle(pool, positions, current_watchlist, analysis, generated_at=None
         "python_analysis": analysis,
         "decision_contract": {
             "max_new_actions": 3,
-            "must_prioritize_positions": True,
             "must_reject_stale_data": True,
             "must_reject_unknown_or_D_market_new_entries": True,
-            "must_check_t_plus_one": True,
             "must_check_net_risk_reward": True,
-            "note": "本数据包不包含AI结论；请上传给外部AI完成最终裁决。",
+            "positions_are_context_only": True,
+            "note": "本数据包不包含AI结论；请上传给外部AI完成股票池质量裁决。持仓不作为裁决门槛。",
         },
     }
 
