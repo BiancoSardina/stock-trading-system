@@ -1,0 +1,990 @@
+{
+  "date": "2026-09-07",
+  "market_status": "C",
+  "market_score": 51,
+  "generated_at": "2026-09-07 14:56:54",
+  "data_ok": true,
+  "source_count": 5557,
+  "scored_count": 986,
+  "core_pool": [
+    {
+      "code": "600415",
+      "name": "小商品城",
+      "stock_score": 82,
+      "level": "core",
+      "total_score": 84.1,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 14,
+        "rs": 14,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 7.57,
+        "distance_ma20": 5.85,
+        "rsi14": 62.7,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 7.57,
+      "price": 13.07,
+      "levels": {
+        "ma5": 12.922,
+        "ma10": 12.631,
+        "ma20": 12.348,
+        "ma60": 11.484,
+        "ma60_slope": 1.28,
+        "atr14": 0.4436,
+        "support": 11.35,
+        "resistance": 13.14,
+        "stop": 12.348
+      },
+      "quote_time": "2026-09-07 14:54:21",
+      "industry": "商业百货",
+      "industry_score": 96,
+      "reason": [
+        "行业强(96分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "002033",
+      "name": "丽江股份",
+      "stock_score": 83,
+      "level": "core",
+      "total_score": 82.5,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 16,
+        "rs": 14,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 5.1,
+        "distance_ma20": 2.77,
+        "rsi14": 62.6,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 5.1,
+      "price": 9.28,
+      "levels": {
+        "ma5": 9.2,
+        "ma10": 9.166,
+        "ma20": 9.03,
+        "ma60": 8.654,
+        "ma60_slope": 0.65,
+        "atr14": 0.2329,
+        "support": 8.67,
+        "resistance": 9.86,
+        "stop": 9.03
+      },
+      "quote_time": "2026-09-07 14:55:57",
+      "industry": "酒店旅游",
+      "industry_score": 80,
+      "reason": [
+        "行业强(80分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "600611",
+      "name": "大众交通",
+      "stock_score": 85,
+      "level": "strong",
+      "total_score": 82.0,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 16,
+        "risk": 3
+      },
+      "position": {
+        "rise20": 10.09,
+        "distance_ma20": 4.8,
+        "rsi14": 58.6,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.09,
+      "price": 5.02,
+      "levels": {
+        "ma5": 4.968,
+        "ma10": 4.797,
+        "ma20": 4.79,
+        "ma60": 4.286,
+        "ma60_slope": 1.29,
+        "atr14": 0.3243,
+        "support": 4.26,
+        "resistance": 5.67,
+        "stop": 4.79
+      },
+      "quote_time": "2026-09-07 14:53:53",
+      "industry": "交通运输",
+      "industry_score": 65,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    }
+  ],
+  "watch_pool": [
+    {
+      "code": "600859",
+      "name": "王府井",
+      "stock_score": 79,
+      "level": "A",
+      "total_score": 81.5,
+      "factor": {
+        "trend": 25,
+        "momentum": 15,
+        "capital": 19,
+        "rs": 12,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 0.29,
+        "distance_ma20": 3.08,
+        "rsi14": 58.8,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 0.29,
+      "price": 10.3,
+      "levels": {
+        "ma5": 10.124,
+        "ma10": 10.055,
+        "ma20": 9.992,
+        "ma60": 9.877,
+        "ma60_slope": -0.2,
+        "atr14": 0.25,
+        "support": 9.61,
+        "resistance": 10.34,
+        "stop": 9.992
+      },
+      "quote_time": "2026-09-07 14:56:31",
+      "industry": "商业百货",
+      "industry_score": 96,
+      "reason": [
+        "行业强(96分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "002299",
+      "name": "圣农发展",
+      "stock_score": 79,
+      "level": "A",
+      "total_score": 81.5,
+      "factor": {
+        "trend": 29,
+        "momentum": 15,
+        "capital": 15,
+        "rs": 12,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 0.82,
+        "distance_ma20": 4.76,
+        "rsi14": 64.9,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 0.82,
+      "price": 17.28,
+      "levels": {
+        "ma5": 16.754,
+        "ma10": 16.69,
+        "ma20": 16.495,
+        "ma60": 16.24,
+        "ma60_slope": 0.36,
+        "atr14": 0.4571,
+        "support": 15.6,
+        "resistance": 17.37,
+        "stop": 16.495
+      },
+      "quote_time": "2026-09-07 14:56:42",
+      "industry": "农林牧渔",
+      "industry_score": 96,
+      "reason": [
+        "行业强(96分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-04",
+      "days_in_pool": 2,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "601988",
+      "name": "中国银行",
+      "stock_score": 84,
+      "level": "S",
+      "total_score": 80.5,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 14,
+        "rs": 16,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 10.48,
+        "distance_ma20": 3.83,
+        "rsi14": 67.5,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.48,
+      "price": 6.43,
+      "levels": {
+        "ma5": 6.578,
+        "ma10": 6.407,
+        "ma20": 6.193,
+        "ma60": 5.987,
+        "ma60_slope": 0.53,
+        "atr14": 0.145,
+        "support": 5.79,
+        "resistance": 6.73,
+        "stop": 6.193
+      },
+      "quote_time": "2026-09-07 14:53:17",
+      "industry": "金融行业",
+      "industry_score": 61,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "600318",
+      "name": "新力金融",
+      "stock_score": 82,
+      "level": "S",
+      "total_score": 80.0,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 16,
+        "rs": 14,
+        "risk": 6
+      },
+      "position": {
+        "rise20": 7.22,
+        "distance_ma20": 5.33,
+        "rsi14": 61.7,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 7.22,
+      "price": 7.13,
+      "levels": {
+        "ma5": 7.234,
+        "ma10": 7.011,
+        "ma20": 6.769,
+        "ma60": 6.442,
+        "ma60_slope": 1.15,
+        "atr14": 0.2971,
+        "support": 6.3,
+        "resistance": 7.72,
+        "stop": 6.769
+      },
+      "quote_time": "2026-09-07 14:55:59",
+      "industry": "水泥行业",
+      "industry_score": 69,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "601116",
+      "name": "三江购物",
+      "stock_score": 83,
+      "level": "S",
+      "total_score": 79.9,
+      "factor": {
+        "trend": 28,
+        "momentum": 15,
+        "capital": 20,
+        "rs": 16,
+        "risk": 4
+      },
+      "position": {
+        "rise20": 10.26,
+        "distance_ma20": 8.03,
+        "rsi14": 50.6,
+        "deduct": 5,
+        "reasons": [
+          "偏离MA20 8.0%>6%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.26,
+      "price": 11.82,
+      "levels": {
+        "ma5": 11.366,
+        "ma10": 11.116,
+        "ma20": 10.941,
+        "ma60": 10.404,
+        "ma60_slope": 0.05,
+        "atr14": 0.5157,
+        "support": 10.24,
+        "resistance": 11.88,
+        "stop": 10.941
+      },
+      "quote_time": "2026-09-07 14:55:06",
+      "industry": "商业百货",
+      "industry_score": 96,
+      "reason": [
+        "行业强(96分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "偏离MA20 8.0%>6%扣5"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "601058",
+      "name": "赛轮轮胎",
+      "stock_score": 81,
+      "level": "S",
+      "total_score": 79.5,
+      "factor": {
+        "trend": 29,
+        "momentum": 15,
+        "capital": 17,
+        "rs": 13,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 3.17,
+        "distance_ma20": 0.3,
+        "rsi14": 55.6,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 3.17,
+      "price": 14.31,
+      "levels": {
+        "ma5": 15.23,
+        "ma10": 14.748,
+        "ma20": 14.267,
+        "ma60": 13.352,
+        "ma60_slope": 1.76,
+        "atr14": 0.4871,
+        "support": 13.22,
+        "resistance": 15.77,
+        "stop": 14.267
+      },
+      "quote_time": "2026-09-07 14:53:31",
+      "industry": "汽车制造",
+      "industry_score": 71,
+      "reason": [
+        "行业强(71分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "600760",
+      "name": "中航沈飞",
+      "stock_score": 81,
+      "level": "S",
+      "total_score": 79.5,
+      "factor": {
+        "trend": 30,
+        "momentum": 15,
+        "capital": 14,
+        "rs": 13,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 4.48,
+        "distance_ma20": 3.68,
+        "rsi14": 69.9,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 4.48,
+      "price": 47.12,
+      "levels": {
+        "ma5": 47.826,
+        "ma10": 46.689,
+        "ma20": 45.446,
+        "ma60": 42.946,
+        "ma60_slope": 1.18,
+        "atr14": 1.2543,
+        "support": 42.85,
+        "resistance": 49.52,
+        "stop": 45.446
+      },
+      "quote_time": "2026-09-07 14:54:07",
+      "industry": "汽车制造",
+      "industry_score": 71,
+      "reason": [
+        "行业强(71分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "000876",
+      "name": "新 希 望",
+      "stock_score": 88,
+      "level": "S",
+      "total_score": 79.2,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 14,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 9.65,
+        "distance_ma20": 10.53,
+        "rsi14": 65.7,
+        "deduct": 10,
+        "reasons": [
+          "偏离MA20 10.5%>10%扣10"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 9.65,
+      "price": 7.84,
+      "levels": {
+        "ma5": 7.362,
+        "ma10": 7.219,
+        "ma20": 7.093,
+        "ma60": 6.9,
+        "ma60_slope": 0.67,
+        "atr14": 0.2136,
+        "support": 6.77,
+        "resistance": 7.89,
+        "stop": 7.4128
+      },
+      "quote_time": "2026-09-07 14:53:42",
+      "industry": "农林牧渔",
+      "industry_score": 96,
+      "reason": [
+        "行业强(96分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "偏离MA20 10.5%>10%扣10"
+      ],
+      "first_seen": "2026-09-04",
+      "days_in_pool": 2,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "600059",
+      "name": "古越龙山",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 79.2,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 17,
+        "rs": 16,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 11.64,
+        "distance_ma20": 7.86,
+        "rsi14": 64.0,
+        "deduct": 5,
+        "reasons": [
+          "偏离MA20 7.9%>6%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 11.64,
+      "price": 8.92,
+      "levels": {
+        "ma5": 8.64,
+        "ma10": 8.47,
+        "ma20": 8.27,
+        "ma60": 7.95,
+        "ma60_slope": 0.79,
+        "atr14": 0.3336,
+        "support": 7.77,
+        "resistance": 9.46,
+        "stop": 8.27
+      },
+      "quote_time": "2026-09-07 14:54:41",
+      "industry": "酿酒行业",
+      "industry_score": 80,
+      "reason": [
+        "行业强(80分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "偏离MA20 7.9%>6%扣5"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "601398",
+      "name": "工商银行",
+      "stock_score": 82,
+      "level": "S",
+      "total_score": 78.9,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 14,
+        "rs": 14,
+        "risk": 10
+      },
+      "position": {
+        "rise20": 6.11,
+        "distance_ma20": 1.84,
+        "rsi14": 64.5,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 6.11,
+      "price": 7.99,
+      "levels": {
+        "ma5": 8.118,
+        "ma10": 8.016,
+        "ma20": 7.846,
+        "ma60": 7.596,
+        "ma60_slope": 0.54,
+        "atr14": 0.1579,
+        "support": 7.46,
+        "resistance": 8.29,
+        "stop": 7.846
+      },
+      "quote_time": "2026-09-07 14:53:08",
+      "industry": "金融行业",
+      "industry_score": 61,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "601939",
+      "name": "建设银行",
+      "stock_score": 82,
+      "level": "S",
+      "total_score": 78.9,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 15,
+        "rs": 14,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 5.63,
+        "distance_ma20": 0.72,
+        "rsi14": 58.9,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 5.63,
+      "price": 10.7,
+      "levels": {
+        "ma5": 10.972,
+        "ma10": 10.843,
+        "ma20": 10.624,
+        "ma60": 10.269,
+        "ma60_slope": 0.39,
+        "atr14": 0.2207,
+        "support": 10.1,
+        "resistance": 11.23,
+        "stop": 10.624
+      },
+      "quote_time": "2026-09-07 14:53:27",
+      "industry": "金融行业",
+      "industry_score": 61,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "600795",
+      "name": "国电电力",
+      "stock_score": 80,
+      "level": "S",
+      "total_score": 78.7,
+      "factor": {
+        "trend": 28,
+        "momentum": 15,
+        "capital": 14,
+        "rs": 14,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 4.98,
+        "distance_ma20": 1.88,
+        "rsi14": 66.2,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 4.98,
+      "price": 5.27,
+      "levels": {
+        "ma5": 5.334,
+        "ma10": 5.264,
+        "ma20": 5.173,
+        "ma60": 4.951,
+        "ma60_slope": 0.6,
+        "atr14": 0.1121,
+        "support": 4.89,
+        "resistance": 5.48,
+        "stop": 5.173
+      },
+      "quote_time": "2026-09-07 14:54:32",
+      "industry": "电力行业",
+      "industry_score": 71,
+      "reason": [
+        "行业强(71分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "002258",
+      "name": "利尔化学",
+      "stock_score": 83,
+      "level": "S",
+      "total_score": 78.0,
+      "factor": {
+        "trend": 30,
+        "momentum": 14,
+        "capital": 19,
+        "rs": 13,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 3.18,
+        "distance_ma20": 3.43,
+        "rsi14": 49.5,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 3.18,
+      "price": 14.94,
+      "levels": {
+        "ma5": 14.708,
+        "ma10": 14.505,
+        "ma20": 14.444,
+        "ma60": 14.029,
+        "ma60_slope": 1.05,
+        "atr14": 0.4671,
+        "support": 13.45,
+        "resistance": 15.15,
+        "stop": 14.444
+      },
+      "quote_time": "2026-09-07 14:55:06",
+      "industry": "农药化肥",
+      "industry_score": 50,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "000930",
+      "name": "中粮科技",
+      "stock_score": 87,
+      "level": "S",
+      "total_score": 78.0,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 19,
+        "rs": 16,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 10.65,
+        "distance_ma20": 7.44,
+        "rsi14": 55.1,
+        "deduct": 5,
+        "reasons": [
+          "偏离MA20 7.4%>6%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.65,
+      "price": 5.3,
+      "levels": {
+        "ma5": 5.116,
+        "ma10": 5.06,
+        "ma20": 4.933,
+        "ma60": 4.708,
+        "ma60_slope": 0.42,
+        "atr14": 0.2064,
+        "support": 4.61,
+        "resistance": 5.39,
+        "stop": 4.933
+      },
+      "quote_time": "2026-09-07 14:56:24",
+      "industry": "食品行业",
+      "industry_score": 60,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "偏离MA20 7.4%>6%扣5"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "603009",
+      "name": "北特科技",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 77.9,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 17,
+        "risk": 4
+      },
+      "position": {
+        "rise20": 22.1,
+        "distance_ma20": 5.65,
+        "rsi14": 51.9,
+        "deduct": 5,
+        "reasons": [
+          "20日涨幅22.1%>15%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 22.1,
+      "price": 48.84,
+      "levels": {
+        "ma5": 46.57,
+        "ma10": 46.29,
+        "ma20": 46.23,
+        "ma60": 44.45,
+        "ma60_slope": 0.15,
+        "atr14": 2.4936,
+        "support": 39.55,
+        "resistance": 50.0,
+        "stop": 46.23
+      },
+      "quote_time": "2026-09-07 14:54:19",
+      "industry": "汽车制造",
+      "industry_score": 71,
+      "reason": [
+        "行业强(71分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "20日涨幅22.1%>15%扣5"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    },
+    {
+      "code": "603369",
+      "name": "今世缘",
+      "stock_score": 77,
+      "level": "A",
+      "total_score": 77.5,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 11,
+        "rs": 14,
+        "risk": 6
+      },
+      "position": {
+        "rise20": 8.52,
+        "distance_ma20": 5.52,
+        "rsi14": 55.8,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.52,
+      "price": 30.81,
+      "levels": {
+        "ma5": 30.254,
+        "ma10": 29.248,
+        "ma20": 29.197,
+        "ma60": 26.865,
+        "ma60_slope": 1.72,
+        "atr14": 0.9557,
+        "support": 27.49,
+        "resistance": 31.51,
+        "stop": 29.197
+      },
+      "quote_time": "2026-09-07 14:55:40",
+      "industry": "酿酒行业",
+      "industry_score": 80,
+      "reason": [
+        "行业强(80分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-07"
+    }
+  ]
+}
