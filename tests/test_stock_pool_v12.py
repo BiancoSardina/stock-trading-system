@@ -31,18 +31,18 @@ def mk(code, name, total, stock, ind_score, above_ma20=True, ma20_gt_ma60=True, 
         e["_watch_only"] = True
     return e
 
-print("== 1. 行业配额：core 单行业最多2只 ==")
-# 6只同行业高分票 → core 只进2只
+print("== 1. 行业唯一：同行业只取最强1只（V1.4 2026-09-07 用户改版，原core≤2/watch≤3） ==")
+# 6只同行业高分票 → 只进1只（total最高的600000）
 scored = [mk(f"60000{i}", f"股{i}", 90 - i, 85 - i, 80) for i in range(6)]
 core, watch, stats = sp.generate_pool(scored, "C", None, "2026-08-07")
-check("core 单行业=2", len(core) == 2, f"len={len(core)}")
-check("取总分最高的2只", [e["code"] for e in core] == ["600000", "600001"], str([e["code"] for e in core]))
+check("同行业只取1只", len(core) == 1 and len(watch) == 0, f"core={len(core)} watch={len(watch)}")
+check("取总分最高的1只", [e["code"] for e in core] == ["600000"], str([e["code"] for e in core]))
 
 print("== 2. 个股底线：core 需 stock_score≥70，watch 需 ≥60 ==")
 scored = [
-    mk("600100", "弱股", 88, 55, 80),     # 个股55 → 不够watch(60)
-    mk("600101", "中等", 88, 65, 80),     # 个股65 → 可watch(≥60) 不可core(<70)
-    mk("600102", "强股", 88, 75, 80),     # 个股75 → core
+    mk("600100", "弱股", 88, 55, 80, industry="行业A"),     # 个股55 → 不够watch(60)
+    mk("600101", "中等", 88, 65, 80, industry="行业B"),     # 个股65 → 可watch(≥60) 不可core(<70)
+    mk("600102", "强股", 88, 75, 80, industry="行业C"),     # 个股75 → core
 ]
 core, watch, stats = sp.generate_pool(scored, "C", None, "2026-08-07")
 check("个股55→不进池", "600100" not in [e["code"] for e in core + watch], str([e["code"] for e in core + watch]))
@@ -51,9 +51,9 @@ check("个股75→core", [e["code"] for e in core] == ["600102"], str([e["code"]
 
 print("== 3. 趋势硬条件：core 需 价>MA20 且 MA20>MA60；watch 需 价>MA20 ==")
 scored = [
-    mk("600200", "趋势破", 88, 80, 80, above_ma20=True, ma20_gt_ma60=False),  # 不满足core
-    mk("600201", "破MA20", 88, 80, 80, above_ma20=False, ma20_gt_ma60=True),  # 不满足core/watch
-    mk("600202", "全满足", 88, 80, 80, above_ma20=True, ma20_gt_ma60=True),
+    mk("600200", "趋势破", 88, 80, 80, above_ma20=True, ma20_gt_ma60=False, industry="行业A"),  # 不满足core
+    mk("600201", "破MA20", 88, 80, 80, above_ma20=False, ma20_gt_ma60=True, industry="行业B"),  # 不满足core/watch
+    mk("600202", "全满足", 88, 80, 80, above_ma20=True, ma20_gt_ma60=True, industry="行业C"),
 ]
 core, watch, stats = sp.generate_pool(scored, "C", None, "2026-08-07")
 check("MA20>MA60不成立→watch", "600200" in [e["code"] for e in watch] and "600200" not in [e["code"] for e in core],
@@ -63,8 +63,8 @@ check("全满足→core", "600202" in [e["code"] for e in core], str([e["code"] 
 
 print("== 4. 行业准入：_watch_only 不能进 core ==")
 scored = [
-    mk("600300", "行业中等但强", 88, 80, 50, watch_only=True),  # 行业50 → 只能watch
-    mk("600301", "行业强", 88, 80, 60),
+    mk("600300", "行业中等但强", 88, 80, 50, watch_only=True, industry="行业A"),  # 行业50 → 只能watch
+    mk("600301", "行业强", 88, 80, 60, industry="行业B"),
 ]
 core, watch, stats = sp.generate_pool(scored, "C", None, "2026-08-07")
 check("行业50→watch不core", "600300" in [e["code"] for e in watch] and "600300" not in [e["code"] for e in core],
@@ -117,8 +117,8 @@ check("非强者→level=core", len(core) == 1 and core[0].get("level") == "core
       str([(e["code"], e.get("level")) for e in core]))
 # 9c: 强者综合79<82 可入（78门槛）；普通综合81<82 不可入（V1.3.3：C级门槛 85→82，用81验证"82以下不可入"）
 scored = [
-    mk("600902", "强79", 79, 90, 70, rs=16, capital=19),
-    mk("600903", "普81", 81, 75, 70, rs=12, capital=15),
+    mk("600902", "强79", 79, 90, 70, rs=16, capital=19, industry="行业A"),
+    mk("600903", "普81", 81, 75, 70, rs=12, capital=15, industry="行业B"),
 ]
 core, watch, stats = sp.generate_pool(scored, "C", None, "2026-08-07")
 codes = [e["code"] for e in core]
@@ -129,11 +129,11 @@ scored = [mk(f"60091{i}", f"强{i}", 80, 90, 70, rs=16, capital=19, industry=f"�
 core, watch, stats = sp.generate_pool(scored, "C", None, "2026-08-07")
 strongs = [e for e in core if e.get("level") == "strong"]
 check("强者≤3只(跨行业)", len(strongs) == 3, str([(e["code"], e.get("level")) for e in core]))
-# 9d2: 同行业强者只进2只（防垄断：strong与普通core共用单行业≤2配额）
-scored = [mk(f"60095{i}", f"同{i}", 80, 90, 70, rs=16, capital=19) for i in range(4)]
+# 9d2: 同行业强者只进1只（V1.4 全池行业唯一；4只同行业强者只留total最高1只）
+scored = [mk(f"60095{i}", f"同{i}", 80 - i * 0.1, 90, 70, rs=16, capital=19) for i in range(4)]
 core, watch, stats = sp.generate_pool(scored, "C", None, "2026-08-07")
 strongs = [e for e in core if e.get("level") == "strong"]
-check("同行业强者≤2只", len(strongs) == 2, str([(e["code"], e.get("level")) for e in core]))
+check("同行业强者只取1只", len(strongs) == 1 and len(core) == 1, str([(e["code"], e.get("level")) for e in core]))
 # 9e: D市不开通道（禁买；D市强者票综合79<90 不进）
 scored = [mk("600920", "D市强者", 79, 90, 70, rs=16, capital=19)]
 core, watch, stats = sp.generate_pool(scored, "D", None, "2026-08-07")

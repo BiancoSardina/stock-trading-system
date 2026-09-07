@@ -88,7 +88,7 @@ def entry_threshold(market_status, days_in_pool):
 
 def pool_capacity(market_status):
     """
-    池子规模（V1.1 修改一，用户定稿 2026-08-07）：
-      A: core12/watch20  B: core10/watch18  C: core8/watch16  D: core0/watch8
+    池子规模（2026-09-07 用户改版：core 精简、watch 统一）：
+      A: core5/watch8  B: core5/watch8  C: core5/watch8  D: core0/watch8
     """
-    return {"A": (12, 20), "B": (10, 18), "C": (8, 16), "D": (0, 8)}.get(market_status, (10, 18))
+    return {"A": (5, 8), "B": (5, 8), "C": (5, 8), "D": (0, 8)}.get(market_status, (5, 8))

@@ -29,6 +29,10 @@ V1.3.1 CORE_STRONG 强者通道（2026-08-10 用户方案：B/C弱市空池兜�
   · 容量≤3（占 core 总量8内，单行业配额同普通core），level="strong" 标记供外部AI裁决使用。
   · 降级=条件不满足自动回落普通池判断（RS 回到15/行业65才能再入，天然缓冲）
 
+V1.4（2026-09-07 用户改版）：core 容量 A/B/C 全部 12/10/8 → 5（D 仍 0）；
+  watch 容量 A/B/C/D 全部 → 8；行业配额 core≤2/watch≤3 → 全池同行业只取最强 1 只
+  （core/watch 共享 ind_used 计数，按 total 降序先到先得；同分时个股分高者优先）。
+
 用法：
   python3 stock_pool.py            # 完整生成（全量评分 ~10分钟）
   python3 stock_pool.py --limit 100  # 快速测试（只评分前N只）
@@ -57,8 +61,8 @@ SCORE_W_INDUSTRY = 0.15     # 综合评分：行业权重（V1.1 0.3 → 行业�
 IND_ELIMINATE = 40          # 行业准入：<40 排除（行业拖后腿，短线不做）
 IND_CORE_MIN = 55           # 行业准入：<55 只能进 watch（不能进 core）
 IND_WATCH_STRONG = 75       # 行业40-55 的票进 watch 需个股五因子≥75（弱行业里必须强者）
-CORE_MAX_PER_IND = 2        # 行业配额：core 单行业最多2只（防垄断）
-WATCH_MAX_PER_IND = 3       # 行业配额：watch 单行业最多3只
+CORE_MAX_PER_IND = 1        # 行业配额：全池同行业只取最强1只（2026-09-07 用户改版，原2；core/watch共享计数）
+WATCH_MAX_PER_IND = 1       # 行业配额：同上（原3；两常量必须同为1，共享计数才能实现全池行业唯一）
 CORE_STOCK_MIN = 70         # 个股底线：core 需个股五因子≥70（A级）
 WATCH_STOCK_MIN = 60        # 个股底线：watch 需个股五因子≥60（B级）
 WATCH_TOTAL_MIN = 65        # watch 综合分底线（设计文档v1：watch 65≤总分<core门槛；2026-08-12修复空池bug）
@@ -77,7 +81,7 @@ STRONG_IND_MIN = 65         # 行业≥65（普通core≥55；弱市需行业资
 STRONG_RS_MIN = 15          # RS≥15（V1.3收紧档满分17：跑赢上证>10%+跑赢300>5%+20日微涨）
 STRONG_CAPITAL_MIN = 18     # 资金≥18（全量评分口径=量能8+换手4~6+流动性4~6，主力资金缺失）
 STRONG_TOTAL_MIN = 78       # 综合分（扣分后）≥78（普通C市85；前置强条件全过才享78）
-STRONG_MAX = 3              # 容量≤3（弱市不抱太多；占core总量8之内，仍受单行业≤2配额）
+STRONG_MAX = 3              # 容量≤3（弱市不抱太多；占core容量5之内，受全池行业唯一约束）
 
 # ===== 位置风险修正（V1.1 修改二，total 层扣分，不进五因子）=====
 # V1.3 收紧（2026-08-10 用户诊断：池里全是涨多的票）：起扣线 30%→15%、20%→6%，与硬排除线(30/12)衔接
@@ -259,13 +263,13 @@ def build_reasons(entry, ind_name, ind_score):
 
 def generate_pool(scored, market_status, old_pool, today):
     """
-    池生成（V1.2 重写）：
-      · 规模（上限不填满）：A12/20 B10/18 C8/16 D0/8 —— 容量是最高限制，宁缺毋滥
-      · 门槛：A75/B80/C85/D90（宽容期 days≤3 → -3）
+    池生成（V1.2 重写；V1.4 2026-09-07 用户改版）：
+      · 规模（上限不填满）：A5/8 B5/8 C5/8 D0/8 —— 容量是最高限制，宁缺毋滥
+      · 门槛：A75/B80/C82/D90（宽容期 days≤3 → -3）
+      · 行业唯一：全池同行业只取1只（按 total 降序先到先得=最强；core/watch 共享，2026-09-07 用户改版）
       · 个股底线：core 需 stock_score≥70(A级)；watch 需 ≥60(B级)
       · 趋势硬条件：core 需 价>MA20 且 MA20>MA60；watch 需 价>MA20
       · 行业准入：<40 已被 main 排除；40-55(_watch_only) 只能进 watch；≥55 可进 core
-      · 行业配额：core 单行业≤2 / watch 单行业≤3（防单一行业垄断）
       · 淘汰：total<70 / 行业<40 / 破MA60（旧池股票）
       · 升级/降级由排序自然实现（总分降序前N进core）
     返回 (core_pool, watch_pool, stats)
@@ -300,11 +304,11 @@ def generate_pool(scored, market_status, old_pool, today):
         e["_old"] = is_old
         entries.append(e)
 
-    # 按总分降序
-    entries.sort(key=lambda x: -x["total_score"])
+    # 按总分降序（同分时个股分高者优先——同行业竞争时保证"最强"先占名额）
+    entries.sort(key=lambda x: (-x["total_score"], -x["stock_score"]))
 
     core_pool, watch_pool = [], []
-    core_ind_count, watch_ind_count = {}, {}
+    ind_used = {}  # 2026-09-07 用户改版：全池行业唯一——core/watch 共享计数，同行业只取遍历先到的（=最强）1只
     n_strong = 0  # CORE_STRONG 强者通道计数（C市≤3）
     # core 严格门槛（对齐降级线：core 跌破即降 watch，故入 core 必须≥严格门槛；宽容票只能进 watch）
     # V1.3.3（2026-08-12 用户调整）：C级 85→82（C弱市普通票门槛过高易空池，微调3分；强者通道78仍兜底）
@@ -326,6 +330,8 @@ def generate_pool(scored, market_status, old_pool, today):
         # strong 分支 total>=STRONG_TOTAL_MIN 见下）。
         if e["total_score"] < WATCH_TOTAL_MIN:
             continue  # 低于 watch 底线(65)，出局
+        if ind_name in ind_used:
+            continue  # 全池行业唯一：该行业已有更强票入池，同行业其余全部出局
         # V1.2 从严：core 需 行业≥55 + 个股A级 + 趋势成立(价>MA20且MA20>MA60)
         can_core = (not e.get("_watch_only")
                     and e["stock_score"] >= CORE_STOCK_MIN
@@ -335,23 +341,20 @@ def generate_pool(scored, market_status, old_pool, today):
         can_watch = (e["stock_score"] >= WATCH_STOCK_MIN
                      and bool(e["trend"]["above_ma20"]))
         if strong_pre and e["total_score"] >= STRONG_TOTAL_MIN \
-           and len(core_pool) < cap_core and n_strong < STRONG_MAX \
-           and core_ind_count.get(ind_name, 0) < CORE_MAX_PER_IND:
-            # 强者通道优先（总量仍受 cap_core 约束，单行业配额同普通core）
+           and len(core_pool) < cap_core and n_strong < STRONG_MAX:
+            # 强者通道优先（总量仍受 cap_core 约束；行业唯一已由 ind_used 保证）
             e["level"] = "strong"
             core_pool.append(e)
             n_strong += 1
-            core_ind_count[ind_name] = core_ind_count.get(ind_name, 0) + 1
-        elif can_core and len(core_pool) < cap_core and e["total_score"] >= core_min \
-             and core_ind_count.get(ind_name, 0) < CORE_MAX_PER_IND:
+            ind_used[ind_name] = 1
+        elif can_core and len(core_pool) < cap_core and e["total_score"] >= core_min:
             e["level"] = "core"
             core_pool.append(e)
-            core_ind_count[ind_name] = core_ind_count.get(ind_name, 0) + 1
-        elif can_watch and len(watch_pool) < cap_watch \
-             and watch_ind_count.get(ind_name, 0) < WATCH_MAX_PER_IND:
+            ind_used[ind_name] = 1
+        elif can_watch and len(watch_pool) < cap_watch:
             watch_pool.append(e)
-            watch_ind_count[ind_name] = watch_ind_count.get(ind_name, 0) + 1
-        # 配额满/条件不满足 → 继续看下一只（不 break：配额按行业，其他行业仍可进）
+            ind_used[ind_name] = 1
+        # 容量满/条件不满足 → 继续看下一只（不 break：其他行业仍可进）
 
     # 清理内部字段（不落盘）
     for grp in (core_pool, watch_pool):
@@ -542,7 +545,7 @@ def main():
             f"{i}{ind_core.get(i, 0) + ind_watch.get(i, 0)}"
             for i in sorted(all_ind, key=lambda x: -(ind_core.get(x, 0) + ind_watch.get(x, 0)))
         )
-        print(f"🧩 行业分布: {dist}（覆盖{len(all_ind)}个行业；core单行业≤{CORE_MAX_PER_IND}）")
+        print(f"🧩 行业分布: {dist}（覆盖{len(all_ind)}个行业；全池同行业≤1只）")
     if stats["evicted"]:
         print(f"🗑 淘汰 {len(stats['evicted'])}只: " + "; ".join(stats["evicted"][:5]))
     print(f"──────────────────────────────")
