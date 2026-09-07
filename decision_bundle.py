@@ -13,7 +13,8 @@ import stock_pool_manager as spm
 import watchlist
 
 SCHEMA = "external-ai-decision-bundle/v1"
-MAX_AGE_SECONDS = 300
+# 2026-09-07 用户要求：裁决时效 5分钟 → 24小时（数据包生成后一整天内均可完成外部AI裁决）
+MAX_AGE_SECONDS = 86400
 
 
 def _now():
