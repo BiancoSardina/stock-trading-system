@@ -46,4 +46,4 @@ git add -A && git commit -m "快照 $(date +%Y%m%d_%H%M)"
 
 - `stock_pool_full.py` 和 `stock_pool_evening.py` 只运行行情获取、确定性分析和数据包生成；不会调用本地大模型、写入 AI 监测名单或发送交易结论。
 - 运行 `python decision_bundle.py --run-analysis` 会生成 `decision_bundle_latest.json`。将该文件上传到对话，由外部 AI 完成裁决。
-- 数据包包含市场状态、股票池、真实持仓、已有观察名单和原始 Python 分析；生成后仅 5 分钟有效，过期必须重新采集。
+- 数据包包含市场状态、股票池、持仓上下文、已有观察名单和原始 Python 分析；生成后 24 小时有效。股票池质量裁决不以持仓状态作为门槛。

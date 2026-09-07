@@ -13,7 +13,8 @@ import stock_pool_manager as spm
 import watchlist
 
 SCHEMA = "external-ai-decision-bundle/v1"
-MAX_AGE_SECONDS = 300
+# 股票池是收盘/盘中候选质量输入，不承担逐笔实时下单。外部AI裁决可在生成后24小时内完成。
+MAX_AGE_SECONDS = 24 * 60 * 60
 
 
 def _now():
@@ -73,12 +74,11 @@ def build_bundle(pool, positions, current_watchlist, analysis, generated_at=None
         "python_analysis": analysis,
         "decision_contract": {
             "max_new_actions": 3,
-            "must_prioritize_positions": True,
             "must_reject_stale_data": True,
             "must_reject_unknown_or_D_market_new_entries": True,
-            "must_check_t_plus_one": True,
             "must_check_net_risk_reward": True,
-            "note": "本数据包不包含AI结论；请上传给外部AI完成最终裁决。",
+            "positions_are_context_only": True,
+            "note": "本数据包不包含AI结论；请上传给外部AI完成股票池质量裁决。持仓不作为裁决门槛。",
         },
     }
 
