@@ -1,0 +1,676 @@
+{
+  "date": "2026-09-08",
+  "market_status": "C",
+  "market_score": 61,
+  "generated_at": "2026-09-08 18:05:47",
+  "data_ok": true,
+  "source_count": 5557,
+  "scored_count": 1049,
+  "core_pool": [
+    {
+      "code": "600257",
+      "name": "大湖股份",
+      "stock_score": 86,
+      "level": "core",
+      "total_score": 86.8,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 16,
+        "rs": 16,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 11.65,
+        "distance_ma20": 5.59,
+        "rsi14": 68.2,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 11.65,
+      "price": 6.04,
+      "levels": {
+        "ma5": 5.912,
+        "ma10": 5.85,
+        "ma20": 5.72,
+        "ma60": 5.106,
+        "ma60_slope": 1.4,
+        "atr14": 0.185,
+        "support": 5.38,
+        "resistance": 6.14,
+        "stop": 5.72
+      },
+      "quote_time": "2026-09-08 15:34:59",
+      "industry": "农林牧渔",
+      "industry_score": 91,
+      "reason": [
+        "行业强(91分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "601058",
+      "name": "赛轮轮胎",
+      "stock_score": 86,
+      "level": "core",
+      "total_score": 86.0,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 14,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 7.68,
+        "distance_ma20": 1.88,
+        "rsi14": 57.1,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 7.68,
+      "price": 14.59,
+      "levels": {
+        "ma5": 15.056,
+        "ma10": 14.83,
+        "ma20": 14.321,
+        "ma60": 13.38,
+        "ma60_slope": 1.58,
+        "atr14": 0.4979,
+        "support": 13.22,
+        "resistance": 15.77,
+        "stop": 14.321
+      },
+      "quote_time": "2026-09-08 15:34:59",
+      "industry": "汽车制造",
+      "industry_score": 86,
+      "reason": [
+        "行业强(86分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "600096",
+      "name": "云天化",
+      "stock_score": 86,
+      "level": "core",
+      "total_score": 85.8,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 14,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 6.97,
+        "distance_ma20": 5.01,
+        "rsi14": 67.0,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 6.97,
+      "price": 31.91,
+      "levels": {
+        "ma5": 30.976,
+        "ma10": 31.104,
+        "ma20": 30.389,
+        "ma60": 30.038,
+        "ma60_slope": 0.37,
+        "atr14": 1.0379,
+        "support": 28.74,
+        "resistance": 32.26,
+        "stop": 30.389
+      },
+      "quote_time": "2026-09-08 15:34:59",
+      "industry": "农药化肥",
+      "industry_score": 85,
+      "reason": [
+        "行业强(85分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "600028",
+      "name": "中国石化",
+      "stock_score": 87,
+      "level": "core",
+      "total_score": 85.2,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 18,
+        "rs": 14,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 9.39,
+        "distance_ma20": 5.89,
+        "rsi14": 69.7,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 9.39,
+      "price": 5.59,
+      "levels": {
+        "ma5": 5.464,
+        "ma10": 5.438,
+        "ma20": 5.279,
+        "ma60": 5.049,
+        "ma60_slope": 1.01,
+        "atr14": 0.1414,
+        "support": 4.94,
+        "resistance": 5.62,
+        "stop": 5.3072
+      },
+      "quote_time": "2026-09-08 15:34:59",
+      "industry": "石油行业",
+      "industry_score": 75,
+      "reason": [
+        "行业强(75分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "600475",
+      "name": "华光环能",
+      "stock_score": 86,
+      "level": "core",
+      "total_score": 85.1,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 19,
+        "rs": 14,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 8.2,
+        "distance_ma20": 4.45,
+        "rsi14": 64.6,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.2,
+      "price": 15.71,
+      "levels": {
+        "ma5": 15.256,
+        "ma10": 15.224,
+        "ma20": 15.041,
+        "ma60": 14.506,
+        "ma60_slope": 0.42,
+        "atr14": 0.5729,
+        "support": 13.97,
+        "resistance": 16.14,
+        "stop": 15.041
+      },
+      "quote_time": "2026-09-08 15:34:59",
+      "industry": "机械行业",
+      "industry_score": 80,
+      "reason": [
+        "行业强(80分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    }
+  ],
+  "watch_pool": [
+    {
+      "code": "002241",
+      "name": "歌尔股份",
+      "stock_score": 83,
+      "level": "S",
+      "total_score": 83.3,
+      "factor": {
+        "trend": 27,
+        "momentum": 15,
+        "capital": 20,
+        "rs": 13,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 4.32,
+        "distance_ma20": 2.27,
+        "rsi14": 65.8,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 4.32,
+      "price": 23.68,
+      "levels": {
+        "ma5": 23.722,
+        "ma10": 23.801,
+        "ma20": 23.155,
+        "ma60": 22.862,
+        "ma60_slope": 0.2,
+        "atr14": 0.8586,
+        "support": 21.68,
+        "resistance": 24.8,
+        "stop": 23.155
+      },
+      "quote_time": "2026-09-08 15:35:00",
+      "industry": "电子器件",
+      "industry_score": 85,
+      "reason": [
+        "行业强(85分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "600059",
+      "name": "古越龙山",
+      "stock_score": 83,
+      "level": "S",
+      "total_score": 82.5,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 15,
+        "rs": 16,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 10.97,
+        "distance_ma20": 5.85,
+        "rsi14": 64.8,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.97,
+      "price": 8.8,
+      "levels": {
+        "ma5": 8.72,
+        "ma10": 8.536,
+        "ma20": 8.314,
+        "ma60": 7.961,
+        "ma60_slope": 0.83,
+        "atr14": 0.325,
+        "support": 7.77,
+        "resistance": 9.46,
+        "stop": 8.314
+      },
+      "quote_time": "2026-09-08 15:34:59",
+      "industry": "酿酒行业",
+      "industry_score": 80,
+      "reason": [
+        "行业强(80分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "600704",
+      "name": "物产中大",
+      "stock_score": 83,
+      "level": "S",
+      "total_score": 82.4,
+      "factor": {
+        "trend": 28,
+        "momentum": 15,
+        "capital": 18,
+        "rs": 12,
+        "risk": 10
+      },
+      "position": {
+        "rise20": 2.45,
+        "distance_ma20": 1.89,
+        "rsi14": 65.5,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 2.45,
+      "price": 5.01,
+      "levels": {
+        "ma5": 4.948,
+        "ma10": 4.963,
+        "ma20": 4.917,
+        "ma60": 4.905,
+        "ma60_slope": 0.35,
+        "atr14": 0.0757,
+        "support": 4.82,
+        "resistance": 5.02,
+        "stop": 4.917
+      },
+      "quote_time": "2026-09-08 15:34:59",
+      "industry": "物资外贸",
+      "industry_score": 79,
+      "reason": [
+        "行业强(79分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "600415",
+      "name": "小商品城",
+      "stock_score": 79,
+      "level": "A",
+      "total_score": 80.8,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 11,
+        "rs": 14,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 6.33,
+        "distance_ma20": 3.02,
+        "rsi14": 62.3,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 6.33,
+      "price": 12.76,
+      "levels": {
+        "ma5": 12.88,
+        "ma10": 12.689,
+        "ma20": 12.386,
+        "ma60": 11.507,
+        "ma60_slope": 1.22,
+        "atr14": 0.4371,
+        "support": 11.35,
+        "resistance": 13.14,
+        "stop": 12.386
+      },
+      "quote_time": "2026-09-08 15:34:59",
+      "industry": "商业百货",
+      "industry_score": 91,
+      "reason": [
+        "行业强(91分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-07",
+      "days_in_pool": 2,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "000301",
+      "name": "东方盛虹",
+      "stock_score": 80,
+      "level": "S",
+      "total_score": 79.8,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 14,
+        "rs": 14,
+        "risk": 6
+      },
+      "position": {
+        "rise20": 9.31,
+        "distance_ma20": 4.48,
+        "rsi14": 58.1,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 9.31,
+      "price": 14.2,
+      "levels": {
+        "ma5": 14.26,
+        "ma10": 14.121,
+        "ma20": 13.591,
+        "ma60": 12.601,
+        "ma60_slope": 1.56,
+        "atr14": 0.6921,
+        "support": 12.32,
+        "resistance": 15.08,
+        "stop": 13.591
+      },
+      "quote_time": "2026-09-08 15:35:15",
+      "industry": "综合行业",
+      "industry_score": 79,
+      "reason": [
+        "行业强(79分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "000567",
+      "name": "海德股份",
+      "stock_score": 79,
+      "level": "A",
+      "total_score": 79.3,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 12,
+        "rs": 14,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 8.24,
+        "distance_ma20": 4.83,
+        "rsi14": 67.6,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.24,
+      "price": 6.7,
+      "levels": {
+        "ma5": 6.756,
+        "ma10": 6.731,
+        "ma20": 6.391,
+        "ma60": 6.086,
+        "ma60_slope": 1.52,
+        "atr14": 0.2629,
+        "support": 5.83,
+        "resistance": 7.18,
+        "stop": 6.391
+      },
+      "quote_time": "2026-09-08 15:35:15",
+      "industry": "房地产",
+      "industry_score": 81,
+      "reason": [
+        "行业强(81分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "002582",
+      "name": "好想你",
+      "stock_score": 78,
+      "level": "A",
+      "total_score": 78.3,
+      "factor": {
+        "trend": 28,
+        "momentum": 11,
+        "capital": 20,
+        "rs": 14,
+        "risk": 5
+      },
+      "position": {
+        "rise20": 8.09,
+        "distance_ma20": 2.89,
+        "rsi14": 56.3,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.09,
+      "price": 10.96,
+      "levels": {
+        "ma5": 10.45,
+        "ma10": 10.473,
+        "ma20": 10.652,
+        "ma60": 9.752,
+        "ma60_slope": 0.89,
+        "atr14": 0.4279,
+        "support": 9.88,
+        "resistance": 11.99,
+        "stop": 10.652
+      },
+      "quote_time": "2026-09-08 15:35:00",
+      "industry": "食品行业",
+      "industry_score": 80,
+      "reason": [
+        "行业强(80分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    },
+    {
+      "code": "000933",
+      "name": "神火股份",
+      "stock_score": 77,
+      "level": "A",
+      "total_score": 78.2,
+      "factor": {
+        "trend": 27,
+        "momentum": 15,
+        "capital": 15,
+        "rs": 12,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 2.12,
+        "distance_ma20": 2.99,
+        "rsi14": 64.6,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 2.12,
+      "price": 27.48,
+      "levels": {
+        "ma5": 27.358,
+        "ma10": 27.277,
+        "ma20": 26.681,
+        "ma60": 25.026,
+        "ma60_slope": 0.25,
+        "atr14": 0.7857,
+        "support": 25.11,
+        "resistance": 28.19,
+        "stop": 26.681
+      },
+      "quote_time": "2026-09-08 15:35:30",
+      "industry": "煤炭行业",
+      "industry_score": 85,
+      "reason": [
+        "行业强(85分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-08",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-08"
+    }
+  ]
+}
