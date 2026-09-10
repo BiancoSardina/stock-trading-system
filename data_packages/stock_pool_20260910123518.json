@@ -1,0 +1,415 @@
+{
+  "date": "2026-09-10",
+  "market_status": "D",
+  "market_score": 42,
+  "generated_at": "2026-09-10 12:35:10",
+  "data_ok": true,
+  "source_count": 5560,
+  "scored_count": 689,
+  "core_pool": [],
+  "watch_pool": [
+    {
+      "code": "601009",
+      "name": "南京银行",
+      "stock_score": 88,
+      "level": "S",
+      "total_score": 84.0,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 18,
+        "rs": 15,
+        "risk": 10
+      },
+      "position": {
+        "rise20": 10.08,
+        "distance_ma20": 4.9,
+        "rsi14": 69.4,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.08,
+      "price": 12.34,
+      "levels": {
+        "ma5": 12.06,
+        "ma10": 11.919,
+        "ma20": 11.764,
+        "ma60": 11.234,
+        "ma60_slope": 0.45,
+        "atr14": 0.2307,
+        "support": 11.09,
+        "resistance": 12.39,
+        "stop": 11.8786
+      },
+      "quote_time": "2026-09-10 11:30:00",
+      "industry": "金融行业",
+      "industry_score": 61,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-10",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-10"
+    },
+    {
+      "code": "601168",
+      "name": "西部矿业",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 82.0,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 17,
+        "rs": 16,
+        "risk": 6
+      },
+      "position": {
+        "rise20": 10.83,
+        "distance_ma20": 3.76,
+        "rsi14": 60.2,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.83,
+      "price": 40.23,
+      "levels": {
+        "ma5": 39.898,
+        "ma10": 39.756,
+        "ma20": 38.772,
+        "ma60": 35.29,
+        "ma60_slope": 2.12,
+        "atr14": 1.89,
+        "support": 35.39,
+        "resistance": 41.97,
+        "stop": 38.772
+      },
+      "quote_time": "2026-09-10 11:30:00",
+      "industry": "有色金属",
+      "industry_score": 65,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-10",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-10"
+    },
+    {
+      "code": "000968",
+      "name": "蓝焰控股",
+      "stock_score": 84,
+      "level": "S",
+      "total_score": 82.0,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 15,
+        "rs": 16,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 10.53,
+        "distance_ma20": 4.65,
+        "rsi14": 64.0,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.53,
+      "price": 7.56,
+      "levels": {
+        "ma5": 7.452,
+        "ma10": 7.39,
+        "ma20": 7.224,
+        "ma60": 6.845,
+        "ma60_slope": 0.59,
+        "atr14": 0.2757,
+        "support": 6.69,
+        "resistance": 7.87,
+        "stop": 7.224
+      },
+      "quote_time": "2026-09-10 11:30:00",
+      "industry": "煤炭行业",
+      "industry_score": 71,
+      "reason": [
+        "行业强(71分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-10",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-10"
+    },
+    {
+      "code": "002264",
+      "name": "新 华 都",
+      "stock_score": 83,
+      "level": "S",
+      "total_score": 82.0,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 16,
+        "rs": 14,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 7.83,
+        "distance_ma20": 5.12,
+        "rsi14": 62.4,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 7.83,
+      "price": 7.16,
+      "levels": {
+        "ma5": 7.26,
+        "ma10": 7.035,
+        "ma20": 6.811,
+        "ma60": 6.361,
+        "ma60_slope": 1.35,
+        "atr14": 0.2829,
+        "support": 6.38,
+        "resistance": 7.71,
+        "stop": 6.811
+      },
+      "quote_time": "2026-09-10 11:30:00",
+      "industry": "商业百货",
+      "industry_score": 76,
+      "reason": [
+        "行业强(76分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-10",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-10"
+    },
+    {
+      "code": "603268",
+      "name": "松发股份",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 81.1,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 16,
+        "rs": 16,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 14.46,
+        "distance_ma20": 5.86,
+        "rsi14": 65.0,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 14.46,
+      "price": 198.31,
+      "levels": {
+        "ma5": 194.932,
+        "ma10": 191.418,
+        "ma20": 187.325,
+        "ma60": 166.288,
+        "ma60_slope": 2.27,
+        "atr14": 7.7964,
+        "support": 173.26,
+        "resistance": 202.0,
+        "stop": 187.325
+      },
+      "quote_time": "2026-09-10 11:30:00",
+      "industry": "陶瓷行业",
+      "industry_score": 59,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-10",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-10"
+    },
+    {
+      "code": "002648",
+      "name": "卫星化学",
+      "stock_score": 83,
+      "level": "S",
+      "total_score": 78.8,
+      "factor": {
+        "trend": 30,
+        "momentum": 11,
+        "capital": 19,
+        "rs": 16,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 11.23,
+        "distance_ma20": 3.92,
+        "rsi14": 60.7,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 11.23,
+      "price": 28.32,
+      "levels": {
+        "ma5": 27.748,
+        "ma10": 27.936,
+        "ma20": 27.253,
+        "ma60": 25.363,
+        "ma60_slope": 1.53,
+        "atr14": 0.9843,
+        "support": 24.56,
+        "resistance": 29.33,
+        "stop": 27.253
+      },
+      "quote_time": "2026-09-10 11:30:00",
+      "industry": "化工行业",
+      "industry_score": 55,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-10",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-10"
+    },
+    {
+      "code": "002258",
+      "name": "利尔化学",
+      "stock_score": 80,
+      "level": "S",
+      "total_score": 78.5,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 14,
+        "rs": 14,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 9.41,
+        "distance_ma20": 2.38,
+        "rsi14": 55.3,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 9.41,
+      "price": 15.0,
+      "levels": {
+        "ma5": 15.214,
+        "ma10": 14.885,
+        "ma20": 14.651,
+        "ma60": 14.113,
+        "ma60_slope": 1.04,
+        "atr14": 0.5921,
+        "support": 13.45,
+        "resistance": 16.86,
+        "stop": 14.651
+      },
+      "quote_time": "2026-09-10 11:30:00",
+      "industry": "农药化肥",
+      "industry_score": 70,
+      "reason": [
+        "行业强(70分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-09",
+      "days_in_pool": 2,
+      "last_evaluated": "2026-09-10"
+    },
+    {
+      "code": "600754",
+      "name": "锦江酒店",
+      "stock_score": 79,
+      "level": "A",
+      "total_score": 76.9,
+      "factor": {
+        "trend": 24,
+        "momentum": 15,
+        "capital": 19,
+        "rs": 12,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 2.39,
+        "distance_ma20": 2.42,
+        "rsi14": 68.4,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 2.39,
+      "price": 19.69,
+      "levels": {
+        "ma5": 19.642,
+        "ma10": 19.404,
+        "ma20": 19.224,
+        "ma60": 18.869,
+        "ma60_slope": -0.1,
+        "atr14": 0.5721,
+        "support": 18.6,
+        "resistance": 20.24,
+        "stop": 19.224
+      },
+      "quote_time": "2026-09-10 11:30:00",
+      "industry": "酒店旅游",
+      "industry_score": 65,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-10",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-10"
+    }
+  ]
+}
