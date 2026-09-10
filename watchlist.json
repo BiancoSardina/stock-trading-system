@@ -1,9 +1,9 @@
 {
   "stocks": [],
-  "updated": "2026-09-09",
+  "updated": "2026-09-10",
   "last_decision": {
-    "generated_at": "2026-09-09 14:36:08",
-    "source_commit": "8b4adfcad59586e4e0791115ac752e7668bb60fe",
-    "reason": "外部AI股票池质量裁决；市场D级，禁止新增标的，旧监测名单已清理。"
+    "generated_at": "2026-09-10 14:35:35",
+    "source_commit": "d9249173b062e041f961def689c1d307ba51b090",
+    "reason": "外部AI股票池质量裁决（decision_bundle_latest_20260910143535）；市场D32，数据包契约禁止新增标的；候选均为首日入池且净风险收益或位置确认不足，维持空观察名单。"
   }
 }
