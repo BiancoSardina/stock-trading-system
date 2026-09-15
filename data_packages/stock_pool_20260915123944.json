@@ -1,0 +1,430 @@
+{
+  "date": "2026-09-15",
+  "market_status": "D",
+  "market_score": 18,
+  "generated_at": "2026-09-15 12:39:36",
+  "data_ok": true,
+  "source_count": 5561,
+  "scored_count": 580,
+  "core_pool": [],
+  "watch_pool": [
+    {
+      "code": "002142",
+      "name": "宁波银行",
+      "stock_score": 84,
+      "level": "S",
+      "total_score": 80.5,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 14,
+        "rs": 15,
+        "risk": 10
+      },
+      "position": {
+        "rise20": 8.75,
+        "distance_ma20": 2.64,
+        "rsi14": 64.9,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.75,
+      "price": 35.3,
+      "levels": {
+        "ma5": 35.418,
+        "ma10": 34.908,
+        "ma20": 34.391,
+        "ma60": 32.483,
+        "ma60_slope": 1.1,
+        "atr14": 0.6743,
+        "support": 32.48,
+        "resistance": 36.03,
+        "stop": 34.391
+      },
+      "quote_time": "2026-09-15 11:30:00",
+      "industry": "金融行业",
+      "industry_score": 61,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-15",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-15"
+    },
+    {
+      "code": "601999",
+      "name": "出版传媒",
+      "stock_score": 83,
+      "level": "S",
+      "total_score": 78.8,
+      "factor": {
+        "trend": 30,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 15,
+        "risk": 2
+      },
+      "position": {
+        "rise20": 9.31,
+        "distance_ma20": 4.75,
+        "rsi14": 60.0,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 9.31,
+      "price": 6.93,
+      "levels": {
+        "ma5": 7.054,
+        "ma10": 7.091,
+        "ma20": 6.616,
+        "ma60": 6.115,
+        "ma60_slope": 1.87,
+        "atr14": 0.5436,
+        "support": 5.91,
+        "resistance": 8.02,
+        "stop": 6.616
+      },
+      "quote_time": "2026-09-15 11:30:00",
+      "industry": "传媒娱乐",
+      "industry_score": 55,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-15",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-15"
+    },
+    {
+      "code": "002300",
+      "name": "太阳电缆",
+      "stock_score": 79,
+      "level": "A",
+      "total_score": 77.8,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 13,
+        "rs": 16,
+        "risk": 5
+      },
+      "position": {
+        "rise20": 10.67,
+        "distance_ma20": 5.09,
+        "rsi14": 66.1,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.67,
+      "price": 7.78,
+      "levels": {
+        "ma5": 8.044,
+        "ma10": 8.035,
+        "ma20": 7.403,
+        "ma60": 7.007,
+        "ma60_slope": 0.73,
+        "atr14": 0.4236,
+        "support": 6.52,
+        "resistance": 8.8,
+        "stop": 7.403
+      },
+      "quote_time": "2026-09-15 11:30:00",
+      "industry": "发电设备",
+      "industry_score": 71,
+      "reason": [
+        "行业强(71分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-15",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-15"
+    },
+    {
+      "code": "600644",
+      "name": "乐山电力",
+      "stock_score": 78,
+      "level": "A",
+      "total_score": 77.0,
+      "factor": {
+        "trend": 25,
+        "momentum": 16,
+        "capital": 16,
+        "rs": 14,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 5.7,
+        "distance_ma20": 5.81,
+        "rsi14": 63.8,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 5.7,
+      "price": 9.65,
+      "levels": {
+        "ma5": 9.722,
+        "ma10": 9.396,
+        "ma20": 9.12,
+        "ma60": 9.098,
+        "ma60_slope": 0.27,
+        "atr14": 0.4029,
+        "support": 8.6,
+        "resistance": 10.56,
+        "stop": 9.12
+      },
+      "quote_time": "2026-09-15 11:30:00",
+      "industry": "电力行业",
+      "industry_score": 71,
+      "reason": [
+        "行业强(71分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-15",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-15"
+    },
+    {
+      "code": "600893",
+      "name": "航发动力",
+      "stock_score": 79,
+      "level": "A",
+      "total_score": 76.9,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 12,
+        "rs": 15,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 8.78,
+        "distance_ma20": 4.13,
+        "rsi14": 69.7,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.78,
+      "price": 40.26,
+      "levels": {
+        "ma5": 41.026,
+        "ma10": 40.339,
+        "ma20": 38.665,
+        "ma60": 36.823,
+        "ma60_slope": 0.22,
+        "atr14": 1.4171,
+        "support": 35.33,
+        "resistance": 42.44,
+        "stop": 38.665
+      },
+      "quote_time": "2026-09-15 11:30:00",
+      "industry": "飞机制造",
+      "industry_score": 65,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-15",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-15"
+    },
+    {
+      "code": "600172",
+      "name": "黄河旋风",
+      "stock_score": 81,
+      "level": "S",
+      "total_score": 75.2,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 17,
+        "rs": 16,
+        "risk": 3
+      },
+      "position": {
+        "rise20": 14.11,
+        "distance_ma20": 9.23,
+        "rsi14": 66.8,
+        "deduct": 5,
+        "reasons": [
+          "偏离MA20 9.2%>6%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 14.11,
+      "price": 16.34,
+      "levels": {
+        "ma5": 16.038,
+        "ma10": 15.904,
+        "ma20": 14.959,
+        "ma60": 14.13,
+        "ma60_slope": 0.91,
+        "atr14": 1.2471,
+        "support": 12.14,
+        "resistance": 17.24,
+        "stop": 14.959
+      },
+      "quote_time": "2026-09-15 11:30:00",
+      "industry": "其它行业",
+      "industry_score": 76,
+      "reason": [
+        "行业强(76分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "偏离MA20 9.2%>6%扣5"
+      ],
+      "first_seen": "2026-09-15",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-15"
+    },
+    {
+      "code": "601872",
+      "name": "招商轮船",
+      "stock_score": 87,
+      "level": "S",
+      "total_score": 74.5,
+      "factor": {
+        "trend": 30,
+        "momentum": 17,
+        "capital": 20,
+        "rs": 16,
+        "risk": 4
+      },
+      "position": {
+        "rise20": 17.02,
+        "distance_ma20": 9.45,
+        "rsi14": 66.2,
+        "deduct": 10,
+        "reasons": [
+          "20日涨幅17.0%>15%扣5",
+          "偏离MA20 9.4%>6%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 17.02,
+      "price": 21.04,
+      "levels": {
+        "ma5": 20.522,
+        "ma10": 19.669,
+        "ma20": 19.224,
+        "ma60": 17.591,
+        "ma60_slope": 1.27,
+        "atr14": 1.2679,
+        "support": 17.79,
+        "resistance": 21.7,
+        "stop": 19.224
+      },
+      "quote_time": "2026-09-15 11:30:00",
+      "industry": "交通运输",
+      "industry_score": 70,
+      "reason": [
+        "行业强(70分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "20日涨幅17.0%>15%扣5",
+        "偏离MA20 9.4%>6%扣5"
+      ],
+      "first_seen": "2026-09-14",
+      "days_in_pool": 2,
+      "last_evaluated": "2026-09-15"
+    },
+    {
+      "code": "600150",
+      "name": "中国船舶",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 73.5,
+      "factor": {
+        "trend": 29,
+        "momentum": 17,
+        "capital": 16,
+        "rs": 16,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 15.35,
+        "distance_ma20": 7.27,
+        "rsi14": 70.0,
+        "deduct": 10,
+        "reasons": [
+          "20日涨幅15.3%>15%扣5",
+          "偏离MA20 7.3%>6%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 15.35,
+      "price": 38.63,
+      "levels": {
+        "ma5": 39.542,
+        "ma10": 38.089,
+        "ma20": 36.013,
+        "ma60": 34.984,
+        "ma60_slope": 0.73,
+        "atr14": 1.3693,
+        "support": 32.59,
+        "resistance": 41.18,
+        "stop": 36.013
+      },
+      "quote_time": "2026-09-15 11:30:00",
+      "industry": "船舶制造",
+      "industry_score": 75,
+      "reason": [
+        "行业强(75分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "20日涨幅15.3%>15%扣5",
+        "偏离MA20 7.3%>6%扣5"
+      ],
+      "first_seen": "2026-09-15",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-15"
+    }
+  ]
+}
