@@ -1,0 +1,417 @@
+{
+  "date": "2026-09-16",
+  "market_status": "D",
+  "market_score": 49,
+  "generated_at": "2026-09-16 14:35:42",
+  "data_ok": true,
+  "source_count": 5563,
+  "scored_count": 836,
+  "core_pool": [],
+  "watch_pool": [
+    {
+      "code": "002623",
+      "name": "亚玛顿",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 84.2,
+      "factor": {
+        "trend": 25,
+        "momentum": 16,
+        "capital": 20,
+        "rs": 16,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 10.91,
+        "distance_ma20": 4.65,
+        "rsi14": 60.2,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 10.91,
+      "price": 16.67,
+      "levels": {
+        "ma5": 16.298,
+        "ma10": 16.099,
+        "ma20": 15.93,
+        "ma60": 15.51,
+        "ma60_slope": -0.27,
+        "atr14": 0.6064,
+        "support": 15.0,
+        "resistance": 16.96,
+        "stop": 15.93
+      },
+      "quote_time": "2026-09-16 14:35:33",
+      "industry": "玻璃行业",
+      "industry_score": 80,
+      "reason": [
+        "行业强(80分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-16",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-16"
+    },
+    {
+      "code": "600864",
+      "name": "哈投股份",
+      "stock_score": 82,
+      "level": "S",
+      "total_score": 82.6,
+      "factor": {
+        "trend": 29,
+        "momentum": 10,
+        "capital": 20,
+        "rs": 16,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 12.45,
+        "distance_ma20": 4.62,
+        "rsi14": 53.3,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 12.45,
+      "price": 5.96,
+      "levels": {
+        "ma5": 5.76,
+        "ma10": 5.746,
+        "ma20": 5.697,
+        "ma60": 5.483,
+        "ma60_slope": 0.49,
+        "atr14": 0.2136,
+        "support": 5.25,
+        "resistance": 6.19,
+        "stop": 5.697
+      },
+      "quote_time": "2026-09-16 14:33:40",
+      "industry": "电力行业",
+      "industry_score": 86,
+      "reason": [
+        "行业强(86分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-16",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-16"
+    },
+    {
+      "code": "600192",
+      "name": "长城电工",
+      "stock_score": 80,
+      "level": "S",
+      "total_score": 81.7,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 14,
+        "rs": 16,
+        "risk": 5
+      },
+      "position": {
+        "rise20": 14.31,
+        "distance_ma20": 4.93,
+        "rsi14": 59.6,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 14.31,
+      "price": 7.75,
+      "levels": {
+        "ma5": 8.07,
+        "ma10": 7.706,
+        "ma20": 7.386,
+        "ma60": 6.919,
+        "ma60_slope": 0.43,
+        "atr14": 0.3793,
+        "support": 6.4,
+        "resistance": 8.68,
+        "stop": 7.386
+      },
+      "quote_time": "2026-09-16 14:35:25",
+      "industry": "发电设备",
+      "industry_score": 91,
+      "reason": [
+        "行业强(91分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-16",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-16"
+    },
+    {
+      "code": "002389",
+      "name": "航天彩虹",
+      "stock_score": 78,
+      "level": "A",
+      "total_score": 80.5,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 12,
+        "rs": 15,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 7.67,
+        "distance_ma20": 2.01,
+        "rsi14": 63.8,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 7.67,
+      "price": 19.1,
+      "levels": {
+        "ma5": 19.404,
+        "ma10": 19.348,
+        "ma20": 18.724,
+        "ma60": 18.268,
+        "ma60_slope": 0.4,
+        "atr14": 0.61,
+        "support": 17.39,
+        "resistance": 20.17,
+        "stop": 18.724
+      },
+      "quote_time": "2026-09-16 14:34:54",
+      "industry": "电子器件",
+      "industry_score": 95,
+      "reason": [
+        "行业强(95分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-16",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-16"
+    },
+    {
+      "code": "600150",
+      "name": "中国船舶",
+      "stock_score": 82,
+      "level": "S",
+      "total_score": 79.5,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 14,
+        "rs": 16,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 13.76,
+        "distance_ma20": 4.09,
+        "rsi14": 63.5,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 13.76,
+      "price": 37.7,
+      "levels": {
+        "ma5": 39.082,
+        "ma10": 38.419,
+        "ma20": 36.218,
+        "ma60": 35.015,
+        "ma60_slope": 0.65,
+        "atr14": 1.3921,
+        "support": 32.59,
+        "resistance": 41.18,
+        "stop": 36.218
+      },
+      "quote_time": "2026-09-16 14:32:21",
+      "industry": "船舶制造",
+      "industry_score": 65,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-16",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-16"
+    },
+    {
+      "code": "600036",
+      "name": "招商银行",
+      "stock_score": 81,
+      "level": "S",
+      "total_score": 76.5,
+      "factor": {
+        "trend": 28,
+        "momentum": 15,
+        "capital": 14,
+        "rs": 14,
+        "risk": 10
+      },
+      "position": {
+        "rise20": 4.8,
+        "distance_ma20": 1.3,
+        "rsi14": 63.1,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 4.8,
+      "price": 41.03,
+      "levels": {
+        "ma5": 41.376,
+        "ma10": 41.261,
+        "ma20": 40.502,
+        "ma60": 38.949,
+        "ma60_slope": 0.84,
+        "atr14": 0.7157,
+        "support": 38.47,
+        "resistance": 41.83,
+        "stop": 40.502
+      },
+      "quote_time": "2026-09-16 14:32:29",
+      "industry": "金融行业",
+      "industry_score": 51,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-16",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-16"
+    },
+    {
+      "code": "002757",
+      "name": "南兴股份",
+      "stock_score": 74,
+      "level": "A",
+      "total_score": 75.8,
+      "factor": {
+        "trend": 22,
+        "momentum": 16,
+        "capital": 15,
+        "rs": 15,
+        "risk": 6
+      },
+      "position": {
+        "rise20": 8.99,
+        "distance_ma20": 4.54,
+        "rsi14": 69.8,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.99,
+      "price": 17.83,
+      "levels": {
+        "ma5": 17.468,
+        "ma10": 17.618,
+        "ma20": 17.055,
+        "ma60": 17.047,
+        "ma60_slope": -1.62,
+        "atr14": 0.7514,
+        "support": 15.45,
+        "resistance": 19.13,
+        "stop": 17.055
+      },
+      "quote_time": "2026-09-16 14:35:15",
+      "industry": "其它行业",
+      "industry_score": 86,
+      "reason": [
+        "行业强(86分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-16",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-16"
+    },
+    {
+      "code": "600982",
+      "name": "宁波能源",
+      "stock_score": 76,
+      "level": "A",
+      "total_score": 74.9,
+      "factor": {
+        "trend": 22,
+        "momentum": 16,
+        "capital": 15,
+        "rs": 15,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 8.82,
+        "distance_ma20": 4.75,
+        "rsi14": 69.8,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 8.82,
+      "price": 5.18,
+      "levels": {
+        "ma5": 5.178,
+        "ma10": 5.043,
+        "ma20": 4.945,
+        "ma60": 4.939,
+        "ma60_slope": -0.11,
+        "atr14": 0.1571,
+        "support": 4.73,
+        "resistance": 5.35,
+        "stop": 4.945
+      },
+      "quote_time": "2026-09-16 14:35:37",
+      "industry": "供水供气",
+      "industry_score": 69,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-16",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-16"
+    }
+  ]
+}
