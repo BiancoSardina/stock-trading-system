@@ -1,0 +1,419 @@
+{
+  "date": "2026-09-17",
+  "market_status": "D",
+  "market_score": 35,
+  "generated_at": "2026-09-17 12:34:26",
+  "data_ok": true,
+  "source_count": 5564,
+  "scored_count": 673,
+  "core_pool": [],
+  "watch_pool": [
+    {
+      "code": "002212",
+      "name": "天融信",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 82.9,
+      "factor": {
+        "trend": 30,
+        "momentum": 15,
+        "capital": 20,
+        "rs": 16,
+        "risk": 4
+      },
+      "position": {
+        "rise20": 14.05,
+        "distance_ma20": 5.77,
+        "rsi14": 51.9,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 14.05,
+      "price": 7.06,
+      "levels": {
+        "ma5": 7.19,
+        "ma10": 6.9,
+        "ma20": 6.675,
+        "ma60": 6.256,
+        "ma60_slope": 1.52,
+        "atr14": 0.4264,
+        "support": 6.01,
+        "resistance": 8.14,
+        "stop": 6.675
+      },
+      "quote_time": "2026-09-17 11:30:00",
+      "industry": "发电设备",
+      "industry_score": 71,
+      "reason": [
+        "行业强(71分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-17",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-17"
+    },
+    {
+      "code": "603000",
+      "name": "人民网",
+      "stock_score": 84,
+      "level": "S",
+      "total_score": 81.1,
+      "factor": {
+        "trend": 29,
+        "momentum": 16,
+        "capital": 19,
+        "rs": 14,
+        "risk": 6
+      },
+      "position": {
+        "rise20": 7.67,
+        "distance_ma20": 3.19,
+        "rsi14": 58.9,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 7.67,
+      "price": 17.27,
+      "levels": {
+        "ma5": 16.91,
+        "ma10": 16.955,
+        "ma20": 16.736,
+        "ma60": 16.188,
+        "ma60_slope": 0.53,
+        "atr14": 0.7236,
+        "support": 15.65,
+        "resistance": 18.23,
+        "stop": 16.736
+      },
+      "quote_time": "2026-09-17 11:30:00",
+      "industry": "电子信息",
+      "industry_score": 65,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-17",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-17"
+    },
+    {
+      "code": "002292",
+      "name": "奥飞娱乐",
+      "stock_score": 81,
+      "level": "S",
+      "total_score": 80.8,
+      "factor": {
+        "trend": 29,
+        "momentum": 11,
+        "capital": 20,
+        "rs": 14,
+        "risk": 7
+      },
+      "position": {
+        "rise20": 6.18,
+        "distance_ma20": 2.47,
+        "rsi14": 60.5,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 6.18,
+      "price": 8.59,
+      "levels": {
+        "ma5": 8.416,
+        "ma10": 8.54,
+        "ma20": 8.383,
+        "ma60": 7.957,
+        "ma60_slope": 2.04,
+        "atr14": 0.3321,
+        "support": 7.65,
+        "resistance": 8.93,
+        "stop": 8.383
+      },
+      "quote_time": "2026-09-17 11:30:00",
+      "industry": "传媒娱乐",
+      "industry_score": 80,
+      "reason": [
+        "行业强(80分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-17",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-17"
+    },
+    {
+      "code": "002442",
+      "name": "龙星科技",
+      "stock_score": 79,
+      "level": "A",
+      "total_score": 79.1,
+      "factor": {
+        "trend": 25,
+        "momentum": 16,
+        "capital": 16,
+        "rs": 16,
+        "risk": 6
+      },
+      "position": {
+        "rise20": 11.31,
+        "distance_ma20": 4.55,
+        "rsi14": 57.1,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 11.31,
+      "price": 5.51,
+      "levels": {
+        "ma5": 5.388,
+        "ma10": 5.376,
+        "ma20": 5.27,
+        "ma60": 5.01,
+        "ma60_slope": -0.33,
+        "atr14": 0.2214,
+        "support": 4.84,
+        "resistance": 6.09,
+        "stop": 5.27
+      },
+      "quote_time": "2026-09-17 11:30:00",
+      "industry": "化工行业",
+      "industry_score": 80,
+      "reason": [
+        "行业强(80分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-17",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-17"
+    },
+    {
+      "code": "000690",
+      "name": "宝新能源",
+      "stock_score": 79,
+      "level": "A",
+      "total_score": 78.5,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 13,
+        "rs": 14,
+        "risk": 8
+      },
+      "position": {
+        "rise20": 7.58,
+        "distance_ma20": 1.23,
+        "rsi14": 60.2,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 7.58,
+      "price": 5.11,
+      "levels": {
+        "ma5": 5.23,
+        "ma10": 5.187,
+        "ma20": 5.048,
+        "ma60": 4.863,
+        "ma60_slope": 0.42,
+        "atr14": 0.1329,
+        "support": 4.7,
+        "resistance": 5.45,
+        "stop": 5.048
+      },
+      "quote_time": "2026-09-17 11:30:00",
+      "industry": "电力行业",
+      "industry_score": 76,
+      "reason": [
+        "行业强(76分)",
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-17",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-17"
+    },
+    {
+      "code": "601398",
+      "name": "工商银行",
+      "stock_score": 85,
+      "level": "S",
+      "total_score": 78.4,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 18,
+        "rs": 14,
+        "risk": 9
+      },
+      "position": {
+        "rise20": 5.27,
+        "distance_ma20": 1.99,
+        "rsi14": 64.1,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 5.27,
+      "price": 8.19,
+      "levels": {
+        "ma5": 8.152,
+        "ma10": 8.09,
+        "ma20": 8.03,
+        "ma60": 7.7,
+        "ma60_slope": 1.0,
+        "atr14": 0.165,
+        "support": 7.73,
+        "resistance": 8.29,
+        "stop": 8.03
+      },
+      "quote_time": "2026-09-17 11:30:00",
+      "industry": "金融行业",
+      "industry_score": 41,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-17",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-17"
+    },
+    {
+      "code": "002303",
+      "name": "美盈森",
+      "stock_score": 84,
+      "level": "S",
+      "total_score": 76.1,
+      "factor": {
+        "trend": 30,
+        "momentum": 17,
+        "capital": 16,
+        "rs": 17,
+        "risk": 4
+      },
+      "position": {
+        "rise20": 20.61,
+        "distance_ma20": 5.76,
+        "rsi14": 57.4,
+        "deduct": 5,
+        "reasons": [
+          "20日涨幅20.6%>15%扣5"
+        ]
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 20.61,
+      "price": 5.56,
+      "levels": {
+        "ma5": 5.386,
+        "ma10": 5.381,
+        "ma20": 5.257,
+        "ma60": 4.846,
+        "ma60_slope": 2.8,
+        "atr14": 0.3179,
+        "support": 4.55,
+        "resistance": 5.8,
+        "stop": 5.257
+      },
+      "quote_time": "2026-09-17 11:30:00",
+      "industry": "造纸行业",
+      "industry_score": 65,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高",
+        "20日涨幅20.6%>15%扣5"
+      ],
+      "first_seen": "2026-09-17",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-17"
+    },
+    {
+      "code": "000753",
+      "name": "漳州发展",
+      "stock_score": 80,
+      "level": "S",
+      "total_score": 74.2,
+      "factor": {
+        "trend": 28,
+        "momentum": 16,
+        "capital": 16,
+        "rs": 14,
+        "risk": 6
+      },
+      "position": {
+        "rise20": 9.59,
+        "distance_ma20": 2.66,
+        "rsi14": 55.6,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 9.59,
+      "price": 5.14,
+      "levels": {
+        "ma5": 5.154,
+        "ma10": 5.165,
+        "ma20": 5.007,
+        "ma60": 4.731,
+        "ma60_slope": 0.68,
+        "atr14": 0.2257,
+        "support": 4.57,
+        "resistance": 5.5,
+        "stop": 5.007
+      },
+      "quote_time": "2026-09-17 11:30:00",
+      "industry": "汽车制造",
+      "industry_score": 41,
+      "reason": [
+        "趋势成立",
+        "RS领先",
+        "趋势分高"
+      ],
+      "first_seen": "2026-09-17",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-09-17"
+    }
+  ]
+}
