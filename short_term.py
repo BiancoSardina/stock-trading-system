@@ -71,7 +71,8 @@ def load_stock_pool():
     """
     global STOCK_POOL
     STOCK_POOL = {"date": "", "market_status": "", "market_score": "",
-                  "core": [], "watch": [], "valid": False, "stale_days": 0}
+                  "core": [], "watch": [], "opening_reserve": [],
+                  "valid": False, "stale_days": 0}
     try:
         _sp = data_path("stock_pool.json")
         with open(_sp, encoding="utf-8") as _f:
@@ -93,6 +94,7 @@ def load_stock_pool():
             "market_score": _data.get("market_score", ""),
             "core": _data.get("core_pool", []) or [],
             "watch": _data.get("watch_pool", []) or [],
+            "opening_reserve": _data.get("opening_reserve_pool", []) or [],
             "valid": valid,
             "stale_days": stale,
         }
@@ -105,6 +107,7 @@ def load_stock_pool():
 TOTAL_ETF = position_manager.ETF_TOTAL
 TOTAL_STOCK = position_manager.STOCK_TOTAL
 WATCH_DETAIL_TOP = 5  # V1.7 筛选方案A（2026-08-26）：股票池 watch 只逐只分析综合分 top5，其余一行简略
+OPENING_RESERVE_DETAIL_TOP = 5  # 昨夜D级、早盘转A/B时额外复核的结构候选数
 
 # 策略版本号（v2.31 补丁：每次策略修改递增，写入 signal_log 供按版本复盘）
 STRATEGY_VERSION = entry_policy.VERSION
@@ -1548,10 +1551,28 @@ def main():
         _sp_watch_sorted = sorted(_sp_watch, key=lambda x: -(x.get("total_score") or 0))
         _sp_watch_detail = _sp_watch_sorted[:WATCH_DETAIL_TOP]
         _sp_watch_brief = _sp_watch_sorted[WATCH_DETAIL_TOP:]
+        # 昨夜 D 级的 CORE 为空是正确的交易风控，不能把它当作次日研究样本
+        # 为空。只有早盘实时市场已经确认 A/B，才把收盘结构候选库拿出来逐只复核；
+        # 它不改写股票池、观察名单，也不绕过 analyze_item 的实时买入门槛。
+        _opening_reserve_active = (
+            CURRENT_PERIOD == "早盘"
+            and MARKET.get("state") in ("A", "B")
+            and STOCK_POOL.get("market_status") == "D"
+            and bool(STOCK_POOL.get("opening_reserve"))
+        )
+        _sp_opening_reserve = []
+        if _opening_reserve_active:
+            _sp_opening_reserve = sorted(
+                STOCK_POOL.get("opening_reserve", []),
+                key=lambda x: -(x.get("total_score") or 0),
+            )[:OPENING_RESERVE_DETAIL_TOP]
         _sp_covered = {c for c, *_ in STOCKS} | {w.get("code", "") for w in WATCH_STOCKS}
         _pool_blocks, _pool_tags = [], []
         _brief_lines = []
-        for _lvl, _lst in (("core", _sp_core), ("watch", _sp_watch_detail)):
+        _pool_groups = [("core", _sp_core), ("watch", _sp_watch_detail)]
+        if _sp_opening_reserve:
+            _pool_groups.append(("opening_reserve", _sp_opening_reserve))
+        for _lvl, _lst in _pool_groups:
             for _it in _lst:
                 _code = _it.get("code", "")
                 if not _code or _code in _sp_covered or _code in _analyzed:
@@ -1580,8 +1601,16 @@ def main():
                   f"生成{STOCK_POOL.get('date','')} 市场{STOCK_POOL.get('market_status','')}级"
                   f"{STOCK_POOL.get('market_score','')}分)】")
             print("=" * 55)
+            if _opening_reserve_active:
+                print("  🔄 昨夜D级→早盘实时市场转A/B：启用收盘结构候选库逐只复核；"
+                      "仅供技术确认，不等于买入许可。")
             for _b, (_lvl, _it) in zip(_pool_blocks, _pool_tags):
-                _up = "升core需≥85分" if _lvl == "watch" else "core"
+                if _lvl == "watch":
+                    _up = "升core需≥85分"
+                elif _lvl == "opening_reserve":
+                    _up = "开盘结构候选库（昨夜D级，今早A/B复核）"
+                else:
+                    _up = "core"
                 _tag = (f"  📌 股票池{_up}: 总分{_it.get('total_score','-')} 行业{_it.get('industry','')}"
                         f"({_it.get('industry_score','-')}分) 入池{_it.get('days_in_pool','-')}日 20日{_it.get('chg20','-')}%"
                         f" | 当日五因子选出，待外部AI裁决")

@@ -9,7 +9,7 @@ def mk(code, total, stock=80, ind=70, trend_ok=True, watch_only=False, rs=12, ca
     return {
         "code": code, "name": f"测试{code}", "total_score": total,
         "stock_score": stock, "industry_score": ind,
-        "factor": {"rs": rs, "capital": cap},
+        "factor": {"rs": rs, "capital": cap, "momentum": 15},
         "trend": {"above_ma20": trend_ok, "ma20_gt_ma60": trend_ok, "above_ma60": trend_ok},
         "position": {"deduct": 0, "reasons": []},
         "industry": industry,
@@ -94,3 +94,11 @@ entries_d = [
 ]
 print(">>> D级期望：core空(cap=0)，watch收D01-05(≤8只)，D06出局")
 run_case("D", entries_d, "D级")
+
+# 昨夜D级不清空次日研究样本：结构候选库与交易池解耦。
+reserve = sp.generate_opening_reserve(entries_d)
+reserve_codes = {e["code"] for e in reserve}
+assert {"D01", "D02", "D03", "D04"}.issubset(reserve_codes), reserve_codes
+assert all(e["level"] == "opening_reserve" for e in reserve)
+assert all(e["trend"]["above_ma60"] and e["trend"]["ma20_gt_ma60"] for e in reserve)
+print("✅ D级收盘结构候选库保留合格样本，供次日A/B早盘重新核验")
