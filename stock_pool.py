@@ -72,16 +72,6 @@ KLINE_SLEEP = 0.05          # K线请求间隔（秒，全量781只防456限流�
 FAST_PRESCREEN = 400        # --fast 模式：实时行情粗筛前N只再精评（降级用）
 MAX_POS_DEDUCT = 30         # 位置扣分上限
 
-# 收盘D级不等于次日研究样本应被清空。该库只保存结构完整的候选，次日
-# 早盘仍须由实时市场A/B与逐只技术分析再次确认，绝不等同于买入信号。
-OPENING_RESERVE_MAX = 12
-OPENING_RESERVE_MIN_TOTAL = 72
-OPENING_RESERVE_MIN_STOCK = 70
-OPENING_RESERVE_MIN_INDUSTRY = 55
-OPENING_RESERVE_MIN_RS = 10
-OPENING_RESERVE_MIN_CAPITAL = 12
-OPENING_RESERVE_MIN_MOMENTUM = 10
-
 # ===== CORE_STRONG 强者通道（V1.3.1 2026-08-10 用户方案：C市空池兜底，弱市精选极强龙头）=====
 # 设计要点：普通池 C 市 85 分门槛在 V1.3 收紧后容易空池 → 开一条"前置强条件全过才享低综合分"的精品通道。
 # 降级=条件不满足自动回落普通池判断（RS 需回到 15 / 行业回到 65 才能再入，天然有缓冲）。
@@ -375,44 +365,6 @@ def generate_pool(scored, market_status, old_pool, today):
     return core_pool, watch_pool, stats
 
 
-def generate_opening_reserve(scored):
-    """保留独立于收盘市场等级的开盘结构候选库（非交易池/非买入信号）。"""
-    reserve, used_industries = [], set()
-    ranked = sorted(scored, key=lambda x: (-x.get("total_score", 0), -x.get("stock_score", 0)))
-    for entry in ranked:
-        factor = entry.get("factor", {}) or {}
-        trend = entry.get("trend", {}) or {}
-        position = entry.get("position", {}) or {}
-        industry = entry.get("industry", "") or "?"
-        qualifies = (
-            entry.get("total_score", 0) >= OPENING_RESERVE_MIN_TOTAL
-            and entry.get("stock_score", 0) >= OPENING_RESERVE_MIN_STOCK
-            and entry.get("industry_score", 0) >= OPENING_RESERVE_MIN_INDUSTRY
-            and factor.get("rs", 0) >= OPENING_RESERVE_MIN_RS
-            and factor.get("capital", 0) >= OPENING_RESERVE_MIN_CAPITAL
-            and factor.get("momentum", 0) >= OPENING_RESERVE_MIN_MOMENTUM
-            and bool(trend.get("above_ma20"))
-            and bool(trend.get("above_ma60"))
-            and bool(trend.get("ma20_gt_ma60"))
-            and position.get("deduct", 0) <= 10
-        )
-        if not qualifies or industry in used_industries:
-            continue
-        item = dict(entry)
-        item["factor"] = dict(factor)
-        item["trend"] = dict(trend)
-        item["position"] = dict(position)
-        item.pop("_old", None)
-        item.pop("_watch_only", None)
-        item["level"] = "opening_reserve"
-        item["reserve_reason"] = "收盘结构合格；仅在次日早盘实时市场A/B时重新核验"
-        reserve.append(item)
-        used_industries.add(industry)
-        if len(reserve) >= OPENING_RESERVE_MAX:
-            break
-    return reserve
-
-
 @exclusive(lambda: data_path("stock_pool.run"))
 def main():
     ap = argparse.ArgumentParser()
@@ -539,7 +491,6 @@ def main():
         e["reason"] = build_reasons(e, e.get("industry", ""), e.get("industry_score", 0))
     old_pool = spm.load_old_pool()
     core_pool, watch_pool, stats = generate_pool(scored, market_status, old_pool, today)
-    opening_reserve_pool = generate_opening_reserve(scored)
 
     # ⑧ 输出 stock_pool.json
     out = {
@@ -550,8 +501,6 @@ def main():
         "data_ok": True, "source_count": len(all_stocks), "scored_count": len(candidates),
         "core_pool": core_pool,
         "watch_pool": watch_pool,
-        "opening_reserve_pool": opening_reserve_pool,
-        "opening_reserve_policy": "收盘结构候选库；不是买入许可，仅在次日早盘实时市场A/B时供技术分析重新核验",
     }
     if args.limit:
         print("测试范围结果不写入正式股票池")

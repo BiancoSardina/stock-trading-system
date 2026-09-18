@@ -78,8 +78,6 @@ def pool_meta() -> dict:
             "market_status": pool.get("market_status"),
             "market_score": pool.get("market_score"),
             "data_ok": pool.get("data_ok"),
-            "opening_reserve_count": len(pool.get("opening_reserve_pool", []) or []),
-            "opening_reserve_policy": pool.get("opening_reserve_policy", ""),
         }
     except Exception as exc:
         print(f"[tech_analysis_bundle] ⚠️ 读 stock_pool.json 元信息失败: {exc}", file=sys.stderr)
