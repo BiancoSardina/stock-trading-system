@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 """
+当前生产入口已切换 startup/v1：整理启动/超跌企稳两条路径，机会评分优先，
+MA20/MA60与传统强势分仅作背景。下述V1.x说明及generate_pool旧分支保留用于历史格式兼容。
+研究参数、价格区间和部署边界见 STARTUP_RESEARCH.md。
+
 股票池V1.3 — 主程序（stock_pool.py）
 ====================================
 每日 17:30 运行：全流程串行 8-12 分钟
@@ -54,6 +58,7 @@ from runtime import macd, positive, exclusive, data_path, quote_is_fresh, weekly
 import stock_scanner
 import industry_rank
 import stock_pool_manager as spm
+import startup_policy
 
 # ===== 评分常量（V1.2：评分目标=全市场最强个股，行业"不拖后腿"；设计见 stock_pool_design_v2.md）=====
 SCORE_W_STOCK = 0.85        # 综合评分：个股权重（V1.1 0.7 → 个股主导）
@@ -209,6 +214,23 @@ def score_stock(code, name, ind_score, bench_chg20, bench300_chg20, amount=None,
     stock_score = min(100, f_trend + f_mom + f_fund + f_rs + f_risk)
     level, _ = short_term.score_grade(stock_score)
 
+    # Old strength score is retained as background, never an early-entry gate.
+    legacy_score = stock_score
+    opportunity = startup_policy.evaluate(kline, rt, short_term.MARKET.get("state", "UNKNOWN"),
+                                          benchmark=getattr(short_term, "STARTUP_BENCHMARK", {}))
+    if opportunity["status"] == "数据不足":
+        return None  # Count feed failures, rather than disguising them as rejections.
+    if not opportunity["candidate"]:
+        return {"code": code, "name": name, "_exclude": "；".join(opportunity["reasons"])}
+    completed = startup_policy.completed_bars(kline, datetime.now().strftime("%Y-%m-%d"))
+    # Sina daily volume is shares. Use a documented close*volume approximation
+    # over completed sessions, not today's partial turnover or a budget test.
+    historical_amount = sum(b["close"]*b["volume"] for b in completed[-20:])/20
+    if historical_amount < stock_scanner.MIN_AMOUNT:
+        return {"code": code, "name": name, "_exclude": "近20日均成交额近似值不足2亿元（流动性）"}
+    stock_score = opportunity["score"]
+    level, _ = short_term.score_grade(stock_score)
+
     # 位置风险修正
     rise20 = chg20  # rise20 = 20日涨幅（同 chg20）
     dist_ma20 = round((cur / ma20 - 1) * 100, 2) if ma20 else None
@@ -226,9 +248,12 @@ def score_stock(code, name, ind_score, bench_chg20, bench300_chg20, amount=None,
     return {
         "code": code, "name": name,
         "stock_score": stock_score, "level": level,
+        "score_basis": startup_policy.VERSION,
+        "strength_score": legacy_score,
+        "opportunity": opportunity,
+        "historical_amount_20": round(historical_amount, 2),
         "total_score": total,
-        "factor": {"trend": f_trend, "momentum": f_mom, "capital": f_fund,
-                   "rs": f_rs, "risk": f_risk},
+        "factor": opportunity["factors"],
         "position": {"rise20": round(rise20, 2) if rise20 is not None else None,
                      "distance_ma20": dist_ma20,
                      "rsi14": round(rsi14, 1) if rsi14 is not None else None,
@@ -239,8 +264,9 @@ def score_stock(code, name, ind_score, bench_chg20, bench300_chg20, amount=None,
         "chg20": chg20, "price": cur,
         "levels": {"ma5": ma5, "ma10": ma10, "ma20": ma20, "ma60": ma60,
                    "ma60_slope": ma60_slope, "atr14": atr14,
-                   "support": min(lows[-20:]), "resistance": max(highs[-20:]),
-                   "stop": max(ma20 or 0, cur - 2 * (atr14 or 0))},
+                   "support": opportunity["evidence"]["support"],
+                   "resistance": opportunity["evidence"]["pivot"],
+                   "stop": opportunity["evidence"]["stop"]},
         "quote_time": rt.get("date", "") + " " + rt.get("time", ""),
     }
 
@@ -248,6 +274,10 @@ def score_stock(code, name, ind_score, bench_chg20, bench300_chg20, amount=None,
 def build_reasons(entry, ind_name, ind_score):
     """生成 reason 列表（供复盘）"""
     r = []
+    if entry.get("opportunity"):
+        op = entry["opportunity"]
+        return [op["setup"], "启动潜力与位置评分，不以放量大涨为前提",
+                f"行业{ind_score}分", op["status"]] + op["reasons"]
     if ind_score >= 70:
         r.append(f"行业强({ind_score}分)")
     if entry["trend"]["above_ma20"] and entry["trend"]["ma20_gt_ma60"]:
@@ -277,17 +307,24 @@ def generate_pool(scored, market_status, old_pool, today):
     cap_core, cap_watch = spm.pool_capacity(market_status)
     lcmap = spm.old_lifecycle_map(old_pool)
     stats = {"evicted": [], "new": 0, "kept": 0}
+    if market_status not in ("A", "B", "C", "D"):
+        stats["error"] = "市场状态未知，拒绝生成候选池"
+        return [], [], stats
 
     # 生命周期继承 + 淘汰
     entries = []
     for e in scored:
         code = e["code"]
         old_lc = lcmap.get(code)
+        op = e.get("opportunity")
+        if op is not None and (not op.get("candidate") or e.get("industry_score", 0) < IND_ELIMINATE):
+            stats["evicted"].append(f"{code} {e['name']}: 早期形态失效或行业不合格")
+            continue
         if old_lc:
             days = int(old_lc["days_in_pool"]) + int(old_lc.get("last_evaluated") != today)
             first_seen = old_lc.get("first_seen") or today
-            evict, why = spm.evict_check(e["total_score"], e.get("industry_score"),
-                                         e["trend"]["above_ma60"])
+            evict, why = ((False, "") if op is not None else
+                          spm.evict_check(e["total_score"], e.get("industry_score"), e["trend"]["above_ma60"]))
             if evict:
                 stats["evicted"].append(f"{code} {e['name']}: {why}")
                 continue
@@ -315,6 +352,23 @@ def generate_pool(scored, market_status, old_pool, today):
     core_min = {"A": 75, "B": 80, "C": 82, "D": 90}.get(market_status, 80)
     for e in entries:
         ind_name = e.get("industry", "") or "?"
+        if e.get("opportunity") is not None:
+            # Both setup paths can remain below MA20/MA60. Recheck the setup
+            # daily; neither historic membership nor a high score creates a buy.
+            if ind_name in ind_used or e["stock_score"] < startup_policy.MIN_SCORE:
+                continue
+            if (e["opportunity"].get("triggered") and not e.get("_watch_only")
+                    and e.get("industry_score", 0) >= IND_CORE_MIN
+                    and market_status in ("A", "B", "C") and len(core_pool) < cap_core):
+                e["level"] = "core"
+                core_pool.append(e)
+            elif len(watch_pool) < cap_watch:
+                e["level"] = "watch"
+                watch_pool.append(e)
+            else:
+                continue
+            ind_used[ind_name] = 1
+            continue
         f = e.get("factor", {})
         # CORE_STRONG 强者通道（V1.3.1，仅C市）：弱市精选极强龙头，防空池。
         # 前置强条件全硬性（不享受宽容期）：个股≥85 + 行业≥65 + RS≥15 + 资金≥18 + 趋势成立
@@ -393,7 +447,7 @@ def main():
     all_stocks = stock_scanner.fetch_all_stocks()
     if not stock_scanner.LAST_FETCH_COMPLETE:
         raise RuntimeError("全市场数据不完整，保留旧池")
-    kept, dropped = stock_scanner.basic_filter(all_stocks)
+    kept, dropped = stock_scanner.basic_filter(all_stocks, early_setups=True)
     print(f"[stock_pool] 全市场{len(all_stocks)} → 基础过滤后{len(kept)}只 "
           f"(剔除:{json.dumps(dropped, ensure_ascii=False)})", file=sys.stderr, flush=True)
     if not kept:
@@ -413,6 +467,8 @@ def main():
         ind_score = ind_scores.get(ind_name, {}).get("score", 0)
         k["industry"] = ind_name
         k["industry_score"] = ind_score
+        if ind_score < IND_ELIMINATE:
+            continue  # same industry safety gate, before expensive full-history reads
         candidates.append(k)
     candidates.sort(key=lambda x: -x["amount"])
     if args.fast:
@@ -426,8 +482,10 @@ def main():
 
     # ⑤ 基准指数（上证/沪深300 近20日涨幅）
     bench_chg20 = bench300_chg20 = None
+    short_term.STARTUP_BENCHMARK = {}
     try:
         k1 = short_term.get_index_kline("sh000001", 30)
+        short_term.STARTUP_BENCHMARK = {str(b.get("day", ""))[:10]: b.get("close") for b in (k1 or [])}
         k3 = short_term.get_index_kline("sh000300", 30)
         if k1 and len(k1) >= 21:
             bench_chg20 = round((float(k1[-1]["close"]) / float(k1[-21]["close"]) - 1) * 100, 2)
@@ -477,7 +535,7 @@ def main():
             continue
         if ind < IND_CORE_MIN:
             e["_watch_only"] = True  # 行业中等：只能进 watch
-            if e["stock_score"] < IND_WATCH_STRONG:
+            if not e.get("opportunity") and e["stock_score"] < IND_WATCH_STRONG:
                 indu_excluded.append(f"{e['code']} {e['name']}: 行业{ind}中等但个股{int(e['stock_score'])}<{IND_WATCH_STRONG}")
                 continue
         after.append(e)
@@ -494,6 +552,7 @@ def main():
 
     # ⑧ 输出 stock_pool.json
     out = {
+        "score_basis": startup_policy.VERSION,
         "date": today,
         "market_status": market_status,
         "market_score": market_score_val,

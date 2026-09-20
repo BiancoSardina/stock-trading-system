@@ -9,6 +9,7 @@
 设计依据：~/.hermes/scripts/stock_pool_design_v1.md §4.1 + V1.1修改四
 """
 import json
+import math
 import time
 import urllib.request
 
@@ -83,7 +84,7 @@ def is_main_board(code):
     return code.startswith(MAIN_BOARD_PREFIX)
 
 
-def basic_filter(stocks):
+def basic_filter(stocks, early_setups=False):
     """
     基础过滤：
       ① 主板白名单（硬条件）
@@ -112,10 +113,12 @@ def basic_filter(stocks):
         except (TypeError, ValueError):
             dropped["other"] += 1
             continue
-        if price < MIN_PRICE:
+        # Startup research has no nominal-price/budget gate. Historical liquidity
+        # is checked after loading bars; today's low volume is not illiquidity.
+        if not math.isfinite(price) or price <= 0 or (not early_setups and price < MIN_PRICE):
             dropped["price"] += 1
             continue
-        if amount < MIN_AMOUNT:
+        if not early_setups and amount < MIN_AMOUNT:
             dropped["amount"] += 1
             continue
         if chg <= LIMIT_DOWN:

@@ -91,6 +91,12 @@ def write_bundle(report: str, diagnostics: str) -> str:
         "kind": "盘中全量技术分析（无AI解读，原始数据）",
         "generated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
         "analysis_only": True,
+        "research_contract": {
+            "version": "startup/v1", "budget_independent": True,
+            "candidate_paths": ["整理启动型", "超跌企稳型"],
+            "price_rr_is_before_costs": True, "research_is_not_order": True,
+            "D_and_UNKNOWN_forbid_new_buys": True,
+        },
         "local_ai_called": False,
         "pool": pool_meta(),
         "report": report,

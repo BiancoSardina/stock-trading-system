@@ -26,6 +26,7 @@ sys.path.insert(0, SCRIPT_DIR)
 import position_manager
 import qq_send
 from runtime import atomic_json, data_path, read_json
+from report_contract import analysis_environment
 
 REPORT_STATE_FILE = data_path("last_short_report.json")
 
@@ -84,7 +85,7 @@ def build_user_prompt(data: str, previous_report: str = "") -> str:
     return (
         "以下是定时任务脚本刚生成的技术分析数据（已算出MA、RSI、MACD、布林带、评分、买卖信号、"
         "集合竞价信息等）。请严格按系统提示输出不超过1200字的最终决策摘要。"
-        "只列脚本已批准动作，最多3条；不要逐只解释无操作候选。"
+        "最多列3个启动研究候选及条件区间，不受预设预算或传统强势等级限制；实际执行动作另列、最多3条，不把研究改写成订单。"
         "将上一轮报告作为差异基线，仅列新增、取消、升级、降级和价格失效。\n\n"
         "【上一轮已发送摘要】\n" + previous + "\n\n"
         "【技术分析数据】\n"
@@ -185,7 +186,7 @@ def main():
     # 1) 生成技术数据
     script = os.path.join(SCRIPT_DIR, "short_term.py")
     try:
-        _env = dict(os.environ)  # 2026-08-20 恢复全量：不设 HOLD_ONLY，核心池/观察ETF/个股/股票池全输出
+        _env = analysis_environment()
         # V1.5（2026-08-21 用户要求：输出太多）：非持仓 B级及以下（B/C/D）不输出——
         # 不送AI分析、不推送QQ。持仓/A/S级保留。核心池+监测池同样过滤。
         _env["FILTER_MIN_GRADE"] = "A"

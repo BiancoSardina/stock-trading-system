@@ -74,12 +74,17 @@ def build_bundle(pool, positions, current_watchlist, analysis, generated_at=None
         "existing_watchlist": current_watchlist,
         "python_analysis": analysis,
         "decision_contract": {
+            "opportunity_version": "startup/v1",
+            "candidate_paths": ["整理启动型", "超跌企稳型"],
+            "budget_independent_research": True,
+            "strength_grade_is_not_candidate_gate": True,
             "max_new_actions": 3,
             "must_reject_stale_data": True,
             "must_reject_unknown_or_D_market_new_entries": True,
-            "must_check_net_risk_reward": True,
+            "must_check_price_risk_reward_for_research": True,
+            "must_check_net_risk_reward_for_orders": True,
             "positions_are_context_only": True,
-            "note": "本数据包不包含AI结论；请上传给外部AI完成股票池质量裁决。持仓不作为裁决门槛。",
+            "note": "本数据包不包含AI结论；外部AI按opportunity形态证据裁决监测质量。两类候选不要求站上MA60或放量大涨，不因预设预算淘汰。D级可监测但禁止新买；UNKNOWN拒绝裁决。仅引用包中条件区间，不编造价格；持仓仅作背景。",
         },
     }
 

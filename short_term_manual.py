@@ -67,7 +67,7 @@ def ensure_stock_coverage(text: str, data: str) -> str:
 
 
 # ─────────────────────────── 手动模式 prompt ───────────────────────────
-from report_contract import BASE_PROMPT as SYSTEM_PROMPT
+from report_contract import BASE_PROMPT as SYSTEM_PROMPT, analysis_environment
 
 
 def build_position_context() -> str:
@@ -81,7 +81,7 @@ def build_user_prompt(data: str) -> str:
         f"【手动执行 · 数据采集时间 {now}】\n"
         "以下是脚本刚生成的实时技术分析数据（已算出MA、RSI、MACD、布林带、评分、买卖信号、"
         "实时行情等，数据为最新价）。请严格按系统提示输出不超过1200字的最终决策摘要；"
-        "只展开持仓风险和脚本批准的最多3个动作，无操作候选不逐只解释。\n\n"
+        "展开持仓风险及最多3个启动研究候选，引用脚本条件区间与失效位；研究不绑定预算或数量，实际执行动作另列。\n\n"
         "【技术分析数据】\n"
         + data
     )
@@ -135,7 +135,7 @@ def main():
     # 1) 生成实时技术数据
     script = os.path.join(SCRIPT_DIR, "short_term.py")
     try:
-        _env = dict(os.environ)  # 2026-08-20 恢复全量：与定时入口一致；如需持仓聚焦可 HOLD_ONLY=1 环境变量覆盖
+        _env = analysis_environment()  # Research and risk previews never write order/signal state.
         proc = subprocess.run(
             [sys.executable, script],
             capture_output=True,

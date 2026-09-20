@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import position_manager
 import decision_manager
 import entry_policy
+import startup_policy
 from paper_execution import fee as planned_fee, SLIPPAGE as PLANNED_SLIPPAGE
 from runtime import macd, data_path, analysis_only, positive, exclusive, quote_is_fresh, weekly_averages, restore_analysis_mode, align_daily_bars, position_key
 
@@ -62,6 +63,7 @@ def load_watch_stocks():
 
 # 股票池（stock_pool.py 五因子选股；最终裁决由外部AI根据 decision_bundle 完成）
 STOCK_POOL = {}  # {date, market_status, market_score, core, watch, valid, stale_days}
+STARTUP_BENCHMARK = {}  # dated completed benchmark closes; aligned inside startup_policy
 def load_stock_pool():
     """读取 stock_pool.json，date 新鲜度校验（V1.1 三路合并第1路）。
 
@@ -991,6 +993,30 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         lines.append(f"  🔴 {bull_n}/8项偏多 → 偏空承压")
     else:
         lines.append(f"  📊 {bull_n}/8项偏多")
+
+    if not is_etf and analysis_only() and is_watch and not pos:
+        # Research is independent of order sizing. Do not feed a synthetic lot
+        # into execution to bypass minimum commissions or mutate signal state.
+        opportunity = startup_policy.evaluate(kline, rt, MARKET.get("state", "UNKNOWN"),
+                                               benchmark=STARTUP_BENCHMARK)
+        previous = decision_manager.load_states().get(code, {})
+        cooldown = entry_policy.cooldown_reason(previous.get("last_stop_signal_date"),
+                         [str(k['day'])[:10] for k in kline], datetime.now().strftime('%Y-%m-%d'))
+        if cooldown:
+            opportunity["triggered"] = False
+            opportunity["status"] = "候选待确认" if opportunity["candidate"] else opportunity["status"]
+            opportunity["reasons"].append(cooldown)
+        # Do not bury early candidates behind the old S/A display filter.
+        lines[0] = f"\n{ce} 【{name}({code})】👀 启动形态研究 | 机会评分:{opportunity['score']}/100"
+        lines[1] = f"  传统强势评分:{score}/100（{quality}级，仅背景，不是入选或买入门槛）"
+        lines.extend(startup_policy.render(opportunity))
+        ENTRY_REVIEWS.append({"time": datetime.now().isoformat(), "version": startup_policy.VERSION,
+                              "code": code, "name": name, "opportunity": opportunity,
+                              "final_action": "RESEARCH_ONLY", "quantity_considered": None})
+        if CURRENT_PERIOD == "尾盘":
+            FINAL_LIST.append({"code": code, "name": name, "action": opportunity["status"],
+                               "quantity": None, "text": "；".join(opportunity["reasons"])})
+        return "\n".join(lines)
     
     # 操作建议+置信度
     action_type = None  # buy / sell / hold / watch
@@ -1357,11 +1383,12 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
 @exclusive(lambda: data_path("short_term.run"))
 @restore_analysis_mode
 def main():
-    global ACTION_LIST, CURRENT_PERIOD, FILTER_MIN_GRADE, FINAL_LIST, SIGNAL_LOG, ENTRY_REVIEWS
+    global ACTION_LIST, CURRENT_PERIOD, FILTER_MIN_GRADE, FINAL_LIST, SIGNAL_LOG, ENTRY_REVIEWS, STARTUP_BENCHMARK
     ACTION_LIST = []
     SIGNAL_LOG = []
     ENTRY_REVIEWS = []
     FINAL_LIST = []  # V1.6 尾盘确定性结论（每标的六动作之一）
+    STARTUP_BENCHMARK = {}
     # V1.5（2026-08-21 用户要求）：FILTER_MIN_GRADE=A 时非持仓B级及以下不输出
     # （short_term_ai.py 4次定时任务开启；手动分析/晚间持仓任务不设置=全量）
     FILTER_MIN_GRADE = os.environ.get("FILTER_MIN_GRADE", "")
@@ -1410,6 +1437,7 @@ def main():
     bench_chg20 = None
     try:
         _idx_k = get_index_kline("sh000001", 30)
+        STARTUP_BENCHMARK = {str(b.get("day", ""))[:10]: b.get("close") for b in (_idx_k or [])}
         if _idx_k and len(_idx_k) >= 21:
             bench_chg20 = round((float(_idx_k[-1]["close"])/float(_idx_k[-21]["close"])-1)*100, 2)
     except Exception:
@@ -1546,8 +1574,11 @@ def main():
         _sp_watch = STOCK_POOL.get("watch", [])
         # V1.7 筛选：watch 按综合分降序，前 WATCH_DETAIL_TOP 只逐只，其余一行简略
         _sp_watch_sorted = sorted(_sp_watch, key=lambda x: -(x.get("total_score") or 0))
-        _sp_watch_detail = _sp_watch_sorted[:WATCH_DETAIL_TOP]
-        _sp_watch_brief = _sp_watch_sorted[WATCH_DETAIL_TOP:]
+        # Research must inspect every bounded watch candidate, not hide the
+        # early/low-strength names below the former top-five display cutoff.
+        _detail_count = len(_sp_watch_sorted) if analysis_only() else WATCH_DETAIL_TOP
+        _sp_watch_detail = _sp_watch_sorted[:_detail_count]
+        _sp_watch_brief = _sp_watch_sorted[_detail_count:]
         _sp_covered = {c for c, *_ in STOCKS} | {w.get("code", "") for w in WATCH_STOCKS}
         _pool_blocks, _pool_tags = [], []
         _brief_lines = []
@@ -1581,7 +1612,7 @@ def main():
                   f"{STOCK_POOL.get('market_score','')}分)】")
             print("=" * 55)
             for _b, (_lvl, _it) in zip(_pool_blocks, _pool_tags):
-                _up = "升core需≥85分" if _lvl == "watch" else "core"
+                _up = ("启动候选，等待价格条件" if _it.get("opportunity") else "升core需≥85分") if _lvl == "watch" else "core"
                 _tag = (f"  📌 股票池{_up}: 总分{_it.get('total_score','-')} 行业{_it.get('industry','')}"
                         f"({_it.get('industry_score','-')}分) 入池{_it.get('days_in_pool','-')}日 20日{_it.get('chg20','-')}%"
                         f" | 当日五因子选出，待外部AI裁决")
@@ -1636,8 +1667,8 @@ def main():
     print(f"\n{'='*55}")
     print(f"💡 {period}总结")
     if period == "尾盘":
-        print(f"  这是今天最后操作窗口，14:55前完成下单")
-        print("  尾盘仍须满足结构买入区、费用后盈亏比和止损观察期；没有合格机会就不买")
+        print("  尾盘不强制买入；启动研究检查位置与价格盈亏比，实际订单另核验费用与数量")
+        print("  市场禁买和止损观察期仍有效；没有合格买点可保留提前候选")
     elif period == "收割后":
         print(f"  量化收割结束，可观察捡漏")
         print(f"  但建议尾盘14:45再最终确认")
@@ -1673,7 +1704,7 @@ def main():
             print(f"\n⚠️ 风控报告生成异常: {e}")
     
     if FINAL_LIST:
-        print("\n📋 最终动作汇总（与信号日志同一裁决）")
+        print("\n📋 研究与执行汇总（启动研究不写订单或信号日志）")
         for item in FINAL_LIST:
             print(f"  {item['name']}({item['code']})：{item['action']} {item['text']}")
     if not analysis_only():
