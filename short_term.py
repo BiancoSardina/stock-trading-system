@@ -11,6 +11,7 @@ import position_manager
 import decision_manager
 import entry_policy
 import startup_policy
+import daily_history
 from paper_execution import fee as planned_fee, SLIPPAGE as PLANNED_SLIPPAGE
 from runtime import macd, data_path, analysis_only, positive, exclusive, quote_is_fresh, weekly_averages, restore_analysis_mode, align_daily_bars, position_key
 
@@ -837,7 +838,10 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         rt = None
     if not rt: return f"\n❌ {name} 数据获取失败"
     try:
-        kline = align_daily_bars(get_kline(code, 120), rt)
+        # Only research reuses completed daily history; holdings/ETF execution stay unchanged.
+        rows = (daily_history.get(code, 120, rt, lambda: get_kline(code, 120))
+                if analysis_only() and not is_etf and hold == 0 and not pos else get_kline(code, 120))
+        kline = align_daily_bars(rows, rt)
         closes = [float(k["close"]) for k in kline]
         highs = [float(k["high"]) for k in kline]
         lows = [float(k["low"]) for k in kline]

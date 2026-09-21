@@ -12,6 +12,13 @@ DATA_DIR = Path(os.environ.get("STOCK_DATA_DIR", Path(__file__).resolve().parent
 
 
 def data_path(name):
+    if name in ("stock_pool.json", "decision_bundle_latest.json"):
+        from pool_batch import resolve
+        return resolve(name)
+    # Killed pipeline children may leave lock files. Keep those locks isolated
+    # inside their unique batch; the parent holds the cross-run OS lock.
+    if name.endswith(".run") and os.environ.get("POOL_BATCH_DIR"):
+        return str(Path(os.environ["POOL_BATCH_DIR"]) / name)
     return str(DATA_DIR / name)
 
 

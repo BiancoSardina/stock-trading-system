@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from runtime import atomic_json, data_path
+from pool_batch import write_path
 import position_manager
 import stock_pool_manager as spm
 import watchlist
@@ -57,6 +58,7 @@ def build_bundle(pool, positions, current_watchlist, analysis, generated_at=None
     generated_at = generated_at or _now()
     return {
         "schema": SCHEMA,
+        "batch_id": pool.get("batch_id"),
         "generated_at": generated_at.strftime("%Y-%m-%d %H:%M:%S"),
         "valid_until": (generated_at + timedelta(seconds=MAX_AGE_SECONDS)).strftime("%Y-%m-%d %H:%M:%S"),
         "integrity": {
@@ -105,7 +107,7 @@ def main():
         analysis = {"generated_at": now.strftime("%Y-%m-%d %H:%M:%S"), "report": "",
                     "diagnostics": "未运行 short_term.py；仅供收盘候选裁决。"}
     bundle = build_bundle(pool, position_manager.load_positions(), watchlist.load_watchlist(), analysis, _now())
-    output = args.output or data_path("decision_bundle_latest.json")
+    output = args.output or write_path("decision_bundle_latest.json")
     atomic_json(output, bundle)
     print(f"[decision_bundle] 已生成 {output}｜有效至 {bundle['valid_until']}｜本地未调用AI", file=sys.stderr)
 

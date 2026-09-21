@@ -59,6 +59,9 @@ import stock_scanner
 import industry_rank
 import stock_pool_manager as spm
 import startup_policy
+import daily_history
+from pool_batch import write_path
+from runtime import atomic_json
 
 # ===== 评分常量（V1.2：评分目标=全市场最强个股，行业"不拖后腿"；设计见 stock_pool_design_v2.md）=====
 SCORE_W_STOCK = 0.85        # 综合评分：个股权重（V1.1 0.7 → 个股主导）
@@ -148,10 +151,10 @@ def score_stock(code, name, ind_score, bench_chg20, bench300_chg20, amount=None,
         rt = short_term.get_rt(code)
     except Exception:
         return None
-    if not rt:
+    if not rt or not quote_is_fresh(rt) or not positive(rt.get("cur")) or not positive(rt.get("prev")):
         return None
     try:
-        kline = align_daily_bars(_get_kline(code, 120), rt)
+        kline = align_daily_bars(daily_history.get(code, 120, rt, lambda: _get_kline(code, 120)), rt)
         closes = [float(k["close"]) for k in kline]
         highs = [float(k["high"]) for k in kline]
         lows = [float(k["low"]) for k in kline]
@@ -293,7 +296,10 @@ def build_reasons(entry, ind_name, ind_score):
 
 def generate_pool(scored, market_status, old_pool, today):
     """
-    池生成（V1.2 重写；V1.4 2026-09-07 用户改版）：
+    startup/v1：候选形态成立、机会分≥60、行业≥40；CORE另需早期条件触发、
+    行业≥55且市场非D；其余合格候选进入WATCH。MA20/MA60不是准入硬门槛。
+    每行业最多1只，容量A/B/C为5/8，D为0/8。生命周期仍按交易日期继承。
+    以下仅为无opportunity字段的旧格式兼容分支，不适用于启动候选：
       · 规模（上限不填满）：A5/8 B5/8 C5/8 D0/8 —— 容量是最高限制，宁缺毋滥
       · 门槛：A75/B80/C82/D90（宽容期 days≤3 → -3）
       · 行业唯一：全池同行业只取1只（按 total 降序先到先得=最强；core/watch 共享，2026-09-07 用户改版）
@@ -428,6 +434,9 @@ def main():
                     help="降级模式：按成交额粗筛前N只精评（全量评分超时/限流风险时用）")
     args = ap.parse_args()
 
+    if not args.limit:
+        write_path("stock_pool.json")  # Fail before scanning if a pipeline is required.
+
     t0 = time.time()
     today = datetime.now().strftime("%Y-%m-%d")
 
@@ -477,7 +486,7 @@ def main():
         print(f"[stock_pool] --fast 降级模式：按成交额粗筛前{len(candidates)}只精评", file=sys.stderr, flush=True)
     elif args.limit:
         candidates = candidates[:args.limit]
-    print(f"[stock_pool] 全量五因子评分目标 {len(candidates)}只（V1.2：股票先排序，行业后过滤）",
+    print(f"[stock_pool] 启动机会评分目标 {len(candidates)}只（已先通过行业≥{IND_ELIMINATE}闸门）",
           file=sys.stderr, flush=True)
 
     # ⑤ 基准指数（上证/沪深300 近20日涨幅）
@@ -494,32 +503,61 @@ def main():
     except Exception:
         pass
 
-    # ⑥ 五因子评分（串行K线拉取，约0.6s/只；V1.2 全量评分，位置硬排除在此统计）
+    # ⑥ 启动评分：完整日线缓存 + 新鲜报价；串行执行，实测耗时写入scan_metrics。
     scored, fail, pos_excluded = [], 0, []
+    scan_started = time.monotonic()
+    step_deadline = float(os.environ.get("PIPELINE_STEP_DEADLINE", "inf"))
+    metrics = {"source_count": len(all_stocks), "basic_count": len(kept),
+               "candidate_count": len(candidates), "processed": 0, "success": 0, "failed": 0,
+               "excluded": 0, "complete": False, "cache": dict(daily_history.STATS)}
+
+    def save_progress():
+        elapsed = time.monotonic() - scan_started
+        metrics.update(success=len(scored), failed=fail,
+                       excluded=len(pos_excluded), scan_seconds=round(elapsed, 2),
+                       elapsed_seconds=round(time.time()-t0, 2), cache=dict(daily_history.STATS),
+                       remaining_seconds=round(max(0, step_deadline-time.monotonic()), 2)
+                       if step_deadline != float("inf") else None,
+                       estimated_remaining_seconds=round(elapsed / metrics["processed"] *
+                           (len(candidates)-metrics["processed"]), 2) if metrics["processed"] else None)
+        if os.environ.get("POOL_BATCH_DIR"):
+            atomic_json(os.path.join(os.environ["POOL_BATCH_DIR"], "scan_metrics.json"), metrics)
+        print("[stock_pool] scan_metrics=" + json.dumps(metrics, ensure_ascii=False), file=sys.stderr, flush=True)
+
+    save_progress()
     for i, c in enumerate(candidates):
+        if time.monotonic() >= step_deadline:
+            save_progress()
+            raise TimeoutError("评分阶段预算耗尽；未发布部分股票池")
         e = score_stock(c["code"], c["name"], c["industry_score"], bench_chg20, bench300_chg20,
                         amount=c.get("amount"), turnover=c.get("turnover"))
         if e:
             if e.get("_exclude"):
                 pos_excluded.append(f"{e['code']} {e['name']}: {e['_exclude']}")
-                continue
-            e["industry"] = c["industry"]
-            e["industry_score"] = c["industry_score"]
-            scored.append(e)
+            else:
+                e["industry"] = c["industry"]
+                e["industry_score"] = c["industry_score"]
+                scored.append(e)
         else:
             fail += 1
             if fail <= 15:
                 print(f"[stock_pool] ⚠️ 评分失败: {c['code']} {c['name']}", file=sys.stderr, flush=True)
-        time.sleep(KLINE_SLEEP)  # V1.2 防限流（全量781只连续请求）
+        metrics["processed"] = i + 1
+        if fail > max(15, int(len(candidates) * 0.02)):
+            save_progress()
+            raise RuntimeError(f"候选行情失败过多（失败{fail}/{len(candidates)}）；停止扫描并保留旧批次")
+        time.sleep(KLINE_SLEEP)
         if (i + 1) % 100 == 0:
-            print(f"[stock_pool] 评分进度 {i+1}/{len(candidates)}", file=sys.stderr, flush=True)
+            save_progress()
+    metrics["complete"] = True
+    save_progress()
     print(f"[stock_pool] 评分完成: 成功{len(scored)} 失败{fail} 位置硬排除{len(pos_excluded)}",
           file=sys.stderr, flush=True)
 
     if bench_chg20 is None or bench300_chg20 is None:
         raise RuntimeError("基准指数缺失（上证/沪深300 K线不可用），保留旧池")
     # 失败容忍：停牌/除权/新股等边缘标的单只行情失败属正常（实测967只偶发6只≈0.6%），
-    # 大面积失败（>2% 或 >15只）才视为数据源故障中止；小比例跳过并告警
+    # 保持既有容忍阈值：失败数超过 max(15, 候选数×2%) 才整体中止。
     if fail > max(15, int(len(candidates) * 0.02)):
         raise RuntimeError(f"候选行情失败过多（失败{fail}/{len(candidates)}），保留旧池")
     if fail:
@@ -552,6 +590,8 @@ def main():
 
     # ⑧ 输出 stock_pool.json
     out = {
+        "batch_id": os.environ.get("POOL_BATCH_ID"),
+        "scan_metrics": metrics,
         "score_basis": startup_policy.VERSION,
         "date": today,
         "market_status": market_status,
@@ -574,26 +614,26 @@ def main():
               f"CORE={len(core_pool)} WATCH={len(watch_pool)}", file=sys.stderr)
         return
     print(f"📋 股票池日报 {today} | 市场{market_status}级({market_score_val}分)")
-    print(f"候选链路: 全市场{len(all_stocks)} → 主板过滤{len(kept)} → 全量五因子评分{total_scored}只"
+    print(f"候选链路: 全市场{len(all_stocks)} → 基础过滤{len(kept)} → 行业候选{len(candidates)} → 启动合格{total_scored}只"
           f"（位置硬排除{len(pos_excluded)} 行业准入排除{len(indu_excluded)}）")
     print(f"──────────────────────────────")
     if core_pool:
         print(f"🎯 CORE 核心池 {len(core_pool)}只（容量上限{cap_core}，筛选从严宁缺毋滥；"
-              f"门槛{spm.entry_threshold(market_status, None)}）:")
+              f"startup/v1 机会分≥{startup_policy.MIN_SCORE}，早期条件满足、行业≥{IND_CORE_MIN}）:")
         for e in core_pool:
             print(f"  {e['code']} {e['name']} total={e['total_score']} 个股{e['stock_score']} "
                   f"{e['industry']}({e['industry_score']}) 位置扣{e['position']['deduct']} "
                   f"d{e['days_in_pool']}天")
     else:
-        print(f"🎯 CORE 核心池: 无达标票（门槛{spm.entry_threshold(market_status, None)}分"
-              f"+ 个股≥{CORE_STOCK_MIN} + 趋势成立 + 行业≥{IND_CORE_MIN}）")
+        print(f"🎯 CORE 核心池: 无达标票（启动形态、机会分≥{startup_policy.MIN_SCORE}、"
+              f"早期条件满足、行业≥{IND_CORE_MIN}；D级禁入CORE）")
     if watch_pool:
         print(f"👀 WATCH 观察池 {len(watch_pool)}只（容量上限{cap_watch}）:")
         for e in watch_pool[:15]:
             print(f"  {e['code']} {e['name']} total={e['total_score']} 个股{e['stock_score']} "
                   f"{e['industry']}({e['industry_score']}) d{e['days_in_pool']}天")
     elif market_status != "D":
-        print(f"👀 WATCH 观察池: 无达标票（个股≥{WATCH_STOCK_MIN} + 价>MA20）")
+        print(f"👀 WATCH 观察池: 无达标票（启动形态、机会分≥{startup_policy.MIN_SCORE}、行业≥{IND_ELIMINATE}）")
     # V1.2 行业分布（覆盖率软指标）
     from collections import Counter
     ind_core = Counter(e["industry"] for e in core_pool)
@@ -608,7 +648,7 @@ def main():
     if stats["evicted"]:
         print(f"🗑 淘汰 {len(stats['evicted'])}只: " + "; ".join(stats["evicted"][:5]))
     print(f"──────────────────────────────")
-    print(f"次日 18:00 AI 将裁决 CORE {len(core_pool)}只 → 监测名单；WATCH 直接进盘中观察")
+    print("CORE/WATCH 均为研究候选，等待外部AI按startup/v1裁决监测质量；不代表买入许可")
 
 
 if __name__ == "__main__":

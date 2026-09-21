@@ -9,7 +9,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = ["test_decision_manager.py", "test_stock_pool_v12.py", "test_pool_gate_v132.py",
          "test_regressions.py", "test_entry_policy.py", "test_rebound_pool.py",
-         "test_decision_bundle.py"]
+         "test_decision_bundle.py", "test_startup_policy.py", "test_pool_pipeline.py"]
 
 with tempfile.TemporaryDirectory(prefix="stock_regression_") as temp:
     target = Path(temp)
