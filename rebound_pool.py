@@ -44,7 +44,7 @@ import stock_scanner
 import industry_rank
 
 POOL_PATH = os.path.join(SCRIPT_DIR, "rebound_pool.json")
-TREND_POOL_PATH = os.path.join(SCRIPT_DIR, "stock_pool.json")
+TREND_POOL_PATH = short_term.data_path("stock_pool.json")
 
 KLINE_SLEEP = 0.05        # K线请求间隔（防456限流，同 stock_pool）
 FAST_PRESCREEN = 400      # --fast 按成交额粗筛前N只

@@ -27,6 +27,7 @@ import sys
 import time
 
 from runtime import atomic_json, data_path
+from pool_batch import pinned_current
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ANALYSIS_TIMEOUT = 360  # short_term.py 全量最长秒数（与 decision_bundle.py 默认一致）
@@ -118,11 +119,12 @@ def main():
     task = args.task or infer_task()
     print(f"[tech_analysis_bundle] 🚀 任务: {task} {time.strftime('%Y-%m-%d %H:%M:%S')}", file=sys.stderr, flush=True)
 
-    report, err = run_analysis()
-    if not report.strip():
-        print("[tech_analysis_bundle] ❌ short_term.py 输出为空，中止", file=sys.stderr)
-        sys.exit(1)
-    write_bundle(report, err)
+    with pinned_current():
+        report, err = run_analysis()
+        if not report.strip():
+            print("[tech_analysis_bundle] ❌ short_term.py 输出为空，中止", file=sys.stderr)
+            sys.exit(1)
+        write_bundle(report, err)
 
     if args.skip_upload:
         print("[tech_analysis_bundle] skip-upload：未归档上传", file=sys.stderr)
