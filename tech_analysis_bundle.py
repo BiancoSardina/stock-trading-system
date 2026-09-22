@@ -10,14 +10,15 @@ tech_analysis_bundle.py — 盘中全量技术分析 → 数据包 → git 上�
      · 完整      → 正常归档上传
      · 部分缺失  → 正常归档上传，包内明确列出失败标的（失败标的不形成买点结论）
      · 不可用    → 不归档上传，写 analysis_runs/<ts>.json 失败记录并以非 0 退出
-  4. subprocess 调 data_package_upload.py --task <时段任务名> --files technical_analysis_latest.json
+  4. 将本轮包固定到 analysis_runs/<ts>/technical_analysis_latest.json，再从该快照归档上传
+     （latest 只用于查看，不作为上传或重试的数据源）
      → 归档到 data_packages/technical_analysis_latest_<ts>.json → git push → QQ 提醒
      （该步持跨链公共发布锁 runtime.publish_lock()，与池链共用同一把锁）
 
 任务名按运行时段自动推断：09 点→"早盘技术分析" / 11 点→"收割后技术分析" /
 13 点→"午后技术分析" / 14 点→"尾盘技术分析"，也可 --task 手动覆盖。
 
-重试：--retry-upload <ts> 只重跑归档上传（复用原批次文件名），不重新分析。
+重试：--retry-upload <ts> 只上传该轮快照（兼容已有历史归档），找不到则拒绝，不重新分析。
 
 ⚠️ 与 v3.2 全家族不同：本脚本有 argparse（--help 安全）。cron no_agent 调用无需传参。
 """
@@ -25,9 +26,12 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
+from pathlib import Path
 
 from runtime import atomic_json, data_path, publish_lock
 from pool_batch import pinned_current
@@ -91,10 +95,11 @@ def completeness(metrics, min_coverage=None) -> dict:
     market_ok = (metrics.get("market") or {}).get("data_ok") is True
     targets = int(metrics.get("targets") or 0)
     failed = list(metrics.get("failed") or [])
-    analyzed = int(metrics.get("analyzed") or max(0, targets - len(failed)))
+    analyzed = int(metrics.get("analyzed", max(0, targets - len(failed))))
     coverage = (analyzed / targets) if targets else 0.0
     info = {"targets": targets, "analyzed": analyzed, "failed": failed,
-            "market_data_ok": market_ok, "min_coverage": min_coverage,
+            "market_data_ok": market_ok, "market_missing": (metrics.get("market") or {}).get("missing", []),
+            "min_coverage": min_coverage,
             "coverage_pct": round(coverage * 100, 1)}
     if targets <= 0:
         return dict(info, verdict="不可用", reason="没有可分析的标的（目标数0）")
@@ -106,6 +111,7 @@ def completeness(metrics, min_coverage=None) -> dict:
         notes.append(f"失败{len(failed)}只不形成买点结论")
     if not market_ok:
         notes.append("市场数据缺失(market.data_ok≠True)：市场闸门按未知处理，买点结论仅供研究、不可执行")
+        notes.extend(info["market_missing"])
     if not notes:
         return dict(info, verdict="完整", reason=f"全部{targets}只标的分析成功")
     return dict(info, verdict="部分缺失",
@@ -159,10 +165,14 @@ def pool_meta() -> dict:
         return {}
 
 
-def write_bundle(report: str, diagnostics: str, check: dict) -> str:
-    """把分析结果写成 technical_analysis_latest.json（供 data_package_upload 归档上传）"""
+def write_bundle(report: str, diagnostics: str, check: dict, ts: str = "") -> str:
+    """先保存本轮独立快照，再更新 latest；上传和重试只消费独立快照。"""
+    ts = ts or time.strftime("%Y%m%d%H%M%S")
+    if not TS_PATTERN.fullmatch(ts):
+        raise ValueError("Analysis timestamp must be 14 digits")
     bundle = {
         "schema": SCHEMA,
+        "archive_ts": ts,
         "kind": "盘中全量技术分析（无AI解读，原始数据）",
         "generated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
         "analysis_only": True,
@@ -181,12 +191,18 @@ def write_bundle(report: str, diagnostics: str, check: dict) -> str:
         "report": report,
         "diagnostics": (diagnostics or "")[-4000:],
     }
+    snapshot_dir = Path(data_path("analysis_runs")) / ts
+    # Fail closed on same-second collisions; never replace an earlier retry source.
+    snapshot_dir.mkdir(parents=True, exist_ok=False)
+    snapshot = snapshot_dir / "technical_analysis_latest.json"
+    atomic_json(snapshot, bundle)
     out = data_path("technical_analysis_latest.json")
     atomic_json(out, bundle)
     size = os.path.getsize(out)
     print(f"[tech_analysis_bundle] 📦 分析数据包已生成 {out} ({size/1024:.1f}KB) "
           f"完整性={check.get('verdict')}", file=sys.stderr, flush=True)
-    return out
+    print(f"[tech_analysis_bundle] 本轮重试标识: {ts}", file=sys.stderr, flush=True)
+    return str(snapshot)
 
 
 def record_run(check: dict, task: str, extra: "dict | None" = None) -> str:
@@ -207,15 +223,22 @@ def record_run(check: dict, task: str, extra: "dict | None" = None) -> str:
     return path
 
 
-def upload(task: str, ts: str = "") -> int:
-    """归档上传：持跨链公共发布锁（子进程用 PUBLISH_LOCK_HELD=1 避免自锁）"""
+def upload(task: str, ts: str) -> int:
+    """只上传指定轮次快照；兼容已有历史归档，绝不回退到 latest。"""
+    if not TS_PATTERN.fullmatch(ts):
+        raise ValueError("Analysis timestamp must be 14 digits")
+    snapshot = Path(data_path("analysis_runs")) / ts / "technical_analysis_latest.json"
+    archived = Path(SCRIPT_DIR) / "data_packages" / f"technical_analysis_latest_{ts}.json"
+    source = snapshot if snapshot.is_file() else archived
+    if not source.is_file():
+        raise ValueError(f"找不到 {ts} 的原始分析包；拒绝用 latest 代替，请重新分析")
     cmd = [sys.executable, os.path.join(SCRIPT_DIR, "data_package_upload.py"),
-           "--task", task, "--files", "technical_analysis_latest.json"]
-    if ts:
-        cmd += ["--ts", ts]
+           "--task", task, "--files", "technical_analysis_latest.json", "--ts", ts]
     env = dict(os.environ, PUBLISH_LOCK_HELD="1")
-    with publish_lock():
-        proc = subprocess.run(cmd, cwd=SCRIPT_DIR, env=env, timeout=180)
+    with publish_lock(), tempfile.TemporaryDirectory(prefix="analysis_upload_") as temp:
+        # Freeze exact source bytes for the child, including legacy archive retries.
+        shutil.copyfile(source, Path(temp) / "technical_analysis_latest.json")
+        proc = subprocess.run(cmd + ["--source-dir", temp], cwd=SCRIPT_DIR, env=env, timeout=180)
     return proc.returncode
 
 
@@ -234,7 +257,12 @@ def main():
             sys.exit(2)
         task = args.task or task_for_ts(ts)
         print(f"[tech_analysis_bundle] ♻️ 重试归档上传 task={task} ts={ts}", file=sys.stderr, flush=True)
-        sys.exit(upload(task, ts))
+        try:
+            code = upload(task, ts)
+        except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+            print(f"[tech_analysis_bundle] 重试失败：{exc}", file=sys.stderr)
+            sys.exit(1)
+        sys.exit(code)
 
     task = args.task or infer_task()
     print(f"[tech_analysis_bundle] 🚀 任务: {task} {time.strftime('%Y-%m-%d %H:%M:%S')}", file=sys.stderr, flush=True)
@@ -245,9 +273,10 @@ def main():
             print("[tech_analysis_bundle] ❌ short_term.py 输出为空，中止", file=sys.stderr)
             sys.exit(1)
         check = completeness(read_metrics())
-        write_bundle(report, err, check)
+        ts = time.strftime("%Y%m%d%H%M%S")
+        write_bundle(report, err, check, ts)
         if check["verdict"] not in VALID_VERDICTS:
-            record_run(check, task, {"archived": False})
+            record_run(check, task, {"archived": False, "archive_ts": ts})
             print(f"[tech_analysis_bundle] ❌ 分析完整性={check['verdict']}：{check['reason']}；"
                   f"不归档上传（诊断包已生成）", file=sys.stderr, flush=True)
             sys.exit(1)
@@ -258,9 +287,15 @@ def main():
         print("[tech_analysis_bundle] skip-upload：未归档上传", file=sys.stderr)
         return
 
-    code = upload(task)
-    if code == 0:
-        record_run(check, task, {"archived": True})
+    try:
+        code = upload(task, ts)
+    except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+        record_run(check, task, {"archived": False, "archive_ts": ts, "error": str(exc)})
+        print(f"[tech_analysis_bundle] 上传失败：{exc}；可重试 --retry-upload {ts}", file=sys.stderr)
+        sys.exit(1)
+    record_run(check, task, {"archived": code == 0, "archive_ts": ts, "upload_exit": code})
+    if code:
+        print(f"[tech_analysis_bundle] 上传未完成；可重试 --retry-upload {ts}", file=sys.stderr)
     sys.exit(code)
 
 

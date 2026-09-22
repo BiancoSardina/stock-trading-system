@@ -605,9 +605,17 @@ def market_score(indices=None):
     b, b_d = _breadth_score()
     v, v_d = _volume_score()
     e, e_d = _external_score()
-    if not indices or any("缺失" in str(x) for x in (t_d, b_d, v_d, e_d)):
-        MARKET.update({"score": None, "state": "UNKNOWN", "position": 0, "data_ok": False})
-        return ["⚠️ 市场数据缺失：暂停新增买入，持仓风险仍独立检查"]
+    missing = ["指数实时报价缺失"] if not indices else []
+    for component, details in (("指数趋势", t_d), ("赚钱效应", b_d),
+                               ("成交量", v_d), ("外部环境", e_d)):
+        for detail in details if isinstance(details, list) else [details]:
+            if "缺失" in str(detail):
+                missing.append(f"{component}：{detail}")
+    if missing:
+        MARKET.update({"score": None, "state": "UNKNOWN", "position": 0,
+                       "data_ok": False, "missing": missing})
+        return ["⚠️ 市场数据缺失：暂停新增买入，持仓风险仍独立检查",
+                *[f"  缺失子项：{detail}" for detail in missing]]
     total = t + b + v + e
     if total >= 80: state, pos, icon = "A", 80, "🟢"
     elif total >= 65: state, pos, icon = "B", 60, "🟡"
@@ -851,7 +859,7 @@ def analysis_metrics():
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "analysis_only": bool(analysis_only()),
             "market": {"state": MARKET.get("state"), "score": MARKET.get("score"),
-                       "data_ok": market_ok},
+                       "data_ok": market_ok, "missing": MARKET.get("missing", [])},
             "market_data_ok": None if market_ok is None else bool(market_ok),
             "targets": targets, "analyzed": analyzed,
             "failed": failed, "coverage": coverage,
@@ -1034,6 +1042,8 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         # into execution to bypass minimum commissions or mutate signal state.
         opportunity = startup_policy.evaluate(kline, rt, MARKET.get("state", "UNKNOWN"),
                                                benchmark=STARTUP_BENCHMARK)
+        if opportunity["status"] == "数据不足":
+            return _analysis_fail(code, name, "启动分析数据不足：" + "；".join(opportunity["reasons"]))
         previous = decision_manager.load_states().get(code, {})
         cooldown = entry_policy.cooldown_reason(previous.get("last_stop_signal_date"),
                          [str(k['day'])[:10] for k in kline], datetime.now().strftime('%Y-%m-%d'))
@@ -1467,6 +1477,8 @@ def main():
         for _l in market_score(indices):
             print(_l)
     except Exception as _e:
+        MARKET.update({"state": "UNKNOWN", "score": None, "position": 0,
+                       "data_ok": False, "missing": [f"市场评分异常：{type(_e).__name__}"]})
         print(f"\n⚠️ 市场评分生成异常: {_e}")
     
     # 大盘近20日涨幅基准（RS相对强度对比用，默认上证指数）
