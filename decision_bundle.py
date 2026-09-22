@@ -80,13 +80,23 @@ def build_bundle(pool, positions, current_watchlist, analysis, generated_at=None
             "candidate_paths": ["整理启动型", "超跌企稳型"],
             "budget_independent_research": True,
             "strength_grade_is_not_candidate_gate": True,
+            "quality_classification_is_time_independent": True,
+            "buy_state_is_point_in_time": True,
+            "buy_states": ["条件满足", "等待", "失效"],
+            "must_reject_yes_on_invalidated_buy_state": True,
             "max_new_actions": 3,
             "must_reject_stale_data": True,
             "must_reject_unknown_or_D_market_new_entries": True,
             "must_check_price_risk_reward_for_research": True,
             "must_check_net_risk_reward_for_orders": True,
             "positions_are_context_only": True,
-            "note": "本数据包不包含AI结论；外部AI按opportunity形态证据裁决监测质量。两类候选不要求站上MA60或放量大涨，不因预设预算淘汰。D级可监测但禁止新买；UNKNOWN拒绝裁决。仅引用包中条件区间，不编造价格；持仓仅作背景。",
+            "note": "本数据包不包含AI结论；外部AI按opportunity形态证据裁决监测质量。"
+                    "core/watch 是质量分级（只看形态与行业），不随扫描时点变化——午休/盘后扫描出的 core 有效，"
+                    "不得因为非交易时段而降低其分类。每只候选的买点状态见 buy_state："
+                    "条件满足=本轮闸门全过；等待=形态成立但未到区间/未收复开盘·昨收·MA5/非交易时段；"
+                    "失效=形态不成立或已触及结构失效位。buy_state=失效的候选不得给出 YES（仅记录）。"
+                    "两类候选不要求站上MA60或放量大涨，不因预设预算淘汰。D级可监测但禁止新买；UNKNOWN拒绝裁决。"
+                    "仅引用包中条件区间，不编造价格；持仓仅作背景。",
         },
     }
 

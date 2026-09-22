@@ -250,10 +250,11 @@ def score_stock(code, name, ind_score, bench_chg20, bench300_chg20, amount=None,
 
     return {
         "code": code, "name": name,
-        "stock_score": stock_score, "level": level,
+        "stock_score": stock_score, "level": level, "grade": level,
         "score_basis": startup_policy.VERSION,
         "strength_score": legacy_score,
         "opportunity": opportunity,
+        "buy_state": startup_policy.buy_state_record(opportunity),
         "historical_amount_20": round(historical_amount, 2),
         "total_score": total,
         "factor": opportunity["factors"],
@@ -296,23 +297,28 @@ def build_reasons(entry, ind_name, ind_score):
 
 def generate_pool(scored, market_status, old_pool, today):
     """
-    startup/v1：候选形态成立、机会分≥60、行业≥40；CORE另需早期条件触发、
-    行业≥55且市场非D；其余合格候选进入WATCH。MA20/MA60不是准入硬门槛。
-    每行业最多1只，容量A/B/C为5/8，D为0/8。生命周期仍按交易日期继承。
-    以下仅为无opportunity字段的旧格式兼容分支，不适用于启动候选：
+    startup/v1：候选形态成立、机会分≥60、行业≥40 即可入池。
+    质量分类（core/watch）只看形态与行业，与扫描时点无关：
+      · CORE = 未被行业中等限制(_watch_only) + 行业≥55 + 市场非D + 按 total 降序取前 cap_core
+      · WATCH = 其余合格候选，容量 cap_watch
+      · 每行业全池最多 1 只（core/watch 共享计数）
+    买点状态另用 buy_state 字段表示（条件满足/等待/失效），不参与分类：
+      · 午休(11:30-13:00)、盘后(15:00 后)扫描出的 CORE/WATCH 与盘中同质，只是 buy_state=等待
+    MA20/MA60 与"此刻买点是否触发"都不是入选门槛。
+    以下仅为无 opportunity 字段的旧格式兼容分支，不适用于启动候选：
       · 规模（上限不填满）：A5/8 B5/8 C5/8 D0/8 —— 容量是最高限制，宁缺毋滥
       · 门槛：A75/B80/C82/D90（宽容期 days≤3 → -3）
-      · 行业唯一：全池同行业只取1只（按 total 降序先到先得=最强；core/watch 共享，2026-09-07 用户改版）
+      · 行业唯一：全池同行业只取1只（按 total 降序先到先得=最强）
       · 个股底线：core 需 stock_score≥70(A级)；watch 需 ≥60(B级)
       · 趋势硬条件：core 需 价>MA20 且 MA20>MA60；watch 需 价>MA20
       · 行业准入：<40 已被 main 排除；40-55(_watch_only) 只能进 watch；≥55 可进 core
       · 淘汰：total<70 / 行业<40 / 破MA60（旧池股票）
-      · 升级/降级由排序自然实现（总分降序前N进core）
     返回 (core_pool, watch_pool, stats)
     """
     cap_core, cap_watch = spm.pool_capacity(market_status)
     lcmap = spm.old_lifecycle_map(old_pool)
-    stats = {"evicted": [], "new": 0, "kept": 0}
+    stats = {"evicted": [], "new": 0, "kept": 0,
+             "buy_states": dict.fromkeys(startup_policy.BUY_STATES, 0)}
     if market_status not in ("A", "B", "C", "D"):
         stats["error"] = "市场状态未知，拒绝生成候选池"
         return [], [], stats
@@ -359,12 +365,13 @@ def generate_pool(scored, market_status, old_pool, today):
     for e in entries:
         ind_name = e.get("industry", "") or "?"
         if e.get("opportunity") is not None:
+            # 质量分类与买点状态解耦：core/watch 只看形态质量与行业，扫描时点不参与分类。
             # Both setup paths can remain below MA20/MA60. Recheck the setup
             # daily; neither historic membership nor a high score creates a buy.
+            e.setdefault("buy_state", startup_policy.buy_state_record(e["opportunity"]))
             if ind_name in ind_used or e["stock_score"] < startup_policy.MIN_SCORE:
                 continue
-            if (e["opportunity"].get("triggered") and not e.get("_watch_only")
-                    and e.get("industry_score", 0) >= IND_CORE_MIN
+            if (not e.get("_watch_only") and e.get("industry_score", 0) >= IND_CORE_MIN
                     and market_status in ("A", "B", "C") and len(core_pool) < cap_core):
                 e["level"] = "core"
                 core_pool.append(e)
@@ -374,6 +381,9 @@ def generate_pool(scored, market_status, old_pool, today):
             else:
                 continue
             ind_used[ind_name] = 1
+            _state = (e.get("buy_state") or {}).get("state")
+            if _state in stats["buy_states"]:
+                stats["buy_states"][_state] += 1
             continue
         f = e.get("factor", {})
         # CORE_STRONG 强者通道（V1.3.1，仅C市）：弱市精选极强龙头，防空池。
@@ -617,21 +627,25 @@ def main():
     print(f"候选链路: 全市场{len(all_stocks)} → 基础过滤{len(kept)} → 行业候选{len(candidates)} → 启动合格{total_scored}只"
           f"（位置硬排除{len(pos_excluded)} 行业准入排除{len(indu_excluded)}）")
     print(f"──────────────────────────────")
+    _bs = stats.get("buy_states", {})
+    print(f"🔔 买点状态分布: 条件满足{_bs.get('条件满足', 0)} 等待{_bs.get('等待', 0)} 失效{_bs.get('失效', 0)}"
+          f"（时点量，不参与 CORE/WATCH 分级；盘后/午休扫描必然多为「等待」）")
     if core_pool:
-        print(f"🎯 CORE 核心池 {len(core_pool)}只（容量上限{cap_core}，筛选从严宁缺毋滥；"
-              f"startup/v1 机会分≥{startup_policy.MIN_SCORE}，早期条件满足、行业≥{IND_CORE_MIN}）:")
+        print(f"🎯 CORE 核心池 {len(core_pool)}只（容量上限{cap_core}，按形态质量取前N，与扫描时点无关；"
+              f"startup/v1 机会分≥{startup_policy.MIN_SCORE}，行业≥{IND_CORE_MIN}，市场{market_status}级）:")
         for e in core_pool:
             print(f"  {e['code']} {e['name']} total={e['total_score']} 个股{e['stock_score']} "
-                  f"{e['industry']}({e['industry_score']}) 位置扣{e['position']['deduct']} "
-                  f"d{e['days_in_pool']}天")
+                  f"grade={e.get('grade', e.get('level'))} {e['industry']}({e['industry_score']}) "
+                  f"位置扣{e['position']['deduct']} 买点={((e.get('buy_state') or {}).get('state'))} d{e['days_in_pool']}天")
     else:
         print(f"🎯 CORE 核心池: 无达标票（启动形态、机会分≥{startup_policy.MIN_SCORE}、"
-              f"早期条件满足、行业≥{IND_CORE_MIN}；D级禁入CORE）")
+              f"行业≥{IND_CORE_MIN}；D级禁入CORE）")
     if watch_pool:
-        print(f"👀 WATCH 观察池 {len(watch_pool)}只（容量上限{cap_watch}）:")
+        print(f"👀 WATCH 观察池 {len(watch_pool)}只（容量上限{cap_watch}，与扫描时点无关）:")
         for e in watch_pool[:15]:
             print(f"  {e['code']} {e['name']} total={e['total_score']} 个股{e['stock_score']} "
-                  f"{e['industry']}({e['industry_score']}) d{e['days_in_pool']}天")
+                  f"grade={e.get('grade', e.get('level'))} {e['industry']}({e['industry_score']}) "
+                  f"买点={((e.get('buy_state') or {}).get('state'))} d{e['days_in_pool']}天")
     elif market_status != "D":
         print(f"👀 WATCH 观察池: 无达标票（启动形态、机会分≥{startup_policy.MIN_SCORE}、行业≥{IND_ELIMINATE}）")
     # V1.2 行业分布（覆盖率软指标）
@@ -648,7 +662,8 @@ def main():
     if stats["evicted"]:
         print(f"🗑 淘汰 {len(stats['evicted'])}只: " + "; ".join(stats["evicted"][:5]))
     print(f"──────────────────────────────")
-    print("CORE/WATCH 均为研究候选，等待外部AI按startup/v1裁决监测质量；不代表买入许可")
+    print("CORE/WATCH = 质量分级（形态+行业，与扫描时点无关）；买点状态单列，随时点变化")
+    print("两者均为研究候选，等待外部AI按startup/v1裁决监测质量；不代表买入许可")
 
 
 if __name__ == "__main__":

@@ -171,6 +171,48 @@ def evaluate(bars, quote, market="UNKNOWN", now=None, benchmark=None):
     return result
 
 
+BUY_STATES = ("条件满足", "等待", "失效")
+INVALID_MARK = "失效位"
+
+
+def _off_session(now):
+    return (now.weekday() >= 5
+            or not ("09:30" <= now.strftime("%H:%M") < "11:30"
+                    or "13:00" <= now.strftime("%H:%M") < "15:00"))
+
+
+def buy_state_record(result, now=None):
+    """买点状态（时点量）——与"值得关注程度"分离的独立字段。
+
+    条件满足：本轮全部触发闸门通过；
+    失效：形态本身不成立，或当日已触及结构失效位；
+    等待：形态成立但闸门未过（未到区间/未收复开盘·昨收·MA5/非交易时段等）。
+    质量分类（core/watch）不得随本字段变化。
+    """
+    now = now or datetime.now()
+    reasons = list(result.get("reasons") or [])
+    if not result.get("candidate"):
+        state = "失效"
+    elif result.get("triggered"):
+        state = "条件满足"
+    elif any(INVALID_MARK in str(x) for x in reasons):
+        state = "失效"
+    else:
+        state = "等待"
+    off = _off_session(now)
+    if state == "条件满足":
+        note = "本轮闸门全过"
+    elif state == "失效":
+        note = "结构失效位被跌破或形态不成立：本轮不形成买点结论"
+    elif off:
+        note = "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核"
+    else:
+        note = "盘中评估：闸门未过，等待触发"
+    return {"state": state, "reasons": reasons, "note": note, "off_session": bool(off),
+            "as_of": now.strftime("%Y-%m-%d %H:%M:%S"),
+            "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"}
+
+
 def render(result):
     """Research results must never be rendered as broker instructions."""
     f = result["factors"]
@@ -185,5 +227,7 @@ def render(result):
         lines.append(f"  📍 条件买入区间({p['mode']})：{p['entry_low']:.2f}~{p['entry_high']:.2f}；失效位{p['stop']:.2f}；参考压力{p['target']:.2f}；有效日{p['valid_on']}")
         lines.append(f"  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥{MIN_PRICE_RR:g}（未扣费）")
     lines.append("  判定：" + "；".join(result["reasons"]))
+    _state = buy_state_record(result)
+    lines.append(f"  🔔 买点状态：{_state['state']}｜{_state['note']}")
     lines.append("  限制：" + "；".join(result["limitations"]))
     return lines

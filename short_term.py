@@ -13,7 +13,7 @@ import entry_policy
 import startup_policy
 import daily_history
 from paper_execution import fee as planned_fee, SLIPPAGE as PLANNED_SLIPPAGE
-from runtime import macd, data_path, analysis_only, positive, exclusive, quote_is_fresh, weekly_averages, restore_analysis_mode, align_daily_bars, position_key
+from runtime import macd, data_path, analysis_only, positive, exclusive, quote_is_fresh, weekly_averages, restore_analysis_mode, align_daily_bars, position_key, atomic_json
 
 # ETF配置
 ETFS = [
@@ -829,14 +829,45 @@ def _f_risk(atr_pct, max_dd20):
         s += 2; d.append("回撤缺失(中性)")
     return min(s, 10), " ".join(d)
 
+# ===== 分析完整性统计（问题2：报告非空/退出0 ≠ 分析完整）=====
+# 逐只失败都会被记录；失败标的本轮不形成买点结论，其余标的结论不受影响。
+ANALYSIS_STATS = {"targets": 0, "failed": []}
+
+
+def _analysis_fail(code, name, reason):
+    """记录单只失败，并返回与历史完全一致的行（失败标的一律不形成买点结论）。"""
+    ANALYSIS_STATS["failed"].append({"code": code, "name": name, "reason": reason})
+    return f"\n❌ {name} {reason}"
+
+
+def analysis_metrics():
+    """供 tech_analysis_bundle 判定 完整/部分缺失/不可用 的机器可读指标。"""
+    targets = int(ANALYSIS_STATS["targets"])
+    failed = list(ANALYSIS_STATS["failed"])
+    analyzed = max(0, targets - len(failed))
+    coverage = round(analyzed / targets, 4) if targets else 0.0
+    market_ok = MARKET.get("data_ok")
+    return {"schema": "analysis-metrics/v1",
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "analysis_only": bool(analysis_only()),
+            "market": {"state": MARKET.get("state"), "score": MARKET.get("score"),
+                       "data_ok": market_ok},
+            "market_data_ok": None if market_ok is None else bool(market_ok),
+            "targets": targets, "analyzed": analyzed,
+            "failed": failed, "coverage": coverage,
+            "coverage_pct": round(coverage * 100, 1),
+            "complete": bool(targets) and not failed}
+
+
 def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_chg20=None, bench300_chg20=None, no_sell=False, pos=None, from_pool=False):
     """分析单个标的，返回结构化文本"""
+    ANALYSIS_STATS["targets"] += 1
     no_sell = bool(no_sell or (pos or {}).get("no_sell"))
     try:
         rt = get_rt(code)
     except Exception:
         rt = None
-    if not rt: return f"\n❌ {name} 数据获取失败"
+    if not rt: return _analysis_fail(code, name, "数据获取失败")
     try:
         # Only research reuses completed daily history; holdings/ETF execution stay unchanged.
         rows = (daily_history.get(code, 120, rt, lambda: get_kline(code, 120))
@@ -847,15 +878,15 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         lows = [float(k["low"]) for k in kline]
         vols = [int(k["volume"]) for k in kline]
     except:
-        return f"\n❌ {name} K线失败"
+        return _analysis_fail(code, name, "K线失败")
 
     if len(closes) < 60 or not all(positive(x) for x in closes + highs + lows):
-        return f"\n❌ {name} K线不足或价格无效，暂停决策"
+        return _analysis_fail(code, name, "K线不足或价格无效，暂停决策")
     cur, prev = rt["cur"], rt["prev"]
     if not positive(cur) or not positive(prev):
-        return f"\n❌ {name} 报价无效，暂停决策"
+        return _analysis_fail(code, name, "报价无效，暂停决策")
     if not quote_is_fresh(rt):
-        return f"\n❌ {name} 报价日期缺失或过期，暂停决策"
+        return _analysis_fail(code, name, "报价日期缺失或过期，暂停决策")
     chg = round((cur-prev)/prev*100, 2)
     ce = "🟢" if chg >= 0 else "🔴"
     is_watch = hold == 0
@@ -1393,6 +1424,7 @@ def main():
     ENTRY_REVIEWS = []
     FINAL_LIST = []  # V1.6 尾盘确定性结论（每标的六动作之一）
     STARTUP_BENCHMARK = {}
+    ANALYSIS_STATS.update({"targets": 0, "failed": []})  # 分析完整性统计（本轮重算）
     # V1.5（2026-08-21 用户要求）：FILTER_MIN_GRADE=A 时非持仓B级及以下不输出
     # （short_term_ai.py 4次定时任务开启；手动分析/晚间持仓任务不设置=全量）
     FILTER_MIN_GRADE = os.environ.get("FILTER_MIN_GRADE", "")
@@ -1711,9 +1743,18 @@ def main():
         print("\n📋 研究与执行汇总（启动研究不写订单或信号日志）")
         for item in FINAL_LIST:
             print(f"  {item['name']}({item['code']})：{item['action']} {item['text']}")
+    # 分析完整性（机器可读指标 + 报告尾部可读块）：打包侧据此判定 完整/部分缺失/不可用
+    _metrics = analysis_metrics()
+    print("\n📊 【分析完整性】" + f"目标{_metrics['targets']}只 成功{_metrics['analyzed']}只 "
+          f"失败{len(_metrics['failed'])}只 覆盖率{_metrics['coverage_pct']}% "
+          f"市场数据{'完整' if _metrics['market_data_ok'] else '缺失或未知'}")
+    if _metrics["failed"]:
+        print("  失败标的（本轮不形成买点结论）: " + "; ".join(
+            f"{x['code']} {x['name']}({x['reason']})" for x in _metrics["failed"]))
+    print("  说明: 单只失败不影响其余标的结论；失败标的的价格区间不得作为买点依据")
+    atomic_json(data_path("analysis_metrics.json"), _metrics)
     if not analysis_only():
         from signal_store import append_signals
-        from runtime import atomic_json
         atomic_json(data_path('entry_reviews/' + datetime.now().strftime('%Y%m%d_%H%M%S_%f') + '.json'), ENTRY_REVIEWS)
         append_signals(SIGNAL_LOG)
 

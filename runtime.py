@@ -4,11 +4,16 @@ import json
 import math
 import os
 import tempfile
+import time
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
 DATA_DIR = Path(os.environ.get("STOCK_DATA_DIR", Path(__file__).resolve().parent))
+
+# 跨链公共发布锁：池链与分析链共用同一把锁文件，串行化对同一 git 工作区的发布动作。
+PUBLISH_GUARD = "publish.guard"
+PUBLISH_LOCK_HELD_ENV = "PUBLISH_LOCK_HELD"
 
 
 def data_path(name):
@@ -78,6 +83,63 @@ def file_lock(path):
         yield
     finally:
         os.unlink(lock)
+
+
+def _lock_stream(stream):
+    if os.name == "nt":
+        import msvcrt
+        msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+    else:
+        import fcntl
+        fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def _unlock_stream(stream):
+    if os.name == "nt":
+        import msvcrt
+        msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+    else:
+        import fcntl
+        fcntl.flock(stream, fcntl.LOCK_UN)
+
+
+@contextmanager
+def publish_lock(wait=None):
+    """跨链公共发布锁：池链（整轮）与分析链（git 段）共用同一把 flock。
+
+    · 已持有锁的父流程给子进程传 PUBLISH_LOCK_HELD=1，子进程直接放行（避免自锁）。
+    · 默认非阻塞：抢不到立即 OSError（消息说明占用者与等待开关）；PUBLISH_LOCK_WAIT=<秒> 改为等待重试。
+    """
+    if os.environ.get(PUBLISH_LOCK_HELD_ENV) == "1":
+        yield
+        return
+    if wait is None:
+        try:
+            wait = float(os.environ.get("PUBLISH_LOCK_WAIT", "0"))
+        except (TypeError, ValueError):
+            wait = 0.0
+    path = DATA_DIR / PUBLISH_GUARD
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a+b") as stream:
+        if path.stat().st_size == 0:
+            stream.write(b"0")
+            stream.flush()
+        stream.seek(0)
+        deadline = time.monotonic() + max(0.0, wait)
+        while True:
+            try:
+                _lock_stream(stream)
+                break
+            except OSError as exc:
+                if time.monotonic() >= deadline:
+                    raise OSError(f"发布锁被占用：{path}；另一条发布流程正在运行"
+                                  f"（PUBLISH_LOCK_WAIT=<秒> 可改为等待）") from exc
+                time.sleep(0.5)
+        try:
+            yield
+        finally:
+            stream.seek(0)
+            _unlock_stream(stream)
 
 
 def exclusive(path_getter):

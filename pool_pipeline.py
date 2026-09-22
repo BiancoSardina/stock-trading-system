@@ -20,28 +20,12 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 @contextmanager
 def pipeline_lock():
-    """OS lock releases on parent death. Never delete another run's lock."""
-    path = runtime.DATA_DIR / "pool_pipeline.guard"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a+b") as stream:
-        if path.stat().st_size == 0:
-            stream.write(b"0")
-            stream.flush()
-        stream.seek(0)
-        if os.name == "nt":
-            import msvcrt
-            msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
-        else:
-            import fcntl
-            fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        try:
-            yield
-        finally:
-            stream.seek(0)
-            if os.name == "nt":
-                msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
-            else:
-                fcntl.flock(stream, fcntl.LOCK_UN)
+    """池链整轮发布锁：与技术分析链、归档脚本共用同一把 OS 锁（runtime.publish_lock）。
+
+    子进程通过 PUBLISH_LOCK_HELD=1 放行，避免 upload 步自锁。
+    """
+    with runtime.publish_lock():
+        yield
 
 
 def terminate_tree(proc):
@@ -108,7 +92,8 @@ class Pipeline:
         self.record["run_id"] = self.run_id
         self.record_path = runtime.DATA_DIR / "pipeline_runs" / (self.run_id + ".json")
         self.env = dict(os.environ, POOL_BATCH_DIR=str(self.directory.resolve()),
-                        POOL_BATCH_ID=self.batch_id, PYTHONUTF8="1", PIPELINE_COMPACT="1")
+                        POOL_BATCH_ID=self.batch_id, PYTHONUTF8="1", PIPELINE_COMPACT="1",
+                        PUBLISH_LOCK_HELD="1")  # 子进程不再重复获取父流程已持有的发布锁
 
     def save(self):
         self.record["elapsed_seconds"] = round(time.monotonic() - self.started, 2)

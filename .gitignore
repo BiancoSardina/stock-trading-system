@@ -34,4 +34,7 @@ pool_batches/
 pool_batch_latest.json
 pipeline_runs/
 pool_pipeline.guard
+publish.guard
+analysis_metrics.json
+analysis_runs/
 daily_history/
