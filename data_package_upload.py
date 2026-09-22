@@ -26,6 +26,7 @@ import sys
 import time
 import tempfile
 import pool_batch
+import pool_mode
 from runtime import DATA_DIR, atomic_json, publish_lock
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -37,9 +38,11 @@ SOURCE_FILES = [
     "decision_bundle_latest.json",
 ]
 ANALYSIS_NAME = "technical_analysis_latest.json"
+RESEARCH_FILES = ("research_candidates.json", "research_candidates_latest.json")
 TS_PATTERN = re.compile(r"^\d{14}$")
 # 被超时/中断杀死的上一轮可能留下"已 git add 未提交"的归档副本；只有这类残留可被自动清理。
-ARCHIVE_NAME = re.compile(r"^(stock_pool|decision_bundle_latest|technical_analysis_latest)_\d{14}\.json$")
+ARCHIVE_NAME = re.compile(r"^(stock_pool|decision_bundle_latest|technical_analysis_latest)_\d{14}\.json$"
+                          r"|^research_candidates_(\d{14}|\d{14}_[a-f0-9]{8})\.json$")
 
 
 def is_archive_copy(path):
@@ -80,7 +83,7 @@ def ts_now() -> str:
 def archive(task: str, dry_run: bool = False, files: "list | None" = None, source_dir=None, ts=None):
     """Validate all inputs before copying anything. Batch retries use stable filenames."""
     names = files or SOURCE_FILES
-    if len(names) != len(set(names)) or any(name not in (*SOURCE_FILES, ANALYSIS_NAME) for name in names):
+    if len(names) != len(set(names)) or any(name not in (*SOURCE_FILES, ANALYSIS_NAME, *RESEARCH_FILES) for name in names):
         raise ValueError("Unsupported or duplicate archive filenames")
     is_pair = bool(set(names) & set(SOURCE_FILES))
     if is_pair and set(names) != set(SOURCE_FILES):
@@ -103,6 +106,15 @@ def archive(task: str, dry_run: bool = False, files: "list | None" = None, sourc
             raise ValueError("Forced archive timestamp must be 14 digits")
     else:
         ts = ts_now()
+    # 降级研究候选：校验标注 + 用批次 id 保持重试文件名稳定（不进入正式池语义）
+    for name in names:
+        if name in RESEARCH_FILES:
+            payload = json.loads((source / name).read_text(encoding="utf-8"))
+            pool_mode.validate_research_payload(payload)
+            if payload.get("batch_id"):
+                ts = payload["batch_id"]
+            note = ("降级研究候选：未更新正式池 / 未生成裁决包 / 未更新监测名单；" +
+                    "禁止买入｜" + "；".join(payload.get("degraded_reasons") or []))
     if is_pair:
         pool, _ = pool_batch.validate_pair(source)
         if pool.get("batch_id"):
@@ -180,8 +192,9 @@ def git_push(task: str, ts: str, archived) -> str:
 
 def qq_notify(task: str, ts: str, archived, commit_hash: str, note: str = "") -> bool:
     """发 QQ 提醒；成功返回 True，失败返回 False（消息原文 print 到 stdout 供兜底）。"""
+    degraded = any(str(item[0]).startswith("research_candidates") for item in archived)
     lines = [
-        f"✅ {task}数据包上传完成",
+        f"⚠️ {task}（降级研究候选·未更新正式池）" if degraded else f"✅ {task}数据包上传完成",
         f"时间: {ts}",
         "文件:",
     ]

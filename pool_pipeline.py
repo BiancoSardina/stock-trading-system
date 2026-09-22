@@ -13,6 +13,7 @@ import time
 import uuid
 
 import pool_batch
+import pool_mode
 import runtime
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -125,6 +126,13 @@ class Pipeline:
             event["seconds"] = round(time.monotonic() - start, 2)
             self.save()
 
+    def _research_payload(self):
+        """批次目录里的降级研究候选（存在即本轮是降级研究轮）。"""
+        try:
+            return runtime.read_json(self.directory / pool_mode.RESEARCH_FILE, {}) or None
+        except (ValueError, OSError):
+            return None
+
     def execute(self):
         try:
             with pipeline_lock():
@@ -135,29 +143,55 @@ class Pipeline:
                     if old_pool.exists():
                         shutil.copy2(old_pool, self.directory / "stock_pool.json")
                     self.step("pool", "stock_pool.py", self.work_deadline - self.bundle_reserve - self.upload_reserve)
-                    self.step("bundle", "decision_bundle.py", self.work_deadline - self.upload_reserve,
-                              extra={"ANALYSIS_ONLY": "1", "BUNDLE_RUN_ANALYSIS": "1"})
-                    self.record["stage"] = "validate_publish"
-                    self.save()
-                    if time.monotonic() >= self.work_deadline - self.upload_reserve:
-                        raise TimeoutError("Insufficient time to validate/publish and upload")
-                    pool_batch.publish(self.batch_id)
+                    research = self._research_payload()
+                    if research is None:
+                        self.step("bundle", "decision_bundle.py", self.work_deadline - self.upload_reserve,
+                                  extra={"ANALYSIS_ONLY": "1", "BUNDLE_RUN_ANALYSIS": "1"})
+                        self.record["stage"] = "validate_publish"
+                        self.save()
+                        if time.monotonic() >= self.work_deadline - self.upload_reserve:
+                            raise TimeoutError("Insufficient time to validate/publish and upload")
+                        pool_batch.publish(self.batch_id)
+                        self.record["pool_mode"] = pool_mode.MODE_FORMAL
+                        self.record["complete_batch"] = True
+                    else:
+                        # 降级研究轮：不动正式池指针 / 不生成裁决包 / 不写 watchlist
+                        pool_mode.validate_research_payload(research)
+                        self.record["pool_mode"] = pool_mode.MODE_DEGRADED
+                        self.record["degraded_reasons"] = research.get("degraded_reasons") or []
+                        self.record["stage"] = "degraded_research"
+                        print(f"[pool_pipeline] ⚠️ 降级研究轮（{'；'.join(self.record['degraded_reasons'])}）；"
+                              f"正式池指针保持不动", file=sys.stderr, flush=True)
                 else:
-                    ready = runtime.read_json(self.directory / "ready.json", {})
-                    if ready.get("batch_id") != self.batch_id:
-                        raise ValueError("Retry requires a complete, validated batch")
-                    pool_batch.validate_pair(self.directory)
-                    for name in pool_batch.NAMES:
-                        if ready.get("sha256", {}).get(name) != pool_batch.digest(self.directory / name):
-                            raise ValueError("Retry batch changed")
-                self.record["complete_batch"] = True
+                    research = self._research_payload()
+                    if research is not None:
+                        pool_mode.validate_research_payload(research)
+                        self.record["pool_mode"] = pool_mode.MODE_DEGRADED
+                        self.record["degraded_reasons"] = research.get("degraded_reasons") or []
+                    else:
+                        ready = runtime.read_json(self.directory / "ready.json", {})
+                        if ready.get("batch_id") != self.batch_id:
+                            raise ValueError("Retry requires a complete, validated batch")
+                        pool_batch.validate_pair(self.directory)
+                        for name in pool_batch.NAMES:
+                            if ready.get("sha256", {}).get(name) != pool_batch.digest(self.directory / name):
+                                raise ValueError("Retry batch changed")
+                        self.record["pool_mode"] = pool_mode.MODE_FORMAL
+                        self.record["complete_batch"] = True
                 self.save()
+                degraded = self.record.get("pool_mode") == pool_mode.MODE_DEGRADED
+                task = f"{self.task}·降级研究" if degraded else self.task
+                extra_args = ("--files", pool_mode.RESEARCH_FILE) if degraded else ()
                 self.step("upload", "data_package_upload.py", self.work_deadline,
-                          args=("--task", self.task, "--source-dir", str(self.directory.resolve()),
+                          args=("--task", task, *extra_args, "--source-dir", str(self.directory.resolve()),
                                 "--receipt", str(self.record_path.with_suffix(".upload.json"))))
-                self.record.update(status="completed", stage="done")
+                self.record.update(status="completed", stage="degraded_done" if degraded else "done")
                 self.save()
-                print(f"[pool_pipeline] ✅ {self.task}完成 batch={self.batch_id}", flush=True)
+                if degraded:
+                    print(f"[pool_pipeline] ⚠️ {self.task}降级研究候选完成 batch={self.batch_id}"
+                          f"（正式池未更新）", flush=True)
+                else:
+                    print(f"[pool_pipeline] ✅ {self.task}完成 batch={self.batch_id}", flush=True)
                 return 0
         except Exception as exc:
             self.record.update(status="failed", error=f"{type(exc).__name__}: {exc}")

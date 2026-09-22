@@ -37,4 +37,6 @@ pool_pipeline.guard
 publish.guard
 analysis_metrics.json
 analysis_runs/
+research_candidates_latest.json
+research_candidates.json
 daily_history/

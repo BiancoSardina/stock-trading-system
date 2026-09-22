@@ -35,6 +35,7 @@ from pathlib import Path
 
 from runtime import atomic_json, data_path, publish_lock
 from pool_batch import pinned_current
+import pool_mode
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ANALYSIS_TIMEOUT = 360  # short_term.py 全量最长秒数（与 decision_bundle.py 默认一致）
@@ -150,19 +151,25 @@ def run_analysis() -> tuple:
 
 
 def pool_meta() -> dict:
-    """读当前 stock_pool.json 的摘要元信息（容错：读不到返回空 dict）"""
+    """读当前股票池摘要 + 来源判定（正式池 / 降级研究候选 / 回退自选）；容错返回空 dict。"""
+    meta = {}
     try:
         pool = json.load(open(data_path("stock_pool.json"), encoding="utf-8"))
-        return {
+        meta = {
             "date": pool.get("date"),
             "generated_at": pool.get("generated_at"),
             "market_status": pool.get("market_status"),
             "market_score": pool.get("market_score"),
             "data_ok": pool.get("data_ok"),
+            "mode": pool.get("mode", pool_mode.MODE_FORMAL),
         }
     except Exception as exc:
         print(f"[tech_analysis_bundle] ⚠️ 读 stock_pool.json 元信息失败: {exc}", file=sys.stderr)
-        return {}
+    try:
+        meta["provenance"] = pool_mode.pool_provenance()
+    except Exception as exc:
+        meta["provenance"] = {"provenance": pool_mode.PROVENANCE_FALLBACK, "error": str(exc)}
+    return meta
 
 
 def write_bundle(report: str, diagnostics: str, check: dict, ts: str = "") -> str:

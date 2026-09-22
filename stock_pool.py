@@ -57,6 +57,7 @@ import short_term
 from runtime import macd, positive, exclusive, data_path, quote_is_fresh, weekly_averages, align_daily_bars
 import stock_scanner
 import industry_rank
+import pool_mode
 import stock_pool_manager as spm
 import startup_policy
 import daily_history
@@ -295,7 +296,7 @@ def build_reasons(entry, ind_name, ind_score):
     return r
 
 
-def generate_pool(scored, market_status, old_pool, today):
+def generate_pool(scored, market_status, old_pool, today, quality_only=False):
     """
     startup/v1：候选形态成立、机会分≥60、行业≥40 即可入池。
     质量分类（core/watch）只看形态与行业，与扫描时点无关：
@@ -319,7 +320,7 @@ def generate_pool(scored, market_status, old_pool, today):
     lcmap = spm.old_lifecycle_map(old_pool)
     stats = {"evicted": [], "new": 0, "kept": 0,
              "buy_states": dict.fromkeys(startup_policy.BUY_STATES, 0)}
-    if market_status not in ("A", "B", "C", "D"):
+    if market_status not in ("A", "B", "C", "D") and not quality_only:
         stats["error"] = "市场状态未知，拒绝生成候选池"
         return [], [], stats
 
@@ -372,7 +373,8 @@ def generate_pool(scored, market_status, old_pool, today):
             if ind_name in ind_used or e["stock_score"] < startup_policy.MIN_SCORE:
                 continue
             if (not e.get("_watch_only") and e.get("industry_score", 0) >= IND_CORE_MIN
-                    and market_status in ("A", "B", "C") and len(core_pool) < cap_core):
+                    and (quality_only or market_status in ("A", "B", "C"))
+                    and len(core_pool) < cap_core):
                 e["level"] = "core"
                 core_pool.append(e)
             elif len(watch_pool) < cap_watch:
@@ -385,6 +387,8 @@ def generate_pool(scored, market_status, old_pool, today):
             if _state in stats["buy_states"]:
                 stats["buy_states"][_state] += 1
             continue
+        if quality_only:
+            continue  # 降级研究轮只收 startup/v1 形态候选；旧格式条目不进研究候选
         f = e.get("factor", {})
         # CORE_STRONG 强者通道（V1.3.1，仅C市）：弱市精选极强龙头，防空池。
         # 前置强条件全硬性（不享受宽容期）：个股≥85 + 行业≥65 + RS≥15 + 资金≥18 + 趋势成立
@@ -435,6 +439,30 @@ def generate_pool(scored, market_status, old_pool, today):
     return core_pool, watch_pool, stats
 
 
+def _report_degraded(out, mode, all_stocks, kept, candidates, scored, stats):
+    """降级研究候选报告：明确标注未更新正式池/未生成裁决包/未更新监测名单，禁止写成可买。"""
+    core, watch = out.get("core_pool", []), out.get("watch_pool", [])
+    if os.getenv("PIPELINE_COMPACT") == "1":
+        print(f"[stock_pool] 降级研究摘要: 候选{len(core) + len(watch)}只"
+              f"(研究重点{len(core)}/观察{len(watch)}) 原因={'；'.join(mode['degraded_reasons'])}",
+              file=sys.stderr, flush=True)
+        return
+    print(f"⚠️ 降级研究候选 {out['date']}｜市场 UNKNOWN（{'；'.join(mode['degraded_reasons'])}）")
+    print(f"链路: 全市场{len(all_stocks)} → 基础过滤{len(kept)} → 候选{len(candidates)} → 形态合格{len(scored)}只")
+    print("状态: 未更新正式池（上一批继续生效）｜未生成裁决包｜未更新监测名单｜禁止买入")
+    if not (core or watch):
+        print("本轮无形态合格候选")
+    for label, group in (("🔍 研究重点", core), ("👀 观察", watch)):
+        if group:
+            print(f"{label} {len(group)}只:")
+            for e in group:
+                print(f"  {e['code']} {e['name']} 机会分{e['stock_score']} grade={e.get('grade')} "
+                      f"买点={((e.get('buy_state') or {}).get('state'))} "
+                      f"{e.get('industry', '')}({e.get('industry_score', 0)})")
+    print("说明: 研究候选可给条件区间/失效位/压力位，但不构成买入；"
+          "升级须下一次市场与个股数据完整复核（不得自行升级为买点）")
+
+
 @exclusive(lambda: data_path("stock_pool.run"))
 def main():
     ap = argparse.ArgumentParser()
@@ -450,22 +478,24 @@ def main():
     t0 = time.time()
     today = datetime.now().strftime("%Y-%m-%d")
 
-    # ① 市场状态（复用生产 market_score——返回 lines，dict 在全局 MARKET）
+    # ① 市场状态（不再直接 raise：由 pool_mode.classify 决定 正式/降级研究/停止）
     try:
         short_term.market_score()
-        m = short_term.MARKET or {}
-        market_score_val = m.get("score")
-        market_status = m.get("state", "UNKNOWN")
-        if market_status not in ("A", "B", "C", "D") or not m.get("data_ok", False):
-            raise ValueError("市场数据不完整")
     except Exception as exc:
-        raise RuntimeError("市场评分不可用，保留旧股票池并停止后续发布") from exc
-    print(f"[stock_pool] 市场状态: {market_status}级({market_score_val}分)", file=sys.stderr, flush=True)
+        short_term.MARKET = {"state": "UNKNOWN", "score": None, "data_ok": False,
+                             "missing": [f"市场评分异常：{type(exc).__name__}"]}
+    m = short_term.MARKET or {}
+    market_score_val = m.get("score")
+    market_status = m.get("state", "UNKNOWN")
+    market_data_ok = bool(m.get("data_ok")) and market_status in ("A", "B", "C", "D")
+    market_missing = list(m.get("missing") or [])
+    print(f"[stock_pool] 市场状态: {market_status}级({market_score_val}分) "
+          f"data_ok={m.get('data_ok')} 缺失子项={market_missing}", file=sys.stderr, flush=True)
 
-    # ② 全市场 + 基础过滤
+    # ② 全市场 + 基础过滤（列表不完整 = 停止：数据真实性不软化）
     all_stocks = stock_scanner.fetch_all_stocks()
     if not stock_scanner.LAST_FETCH_COMPLETE:
-        raise RuntimeError("全市场数据不完整，保留旧池")
+        raise RuntimeError("数据分级=停止：全市场列表不完整，保留上一批正式池")
     kept, dropped = stock_scanner.basic_filter(all_stocks, early_setups=True)
     print(f"[stock_pool] 全市场{len(all_stocks)} → 基础过滤后{len(kept)}只 "
           f"(剔除:{json.dumps(dropped, ensure_ascii=False)})", file=sys.stderr, flush=True)
@@ -565,13 +595,29 @@ def main():
           file=sys.stderr, flush=True)
 
     if bench_chg20 is None or bench300_chg20 is None:
-        raise RuntimeError("基准指数缺失（上证/沪深300 K线不可用），保留旧池")
+        # 基准缺失不再整批中止：按 2026-09-22 规则降级为研究候选（RS 记 0 并标注）
+        print("[stock_pool] ⚠️ 基准指数缺失（上证/沪深300 K线不可用）→ 本轮按降级研究处理",
+              file=sys.stderr, flush=True)
     # 失败容忍：停牌/除权/新股等边缘标的单只行情失败属正常（实测967只偶发6只≈0.6%），
     # 保持既有容忍阈值：失败数超过 max(15, 候选数×2%) 才整体中止。
     if fail > max(15, int(len(candidates) * 0.02)):
         raise RuntimeError(f"候选行情失败过多（失败{fail}/{len(candidates)}），保留旧池")
     if fail:
         print(f"[stock_pool] ⚠️ 跳过{fail}只行情失败标的（≤2%可容忍），继续发布", file=sys.stderr, flush=True)
+
+    # ⑥′ 数据分级（唯一口径，pool_mode）：正式 / 降级研究 / 停止
+    mode = pool_mode.classify(
+        market_status=market_status, market_data_ok=market_data_ok, market_missing=market_missing,
+        fetch_complete=True, industry_count=len(ind_scores),
+        industry_failed=getattr(industry_rank, "LAST_BUILD", {}).get("failed", []),
+        benchmark_ok=bench_chg20 is not None and bench300_chg20 is not None,
+        candidate_failures=fail, candidate_count=len(candidates),
+        scan_complete=bool(metrics.get("complete")))
+    degraded = pool_mode.is_degraded(mode["mode"])
+    print(f"[stock_pool] 数据分级: {mode['mode']}"
+          + (f"（{'；'.join(mode['reasons'])}）" if mode["reasons"] else ""), file=sys.stderr, flush=True)
+    if pool_mode.is_stop(mode["mode"]):
+        raise RuntimeError("数据分级=停止：" + "；".join(mode["stop_reasons"]) + "；保留上一批正式池")
 
     # ⑦ V1.2 行业准入（行业"不拖后腿"：<40 排除；40-55 仅 watch 且需个股≥75）
     indu_excluded = []
@@ -596,10 +642,34 @@ def main():
     for e in scored:
         e["reason"] = build_reasons(e, e.get("industry", ""), e.get("industry_score", 0))
     old_pool = spm.load_old_pool()
-    core_pool, watch_pool, stats = generate_pool(scored, market_status, old_pool, today)
+    core_pool, watch_pool, stats = generate_pool(scored, market_status, old_pool, today,
+                                                 quality_only=degraded)
 
-    # ⑧ 输出 stock_pool.json
+    # ⑨ 输出：正式池（指针发布）或 降级研究候选（独立产物，不动正式池）
+    if degraded:
+        out = pool_mode.build_research_payload(
+            mode, date=today, core_pool=core_pool, watch_pool=watch_pool, stats=stats,
+            scan_metrics=metrics, formal_pool=old_pool,
+            batch_id=os.environ.get("POOL_BATCH_ID"),
+            extra={"score_basis": startup_policy.VERSION, "source_count": len(all_stocks),
+                   "scored_count": len(candidates)})
+        if args.limit:
+            print("测试范围结果不写入（降级研究候选同样不落盘）")
+        else:
+            # 批次目录（供本轮流水的归档/重试）+ 运行数据目录 latest（供后续技术分析读取）
+            _paths = [pool_mode.research_write_path()]
+            _latest = str(pool_mode.DATA_DIR / pool_mode.RESEARCH_LATEST_FILE)
+            if _paths[0] != _latest:
+                _paths.append(_latest)
+            for _p in _paths:
+                atomic_json(_p, out)
+            print(f"[stock_pool] ⚠️ 降级研究候选已生成（未更新正式池 / 未生成裁决包 / 未更新监测名单）"
+                  f" 耗时{time.time()-t0:.0f}s → {_paths[0]}", file=sys.stderr, flush=True)
+        _report_degraded(out, mode, all_stocks, kept, candidates, scored, stats)
+        return
+
     out = {
+        "mode": pool_mode.MODE_FORMAL,
         "batch_id": os.environ.get("POOL_BATCH_ID"),
         "scan_metrics": metrics,
         "score_basis": startup_policy.VERSION,

@@ -11,6 +11,7 @@ import position_manager
 import decision_manager
 import entry_policy
 import startup_policy
+import pool_mode
 import daily_history
 from paper_execution import fee as planned_fee, SLIPPAGE as PLANNED_SLIPPAGE
 from runtime import macd, data_path, analysis_only, positive, exclusive, quote_is_fresh, weekly_averages, restore_analysis_mode, align_daily_bars, position_key, atomic_json
@@ -66,41 +67,59 @@ def load_watch_stocks():
 STOCK_POOL = {}  # {date, market_status, market_score, core, watch, valid, stale_days}
 STARTUP_BENCHMARK = {}  # dated completed benchmark closes; aligned inside startup_policy
 def load_stock_pool():
-    """读取 stock_pool.json，date 新鲜度校验（V1.1 三路合并第1路）。
+    """读取股票池（三路合并第1路）：正式池优先 → 降级研究候选 → 回退固定自选。
 
-    规则：core 全量逐只分析 + watch 简略一行。
-    date 非最近交易日（间隔>4自然日/未来日期/解析失败）→ valid=False，
-    个股覆盖回退为 stock_config + watchlist，并提示 17:30 重新生成。
+    2026-09-22 规则：正式池要求"市场/行业/个股数据完整"（mode=正式）；
+    市场评分缺失那轮不再整批中止，而是产出"降级研究候选"——
+    只作研究（tradeable=False）：禁止买入、不进正式裁决、不写 monitoring 名单，可看区间/失效位/压力位。
     """
     global STOCK_POOL
     STOCK_POOL = {"date": "", "market_status": "", "market_score": "",
-                  "core": [], "watch": [], "valid": False, "stale_days": 0}
+                  "core": [], "watch": [], "valid": False, "stale_days": 0,
+                  "provenance": pool_mode.PROVENANCE_FALLBACK, "degraded": False,
+                  "tradeable": False, "degraded_reasons": []}
     try:
         _sp = data_path("stock_pool.json")
         with open(_sp, encoding="utf-8") as _f:
             _data = json.load(_f)
         _date = str(_data.get("date", ""))[:10]
-        today = datetime.now().strftime("%Y-%m-%d")
-        stale = 0
-        try:
-            _d = datetime.strptime(_date, "%Y-%m-%d").date()
-            _t = datetime.strptime(today, "%Y-%m-%d").date()
-            stale = (_t - _d).days
-        except Exception:
-            stale = -1  # 解析失败
-        # 新鲜：date 不晚于今天 且 间隔 0~4 自然日（覆盖周末/短假）
-        valid = bool(_date) and 0 <= stale <= 4
+        # 正式池：date 新鲜（0~4 自然日）且 mode 为正式（降级产物不得冒充正式池）
+        valid = (pool_mode.is_fresh(_date)
+                 and _data.get("mode", pool_mode.MODE_FORMAL) == pool_mode.MODE_FORMAL)
         STOCK_POOL = {
             "date": _date,
             "market_status": _data.get("market_status", ""),
             "market_score": _data.get("market_score", ""),
             "core": _data.get("core_pool", []) or [],
             "watch": _data.get("watch_pool", []) or [],
-            "valid": valid,
-            "stale_days": stale,
+            "valid": bool(valid),
+            "stale_days": pool_mode.freshness(_date),
+            "provenance": pool_mode.PROVENANCE_FORMAL,
+            "degraded": False,
+            "tradeable": bool(valid),
+            "degraded_reasons": [],
         }
+        if valid:
+            return STOCK_POOL
     except Exception:
         pass
+    # 正式池不可用 → 尝试当轮降级研究候选（明确标注来源，且禁止买入/自行升级）
+    _research = pool_mode.read_research()
+    if _research:
+        STOCK_POOL = {
+            "date": str(_research.get("date", ""))[:10],
+            "market_status": "UNKNOWN",
+            "market_score": None,
+            "core": _research.get("core_pool", []) or [],
+            "watch": _research.get("watch_pool", []) or [],
+            "valid": True,
+            "stale_days": pool_mode.freshness(_research.get("date")),
+            "provenance": pool_mode.PROVENANCE_DEGRADED,
+            "degraded": True,
+            "tradeable": False,
+            "degraded_reasons": _research.get("degraded_reasons", []) or [],
+            "valid_until": _research.get("valid_until"),
+        }
     return STOCK_POOL
 
 # 资金池（2026-08-05 用户确认：现有可用资金池只有 2万，非原10万假设）
@@ -1655,15 +1674,29 @@ def main():
                 f"  {_code} {_it.get('name','')} total={_it.get('total_score','-')} "
                 f"{_it.get('industry','')}({_it.get('industry_score','-')}) 入池{_it.get('days_in_pool','-')}日")
         if _pool_blocks or _brief_lines:
-            print(f"\n🧺 【股票池 ({len(_pool_blocks)}只逐只+{len(_brief_lines)}只简略, "
-                  f"生成{STOCK_POOL.get('date','')} 市场{STOCK_POOL.get('market_status','')}级"
-                  f"{STOCK_POOL.get('market_score','')}分)】")
+            if STOCK_POOL.get("degraded"):
+                print(f"\n⚠️ 【降级研究候选 ({len(_pool_blocks)}只逐只+{len(_brief_lines)}只简略, "
+                      f"生成{STOCK_POOL.get('date','')}｜市场UNKNOWN)】")
+                print(f"   原因: {'；'.join(STOCK_POOL.get('degraded_reasons') or [])}")
+                print("   限制: 未更新正式池 / 未生成裁决包 / 未更新监测名单｜禁止买入｜"
+                      "仅研究区间·失效位·压力位；升级须下一次数据完整复核")
+            else:
+                print(f"\n🧺 【股票池 ({len(_pool_blocks)}只逐只+{len(_brief_lines)}只简略, "
+                      f"生成{STOCK_POOL.get('date','')} 市场{STOCK_POOL.get('market_status','')}级"
+                      f"{STOCK_POOL.get('market_score','')}分)】")
             print("=" * 55)
             for _b, (_lvl, _it) in zip(_pool_blocks, _pool_tags):
-                _up = ("启动候选，等待价格条件" if _it.get("opportunity") else "升core需≥85分") if _lvl == "watch" else "core"
-                _tag = (f"  📌 股票池{_up}: 总分{_it.get('total_score','-')} 行业{_it.get('industry','')}"
-                        f"({_it.get('industry_score','-')}分) 入池{_it.get('days_in_pool','-')}日 20日{_it.get('chg20','-')}%"
-                        f" | 当日五因子选出，待外部AI裁决")
+                if STOCK_POOL.get("degraded"):
+                    _tag = (f"  📌 降级研究候选: 机会分{_it.get('stock_score','-')} "
+                            f"grade={_it.get('grade', _it.get('level','-'))} "
+                            f"买点={((_it.get('buy_state') or {}).get('state'))} "
+                            f"行业{_it.get('industry','')}({_it.get('industry_score','-')}分) "
+                            f"| 禁止买入，待数据完整后复核升级")
+                else:
+                    _up = ("启动候选，等待价格条件" if _it.get("opportunity") else "升core需≥85分") if _lvl == "watch" else "core"
+                    _tag = (f"  📌 股票池{_up}: 总分{_it.get('total_score','-')} 行业{_it.get('industry','')}"
+                            f"({_it.get('industry_score','-')}分) 入池{_it.get('days_in_pool','-')}日 20日{_it.get('chg20','-')}%"
+                            f" | 当日五因子选出，待外部AI裁决")
                 print(_b + "\n" + _tag)
             if _brief_lines:
                 print("  ── 其余 watch 简略（未逐只展开，可关注明日升core）──")

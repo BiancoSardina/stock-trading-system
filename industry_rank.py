@@ -36,6 +36,9 @@ INDUSTRY_MAP_PATH = os.path.join(SCRIPT_DIR, "industry_map.json")
 REP_STOCKS_N = 3          # 每行业代表股数（成交额前N）
 INDUSTRY_KEEP = 70        # 行业评分保留线
 
+# 最近一次构建统计（供 pool_mode 判断"行业数据是否失真"；2026-09-22 新增）
+LAST_BUILD = {"count": 0, "failed": [], "total": 0, "source": ""}
+
 
 def _fetch(url, retries=3, timeout=25):
     for i in range(retries):
@@ -136,17 +139,22 @@ def build_industry_map(force=False):
       ② 行业数 < 40（设计约49）→ 判数据拉取不全：告警 + 回退最近一次更完整的缓存
       ③ 拉取统计输出 stderr（供晚间任务数据校验）
     """
+    global LAST_BUILD
+    LAST_BUILD = {"count": 0, "failed": [], "total": 0, "source": ""}
     if not force:
         try:
             with open(INDUSTRY_MAP_PATH, encoding="utf-8") as f:
                 old = json.load(f)
             if old.get("updated") == time.strftime("%Y-%m-%d") and old.get("industries"):
+                LAST_BUILD = {"count": len(old["industries"]), "failed": [], "total": len(old["industries"]),
+                              "source": "cache"}
                 return old
         except Exception:
             pass
     industries_list = fetch_industry_list()
     if not industries_list:
         print("[industry_rank] ❌ 行业列表拉取失败（getHQNodes 无数据）", file=sys.stderr)
+        LAST_BUILD = {"count": 0, "failed": [], "total": 0, "source": "error"}
         return load_industry_map()
     industries = {}
     failed = []
@@ -177,6 +185,8 @@ def build_industry_map(force=False):
                 print(f"[industry_rank] ⚠️ 行业映射拉取不全 {len(industries)}/{len(industries_list)}"
                       f"（失败: {failed[:8]}），回退旧缓存 {len(old['industries'])}个({old.get('updated')})",
                       file=sys.stderr)
+                LAST_BUILD = {"count": len(old["industries"]), "failed": failed,
+                              "total": len(industries_list), "source": "fallback"}
                 return old
         except Exception:
             pass
@@ -188,6 +198,8 @@ def build_industry_map(force=False):
     data = {"updated": time.strftime("%Y-%m-%d"), "industries": industries}
     with open(INDUSTRY_MAP_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+    LAST_BUILD = {"count": len(industries), "failed": failed,
+                  "total": len(industries_list), "source": "build"}
     return data
 
 

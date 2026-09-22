@@ -9,10 +9,18 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import runtime
+import pool_mode
 
 NAMES = ("stock_pool.json", "decision_bundle_latest.json")
 POINTER = "pool_batch_latest.json"
 SCHEMA = "pool-batch/v1"
+
+
+def validate_research(directory):
+    """校验批量目录里的降级研究候选（不进入正式指针发布）。"""
+    directory = Path(directory)
+    payload = json.loads((directory / pool_mode.RESEARCH_FILE).read_text(encoding="utf-8"))
+    return pool_mode.validate_research_payload(payload)
 
 
 def batch_dir(batch_id):
@@ -36,6 +44,9 @@ def validate_pair(directory, now=None):
         raise ValueError("Pool integrity must be true")
     if pool.get("market_status") not in ("A", "B", "C", "D"):
         raise ValueError("Unknown pool market")
+    # 降级研究候选绝不能作为正式池发布（2026-09-22 规则：UNKNOWN 不得冒充正式等级）
+    if pool.get("mode", pool_mode.MODE_FORMAL) != pool_mode.MODE_FORMAL:
+        raise ValueError("Degraded research candidates cannot be published as a formal pool")
     if not isinstance(pool.get("market_score"), (int, float)) or not math.isfinite(pool["market_score"]):
         raise ValueError("Missing or invalid market score")
     if pool.get("batch_id"):
