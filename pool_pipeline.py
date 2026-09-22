@@ -77,7 +77,9 @@ class Pipeline:
         self.directory = pool_batch.batch_dir(self.batch_id)
         self.retry = bool(retry_batch)
         self.started = time.monotonic()
-        total = float(os.environ.get("PIPELINE_TIMEOUT", "900"))
+        # 2026-09-22 实测：新口径（startup/v1）候选 1593 只、约 0.55s/只 → 扫描步约 880s，
+        # 旧默认 900s（扫描只剩 640s）必然撞线 → 默认提到 2400s（扫描可用 2140s）。
+        total = float(os.environ.get("PIPELINE_TIMEOUT", "2400"))
         self.bundle_reserve = float(os.environ.get("PIPELINE_BUNDLE_BUDGET", "120"))
         self.upload_reserve = float(os.environ.get("PIPELINE_UPLOAD_BUDGET", "120"))
         self.notify_reserve = float(os.environ.get("PIPELINE_NOTIFY_BUDGET", "20"))

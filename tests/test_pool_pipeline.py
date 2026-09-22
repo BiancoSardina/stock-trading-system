@@ -213,7 +213,8 @@ class PipelineTests(unittest.TestCase):
     def test_stage_budget_reserves_bundle_upload_and_notification(self):
         p = pipeline.Pipeline("test")
         scan_budget = p.work_deadline - p.bundle_reserve - p.upload_reserve - p.started
-        self.assertEqual(scan_budget, 640)
+        # 2026-09-22：默认总预算 900→2400（实测 1593 只候选扫描约 880s，640s 必撞线）
+        self.assertEqual(scan_budget, 2140)
         with patch.object(pipeline, "run_process") as run:
             with self.assertRaises(TimeoutError): p.step("pool", "stock_pool.py", 0)
             run.assert_not_called()
