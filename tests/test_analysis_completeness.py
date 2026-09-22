@@ -9,6 +9,7 @@ import sys
 import json
 import subprocess
 import tempfile
+import time
 import unittest
 from datetime import datetime, timedelta
 from contextlib import nullcontext
@@ -221,6 +222,18 @@ class AnalysisSnapshotTests(unittest.TestCase):
         self.assertEqual(ended.exception.code, 0)
         analysis.assert_not_called()
         self.assertEqual(json.loads(self.sent)["report"], "old")
+
+
+class TaskNameTests(unittest.TestCase):
+    def test_every_scheduled_slot_has_an_explicit_name(self):
+        # 09:35 早盘 / 10:30 盘中观察 / 11:10 收割后 / 13:30 午后 / 14:45 尾盘 / 其它兜底
+        names = {9: "早盘技术分析", 10: "盘中观察技术分析", 11: "收割后技术分析",
+                 13: "午后技术分析", 14: "尾盘技术分析", 15: "盘中技术分析"}
+        for hour, expected in names.items():
+            self.assertEqual(tab.task_for_ts(f"20260922{hour:02d}0000"), expected)
+            with patch.object(tab.time, "localtime",
+                              return_value=time.struct_time((2026, 9, 22, hour, 35, 0, 0, 0, -1))):
+                self.assertEqual(tab.infer_task(), expected)
 
 
 class ArchiveGateTests(unittest.TestCase):

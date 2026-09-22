@@ -48,10 +48,12 @@ VALID_VERDICTS = ("完整", "部分缺失")
 
 
 def infer_task() -> str:
-    """按运行小时推断任务名（09:35 早盘 / 11:10 收割后 / 13:30 午后 / 14:45 尾盘）"""
+    """按运行小时推断任务名（09:35 早盘 / 10:30 盘中观察 / 11:10 收割后 / 13:30 午后 / 14:45 尾盘）"""
     hour = time.localtime().tm_hour
     if hour == 9:
         return "早盘技术分析"
+    if hour == 10:
+        return "盘中观察技术分析"
     if hour == 11:
         return "收割后技术分析"
     if hour == 13:
@@ -64,8 +66,8 @@ def infer_task() -> str:
 def task_for_ts(ts: str) -> str:
     """按归档时间戳的小时推断任务名（重试时用）"""
     try:
-        return {9: "早盘技术分析", 11: "收割后技术分析", 13: "午后技术分析",
-                14: "尾盘技术分析"}.get(int(ts[8:10]), "盘中技术分析")
+        return {9: "早盘技术分析", 10: "盘中观察技术分析", 11: "收割后技术分析",
+                13: "午后技术分析", 14: "尾盘技术分析"}.get(int(ts[8:10]), "盘中技术分析")
     except (TypeError, ValueError, IndexError):
         return "盘中技术分析"
 
