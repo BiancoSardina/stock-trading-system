@@ -284,7 +284,7 @@ def stats_by_pool():
     口径说明：当天刚生成的池（first_seen==今天）表现≈0，属正常；
     days_in_pool≥2 的旧票才体现真实选股质量，数据随天数积累。
     """
-    pool_path = os.path.join(SCRIPT_DIR, "stock_pool.json")
+    pool_path = data_path("stock_pool.json")
     if not os.path.isfile(pool_path):
         return "\n📊 【股票池表现】暂无 stock_pool.json（17:30选股任务尚未运行）"
     try:

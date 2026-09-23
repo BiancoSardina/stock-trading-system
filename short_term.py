@@ -10,8 +10,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import position_manager
 import decision_manager
 import entry_policy
+import startup_policy
+import pool_mode
+import daily_history
 from paper_execution import fee as planned_fee, SLIPPAGE as PLANNED_SLIPPAGE
-from runtime import macd, data_path, analysis_only, positive, exclusive, quote_is_fresh, weekly_averages, restore_analysis_mode, align_daily_bars, position_key
+from runtime import macd, data_path, analysis_only, positive, exclusive, quote_is_fresh, weekly_averages, restore_analysis_mode, align_daily_bars, position_key, atomic_json
 
 # ETF配置
 ETFS = [
@@ -62,42 +65,61 @@ def load_watch_stocks():
 
 # 股票池（stock_pool.py 五因子选股；最终裁决由外部AI根据 decision_bundle 完成）
 STOCK_POOL = {}  # {date, market_status, market_score, core, watch, valid, stale_days}
+STARTUP_BENCHMARK = {}  # dated completed benchmark closes; aligned inside startup_policy
 def load_stock_pool():
-    """读取 stock_pool.json，date 新鲜度校验（V1.1 三路合并第1路）。
+    """读取股票池（三路合并第1路）：正式池优先 → 降级研究候选 → 回退固定自选。
 
-    规则：core 全量逐只分析 + watch 简略一行。
-    date 非最近交易日（间隔>4自然日/未来日期/解析失败）→ valid=False，
-    个股覆盖回退为 stock_config + watchlist，并提示 17:30 重新生成。
+    2026-09-22 规则：正式池要求"市场/行业/个股数据完整"（mode=正式）；
+    市场评分缺失那轮不再整批中止，而是产出"降级研究候选"——
+    只作研究（tradeable=False）：禁止买入、不进正式裁决、不写 monitoring 名单，可看区间/失效位/压力位。
     """
     global STOCK_POOL
     STOCK_POOL = {"date": "", "market_status": "", "market_score": "",
-                  "core": [], "watch": [], "valid": False, "stale_days": 0}
+                  "core": [], "watch": [], "valid": False, "stale_days": 0,
+                  "provenance": pool_mode.PROVENANCE_FALLBACK, "degraded": False,
+                  "tradeable": False, "degraded_reasons": []}
     try:
         _sp = data_path("stock_pool.json")
         with open(_sp, encoding="utf-8") as _f:
             _data = json.load(_f)
         _date = str(_data.get("date", ""))[:10]
-        today = datetime.now().strftime("%Y-%m-%d")
-        stale = 0
-        try:
-            _d = datetime.strptime(_date, "%Y-%m-%d").date()
-            _t = datetime.strptime(today, "%Y-%m-%d").date()
-            stale = (_t - _d).days
-        except Exception:
-            stale = -1  # 解析失败
-        # 新鲜：date 不晚于今天 且 间隔 0~4 自然日（覆盖周末/短假）
-        valid = bool(_date) and 0 <= stale <= 4
+        # 正式池：date 新鲜（0~4 自然日）且 mode 为正式（降级产物不得冒充正式池）
+        valid = (pool_mode.is_fresh(_date)
+                 and _data.get("mode", pool_mode.MODE_FORMAL) == pool_mode.MODE_FORMAL)
         STOCK_POOL = {
             "date": _date,
             "market_status": _data.get("market_status", ""),
             "market_score": _data.get("market_score", ""),
             "core": _data.get("core_pool", []) or [],
             "watch": _data.get("watch_pool", []) or [],
-            "valid": valid,
-            "stale_days": stale,
+            "valid": bool(valid),
+            "stale_days": pool_mode.freshness(_date),
+            "provenance": pool_mode.PROVENANCE_FORMAL,
+            "degraded": False,
+            "tradeable": bool(valid),
+            "degraded_reasons": [],
         }
+        if valid:
+            return STOCK_POOL
     except Exception:
         pass
+    # 正式池不可用 → 尝试当轮降级研究候选（明确标注来源，且禁止买入/自行升级）
+    _research = pool_mode.read_research()
+    if _research:
+        STOCK_POOL = {
+            "date": str(_research.get("date", ""))[:10],
+            "market_status": "UNKNOWN",
+            "market_score": None,
+            "core": _research.get("core_pool", []) or [],
+            "watch": _research.get("watch_pool", []) or [],
+            "valid": True,
+            "stale_days": pool_mode.freshness(_research.get("date")),
+            "provenance": pool_mode.PROVENANCE_DEGRADED,
+            "degraded": True,
+            "tradeable": False,
+            "degraded_reasons": _research.get("degraded_reasons", []) or [],
+            "valid_until": _research.get("valid_until"),
+        }
     return STOCK_POOL
 
 # 资金池（2026-08-05 用户确认：现有可用资金池只有 2万，非原10万假设）
@@ -602,9 +624,17 @@ def market_score(indices=None):
     b, b_d = _breadth_score()
     v, v_d = _volume_score()
     e, e_d = _external_score()
-    if not indices or any("缺失" in str(x) for x in (t_d, b_d, v_d, e_d)):
-        MARKET.update({"score": None, "state": "UNKNOWN", "position": 0, "data_ok": False})
-        return ["⚠️ 市场数据缺失：暂停新增买入，持仓风险仍独立检查"]
+    missing = ["指数实时报价缺失"] if not indices else []
+    for component, details in (("指数趋势", t_d), ("赚钱效应", b_d),
+                               ("成交量", v_d), ("外部环境", e_d)):
+        for detail in details if isinstance(details, list) else [details]:
+            if "缺失" in str(detail):
+                missing.append(f"{component}：{detail}")
+    if missing:
+        MARKET.update({"score": None, "state": "UNKNOWN", "position": 0,
+                       "data_ok": False, "missing": missing})
+        return ["⚠️ 市场数据缺失：暂停新增买入，持仓风险仍独立检查",
+                *[f"  缺失子项：{detail}" for detail in missing]]
     total = t + b + v + e
     if total >= 80: state, pos, icon = "A", 80, "🟢"
     elif total >= 65: state, pos, icon = "B", 60, "🟡"
@@ -826,30 +856,64 @@ def _f_risk(atr_pct, max_dd20):
         s += 2; d.append("回撤缺失(中性)")
     return min(s, 10), " ".join(d)
 
+# ===== 分析完整性统计（问题2：报告非空/退出0 ≠ 分析完整）=====
+# 逐只失败都会被记录；失败标的本轮不形成买点结论，其余标的结论不受影响。
+ANALYSIS_STATS = {"targets": 0, "failed": []}
+
+
+def _analysis_fail(code, name, reason):
+    """记录单只失败，并返回与历史完全一致的行（失败标的一律不形成买点结论）。"""
+    ANALYSIS_STATS["failed"].append({"code": code, "name": name, "reason": reason})
+    return f"\n❌ {name} {reason}"
+
+
+def analysis_metrics():
+    """供 tech_analysis_bundle 判定 完整/部分缺失/不可用 的机器可读指标。"""
+    targets = int(ANALYSIS_STATS["targets"])
+    failed = list(ANALYSIS_STATS["failed"])
+    analyzed = max(0, targets - len(failed))
+    coverage = round(analyzed / targets, 4) if targets else 0.0
+    market_ok = MARKET.get("data_ok")
+    return {"schema": "analysis-metrics/v1",
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "analysis_only": bool(analysis_only()),
+            "market": {"state": MARKET.get("state"), "score": MARKET.get("score"),
+                       "data_ok": market_ok, "missing": MARKET.get("missing", [])},
+            "market_data_ok": None if market_ok is None else bool(market_ok),
+            "targets": targets, "analyzed": analyzed,
+            "failed": failed, "coverage": coverage,
+            "coverage_pct": round(coverage * 100, 1),
+            "complete": bool(targets) and not failed}
+
+
 def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_chg20=None, bench300_chg20=None, no_sell=False, pos=None, from_pool=False):
     """分析单个标的，返回结构化文本"""
+    ANALYSIS_STATS["targets"] += 1
     no_sell = bool(no_sell or (pos or {}).get("no_sell"))
     try:
         rt = get_rt(code)
     except Exception:
         rt = None
-    if not rt: return f"\n❌ {name} 数据获取失败"
+    if not rt: return _analysis_fail(code, name, "数据获取失败")
     try:
-        kline = align_daily_bars(get_kline(code, 120), rt)
+        # Only research reuses completed daily history; holdings/ETF execution stay unchanged.
+        rows = (daily_history.get(code, 120, rt, lambda: get_kline(code, 120))
+                if analysis_only() and not is_etf and hold == 0 and not pos else get_kline(code, 120))
+        kline = align_daily_bars(rows, rt)
         closes = [float(k["close"]) for k in kline]
         highs = [float(k["high"]) for k in kline]
         lows = [float(k["low"]) for k in kline]
         vols = [int(k["volume"]) for k in kline]
     except:
-        return f"\n❌ {name} K线失败"
+        return _analysis_fail(code, name, "K线失败")
 
     if len(closes) < 60 or not all(positive(x) for x in closes + highs + lows):
-        return f"\n❌ {name} K线不足或价格无效，暂停决策"
+        return _analysis_fail(code, name, "K线不足或价格无效，暂停决策")
     cur, prev = rt["cur"], rt["prev"]
     if not positive(cur) or not positive(prev):
-        return f"\n❌ {name} 报价无效，暂停决策"
+        return _analysis_fail(code, name, "报价无效，暂停决策")
     if not quote_is_fresh(rt):
-        return f"\n❌ {name} 报价日期缺失或过期，暂停决策"
+        return _analysis_fail(code, name, "报价日期缺失或过期，暂停决策")
     chg = round((cur-prev)/prev*100, 2)
     ce = "🟢" if chg >= 0 else "🔴"
     is_watch = hold == 0
@@ -991,6 +1055,32 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
         lines.append(f"  🔴 {bull_n}/8项偏多 → 偏空承压")
     else:
         lines.append(f"  📊 {bull_n}/8项偏多")
+
+    if not is_etf and analysis_only() and is_watch and not pos:
+        # Research is independent of order sizing. Do not feed a synthetic lot
+        # into execution to bypass minimum commissions or mutate signal state.
+        opportunity = startup_policy.evaluate(kline, rt, MARKET.get("state", "UNKNOWN"),
+                                               benchmark=STARTUP_BENCHMARK)
+        if opportunity["status"] == "数据不足":
+            return _analysis_fail(code, name, "启动分析数据不足：" + "；".join(opportunity["reasons"]))
+        previous = decision_manager.load_states().get(code, {})
+        cooldown = entry_policy.cooldown_reason(previous.get("last_stop_signal_date"),
+                         [str(k['day'])[:10] for k in kline], datetime.now().strftime('%Y-%m-%d'))
+        if cooldown:
+            opportunity["triggered"] = False
+            opportunity["status"] = "候选待确认" if opportunity["candidate"] else opportunity["status"]
+            opportunity["reasons"].append(cooldown)
+        # Do not bury early candidates behind the old S/A display filter.
+        lines[0] = f"\n{ce} 【{name}({code})】👀 启动形态研究 | 机会评分:{opportunity['score']}/100"
+        lines[1] = f"  传统强势评分:{score}/100（{quality}级，仅背景，不是入选或买入门槛）"
+        lines.extend(startup_policy.render(opportunity))
+        ENTRY_REVIEWS.append({"time": datetime.now().isoformat(), "version": startup_policy.VERSION,
+                              "code": code, "name": name, "opportunity": opportunity,
+                              "final_action": "RESEARCH_ONLY", "quantity_considered": None})
+        if CURRENT_PERIOD == "尾盘":
+            FINAL_LIST.append({"code": code, "name": name, "action": opportunity["status"],
+                               "quantity": None, "text": "；".join(opportunity["reasons"])})
+        return "\n".join(lines)
     
     # 操作建议+置信度
     action_type = None  # buy / sell / hold / watch
@@ -1357,11 +1447,13 @@ def analyze_item(code, name, hold, total_amount=TOTAL_ETF, is_etf=True, bench_ch
 @exclusive(lambda: data_path("short_term.run"))
 @restore_analysis_mode
 def main():
-    global ACTION_LIST, CURRENT_PERIOD, FILTER_MIN_GRADE, FINAL_LIST, SIGNAL_LOG, ENTRY_REVIEWS
+    global ACTION_LIST, CURRENT_PERIOD, FILTER_MIN_GRADE, FINAL_LIST, SIGNAL_LOG, ENTRY_REVIEWS, STARTUP_BENCHMARK
     ACTION_LIST = []
     SIGNAL_LOG = []
     ENTRY_REVIEWS = []
     FINAL_LIST = []  # V1.6 尾盘确定性结论（每标的六动作之一）
+    STARTUP_BENCHMARK = {}
+    ANALYSIS_STATS.update({"targets": 0, "failed": []})  # 分析完整性统计（本轮重算）
     # V1.5（2026-08-21 用户要求）：FILTER_MIN_GRADE=A 时非持仓B级及以下不输出
     # （short_term_ai.py 4次定时任务开启；手动分析/晚间持仓任务不设置=全量）
     FILTER_MIN_GRADE = os.environ.get("FILTER_MIN_GRADE", "")
@@ -1404,12 +1496,15 @@ def main():
         for _l in market_score(indices):
             print(_l)
     except Exception as _e:
+        MARKET.update({"state": "UNKNOWN", "score": None, "position": 0,
+                       "data_ok": False, "missing": [f"市场评分异常：{type(_e).__name__}"]})
         print(f"\n⚠️ 市场评分生成异常: {_e}")
     
     # 大盘近20日涨幅基准（RS相对强度对比用，默认上证指数）
     bench_chg20 = None
     try:
         _idx_k = get_index_kline("sh000001", 30)
+        STARTUP_BENCHMARK = {str(b.get("day", ""))[:10]: b.get("close") for b in (_idx_k or [])}
         if _idx_k and len(_idx_k) >= 21:
             bench_chg20 = round((float(_idx_k[-1]["close"])/float(_idx_k[-21]["close"])-1)*100, 2)
     except Exception:
@@ -1546,8 +1641,11 @@ def main():
         _sp_watch = STOCK_POOL.get("watch", [])
         # V1.7 筛选：watch 按综合分降序，前 WATCH_DETAIL_TOP 只逐只，其余一行简略
         _sp_watch_sorted = sorted(_sp_watch, key=lambda x: -(x.get("total_score") or 0))
-        _sp_watch_detail = _sp_watch_sorted[:WATCH_DETAIL_TOP]
-        _sp_watch_brief = _sp_watch_sorted[WATCH_DETAIL_TOP:]
+        # Research must inspect every bounded watch candidate, not hide the
+        # early/low-strength names below the former top-five display cutoff.
+        _detail_count = len(_sp_watch_sorted) if analysis_only() else WATCH_DETAIL_TOP
+        _sp_watch_detail = _sp_watch_sorted[:_detail_count]
+        _sp_watch_brief = _sp_watch_sorted[_detail_count:]
         _sp_covered = {c for c, *_ in STOCKS} | {w.get("code", "") for w in WATCH_STOCKS}
         _pool_blocks, _pool_tags = [], []
         _brief_lines = []
@@ -1576,15 +1674,29 @@ def main():
                 f"  {_code} {_it.get('name','')} total={_it.get('total_score','-')} "
                 f"{_it.get('industry','')}({_it.get('industry_score','-')}) 入池{_it.get('days_in_pool','-')}日")
         if _pool_blocks or _brief_lines:
-            print(f"\n🧺 【股票池 ({len(_pool_blocks)}只逐只+{len(_brief_lines)}只简略, "
-                  f"生成{STOCK_POOL.get('date','')} 市场{STOCK_POOL.get('market_status','')}级"
-                  f"{STOCK_POOL.get('market_score','')}分)】")
+            if STOCK_POOL.get("degraded"):
+                print(f"\n⚠️ 【降级研究候选 ({len(_pool_blocks)}只逐只+{len(_brief_lines)}只简略, "
+                      f"生成{STOCK_POOL.get('date','')}｜市场UNKNOWN)】")
+                print(f"   原因: {'；'.join(STOCK_POOL.get('degraded_reasons') or [])}")
+                print("   限制: 未更新正式池 / 未生成裁决包 / 未更新监测名单｜禁止买入｜"
+                      "仅研究区间·失效位·压力位；升级须下一次数据完整复核")
+            else:
+                print(f"\n🧺 【股票池 ({len(_pool_blocks)}只逐只+{len(_brief_lines)}只简略, "
+                      f"生成{STOCK_POOL.get('date','')} 市场{STOCK_POOL.get('market_status','')}级"
+                      f"{STOCK_POOL.get('market_score','')}分)】")
             print("=" * 55)
             for _b, (_lvl, _it) in zip(_pool_blocks, _pool_tags):
-                _up = "升core需≥85分" if _lvl == "watch" else "core"
-                _tag = (f"  📌 股票池{_up}: 总分{_it.get('total_score','-')} 行业{_it.get('industry','')}"
-                        f"({_it.get('industry_score','-')}分) 入池{_it.get('days_in_pool','-')}日 20日{_it.get('chg20','-')}%"
-                        f" | 当日五因子选出，待外部AI裁决")
+                if STOCK_POOL.get("degraded"):
+                    _tag = (f"  📌 降级研究候选: 机会分{_it.get('stock_score','-')} "
+                            f"grade={_it.get('grade', _it.get('level','-'))} "
+                            f"买点={((_it.get('buy_state') or {}).get('state'))} "
+                            f"行业{_it.get('industry','')}({_it.get('industry_score','-')}分) "
+                            f"| 禁止买入，待数据完整后复核升级")
+                else:
+                    _up = ("启动候选，等待价格条件" if _it.get("opportunity") else "升core需≥85分") if _lvl == "watch" else "core"
+                    _tag = (f"  📌 股票池{_up}: 总分{_it.get('total_score','-')} 行业{_it.get('industry','')}"
+                            f"({_it.get('industry_score','-')}分) 入池{_it.get('days_in_pool','-')}日 20日{_it.get('chg20','-')}%"
+                            f" | 当日五因子选出，待外部AI裁决")
                 print(_b + "\n" + _tag)
             if _brief_lines:
                 print("  ── 其余 watch 简略（未逐只展开，可关注明日升core）──")
@@ -1636,8 +1748,8 @@ def main():
     print(f"\n{'='*55}")
     print(f"💡 {period}总结")
     if period == "尾盘":
-        print(f"  这是今天最后操作窗口，14:55前完成下单")
-        print("  尾盘仍须满足结构买入区、费用后盈亏比和止损观察期；没有合格机会就不买")
+        print("  尾盘不强制买入；启动研究检查位置与价格盈亏比，实际订单另核验费用与数量")
+        print("  市场禁买和止损观察期仍有效；没有合格买点可保留提前候选")
     elif period == "收割后":
         print(f"  量化收割结束，可观察捡漏")
         print(f"  但建议尾盘14:45再最终确认")
@@ -1673,12 +1785,21 @@ def main():
             print(f"\n⚠️ 风控报告生成异常: {e}")
     
     if FINAL_LIST:
-        print("\n📋 最终动作汇总（与信号日志同一裁决）")
+        print("\n📋 研究与执行汇总（启动研究不写订单或信号日志）")
         for item in FINAL_LIST:
             print(f"  {item['name']}({item['code']})：{item['action']} {item['text']}")
+    # 分析完整性（机器可读指标 + 报告尾部可读块）：打包侧据此判定 完整/部分缺失/不可用
+    _metrics = analysis_metrics()
+    print("\n📊 【分析完整性】" + f"目标{_metrics['targets']}只 成功{_metrics['analyzed']}只 "
+          f"失败{len(_metrics['failed'])}只 覆盖率{_metrics['coverage_pct']}% "
+          f"市场数据{'完整' if _metrics['market_data_ok'] else '缺失或未知'}")
+    if _metrics["failed"]:
+        print("  失败标的（本轮不形成买点结论）: " + "; ".join(
+            f"{x['code']} {x['name']}({x['reason']})" for x in _metrics["failed"]))
+    print("  说明: 单只失败不影响其余标的结论；失败标的的价格区间不得作为买点依据")
+    atomic_json(data_path("analysis_metrics.json"), _metrics)
     if not analysis_only():
         from signal_store import append_signals
-        from runtime import atomic_json
         atomic_json(data_path('entry_reviews/' + datetime.now().strftime('%Y%m%d_%H%M%S_%f') + '.json'), ENTRY_REVIEWS)
         append_signals(SIGNAL_LOG)
 

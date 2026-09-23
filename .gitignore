@@ -27,3 +27,16 @@ stock_pool_ai_latest.json
 short_term_latest.json
 decision_bundle_latest.json
 technical_analysis_latest.json
+
+# Research diagnostics and transactional pipeline runtime (not source artifacts).
+entry_reviews/
+pool_batches/
+pool_batch_latest.json
+pipeline_runs/
+pool_pipeline.guard
+publish.guard
+analysis_metrics.json
+analysis_runs/
+research_candidates_latest.json
+research_candidates.json
+daily_history/

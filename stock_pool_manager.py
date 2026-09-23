@@ -15,9 +15,9 @@ import json
 import os
 from datetime import datetime
 from runtime import data_path, atomic_json
+from pool_batch import write_path
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-POOL_PATH = data_path("stock_pool.json")
 
 # 生命周期常量（V1.1 冲突点清单3：三处阈值口径独立，勿混用）
 POOL_LEVEL_S = 85          # watch→core 升级线
@@ -31,7 +31,7 @@ POOL_GRACE_DEDUCT = 3      # 宽容期入池门槛下调分
 def load_old_pool():
     """读旧 stock_pool.json，异常返回 None"""
     try:
-        with open(POOL_PATH, encoding="utf-8") as f:
+        with open(data_path("stock_pool.json"), encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return None
@@ -39,7 +39,7 @@ def load_old_pool():
 
 def save_pool(data):
     """写 stock_pool.json（原子写）"""
-    atomic_json(POOL_PATH, data)
+    atomic_json(write_path("stock_pool.json"), data)
 
 
 def old_lifecycle_map(old_pool):
