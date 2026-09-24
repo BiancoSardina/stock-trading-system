@@ -1,9 +1,9 @@
 {
   "stocks": [],
-  "updated": "2026-09-23",
+  "updated": "2026-09-24",
   "last_decision": {
-    "generated_at": "2026-09-22 18:29:52",
-    "source_commit": "32df3ad59414b9082b3cadbab001aa153d5d7fbc",
-    "reason": "外部AI股票池质量裁决（decision_bundle_latest_20260922182116_b70a6b94）；采用 quality/candidate 两层观察名单：市场A84；无quality、无candidate。13只标的均为首日入池且处于候选待确认；除普利特外，止损至压力位净风险收益均低于1.5倍，普利特则MA20/MA60趋势破坏且量能不足。其余标的还存在MA20/MA60结构未修复、行业偏弱、相对强度不足、位置或量能确认不足等问题，故移除上轮过期候补；监测清单不构成买入许可。"
+    "generated_at": "2026-09-24 12:38:51",
+    "source_commit": "de9fa1bc7677cf3d5252cd52015a4fe5f4693ab2",
+    "reason": "外部AI股票池质量裁决（decision_bundle_latest_20260924123044_b7981337）；采用 quality/candidate 两层观察名单：市场D40；无quality、无candidate。8只均为首日入池且候选待确认；仅伊利股份维持MA20/MA60多头，但行业强度55、量能0.78及当前价格盈亏比0.35不足，未达候补标准；其余7只MA20/MA60趋势结构未修复，并伴随行业/相对强度、量能、位置或风险收益确认不足。市场D禁止新开仓和买入建议，但未以此自动否决观察资格；本轮仍无可保留候补，监测清单不构成买入许可。"
   }
 }
