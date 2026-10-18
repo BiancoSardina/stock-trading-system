@@ -3,7 +3,7 @@
 短线套利分析系统 — 统一分析ETF+个股
 供 09:30一条龙(09:50) / 11:10 / 12:30一条龙(12:50) / 14:20一条龙(14:40) 四个时段使用
 """
-import json, urllib.request, sys, os
+import json, urllib.request, sys, os, time
 from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -13,6 +13,7 @@ import entry_policy
 import startup_policy
 import pool_mode
 import daily_history
+import board_policy
 from paper_execution import fee as planned_fee, SLIPPAGE as PLANNED_SLIPPAGE
 from runtime import macd, data_path, analysis_only, positive, exclusive, quote_is_fresh, weekly_averages, restore_analysis_mode, align_daily_bars, position_key, atomic_json
 
@@ -157,7 +158,7 @@ def sina_get(url):
 
 def get_prefix(code):
     # 5/6/9开头=沪市（含56开头沪市ETF如562800稀有金属ETF），其余=深市
-    return "sh" if code.startswith(("5", "6", "9")) else "sz"
+    return board_policy.sina_prefix(code)
 
 # 行业推断（第八阶段复盘用）：按名称关键词匹配ETF行业，个股从stock_config映射
 _INDUSTRY_MAP = [
@@ -492,22 +493,113 @@ def _trend_score(indices):
             detail.append(f"{nm}数据缺失")
     return score, detail
 
-def _breadth_score():
-    """② 赚钱效应分(30)：涨跌家数15 + 涨停/跌停15"""
-    score, detail = 0, []
-    # 涨跌家数（东财 ulist：沪市000001 + 深市综指399106 一次请求）
+# ===== 市场数据源兜底（2026-09-23 实测沉淀）=====
+# 症状：push2delay.eastmoney.com TLS 握手完成但服务端空响应(Empty reply)+所有
+# push2/push2delay 节点不可达 → ulist 涨跌家数与 f170 隔夜美股双双缺失 →
+# market_score data_ok=False → 池链整轮被判"降级研究"（不出正式池）、
+# 分析包标"市场闸门按未知处理，买点结论仅供研究不可执行"。
+# 对策：东财优先，失败自动切新浪同源数据（东财恢复即自动切回，不改评分口径）。
+BREADTH_CACHE_TTL = 300   # 秒：新浪全市场扫描结果缓存，避免同轮重复拉全市场触发新浪456
+
+def _em_breadth_counts(attempts=2):
+    """东财 ulist 涨跌家数（沪市1.000001 + 深市综指0.399106）——主源。"""
+    url = ("https://push2delay.eastmoney.com/api/qt/ulist.np/get?fltt=2"
+           "&secids=1.000001,0.399106&fields=f2,f3,f104,f105,f106")
+    last = None
+    for _ in range(max(1, attempts)):
+        try:
+            d = json.loads(em_get(url, timeout=6).decode("utf-8", "ignore"))
+            up = dn = fl = 0
+            for it in d["data"]["diff"]:
+                up += int(it.get("f104", 0) or 0)
+                dn += int(it.get("f105", 0) or 0)
+                fl += int(it.get("f106", 0) or 0)
+            if up + dn + fl <= 0:
+                raise ValueError("涨跌家数缺失")
+            return up, dn, fl, "东财"
+        except Exception as exc:
+            last = exc
+    raise ValueError(f"东财涨跌家数不可用({type(last).__name__})")
+
+def _sina_breadth_counts(force=False):
+    """新浪 hs_a 全市场分页统计涨/跌/平——兜底源（与 stock_scanner 同源，56页~20s）。
+    只在新浪列表完整时采用；不完整则抛错走"缺失"(保持 UNKNOWN，不猜等级)。"""
+    if not force:
+        try:
+            with open(data_path("breadth_cache.json"), encoding="utf-8") as fh:
+                cache = json.load(fh)
+            fresh = time.time() - float(cache["ts"]) <= BREADTH_CACHE_TTL
+            if fresh and cache.get("day") == datetime.now().strftime("%Y-%m-%d"):
+                return int(cache["up"]), int(cache["dn"]), int(cache["flat"]), cache.get("src", "新浪全市场扫描")
+        except Exception:
+            pass
+    import stock_scanner  # 延迟导入（stock_scanner 不依赖 short_term，避免循环导入）
+    rows = stock_scanner.fetch_all_stocks()
+    if not stock_scanner.LAST_FETCH_COMPLETE or not rows:
+        raise ValueError("新浪全市场列表不完整")
     up = dn = fl = 0
+    for row in rows:
+        try:
+            cp = float(row.get("changepercent"))
+        except (TypeError, ValueError):
+            continue
+        if cp > 0:
+            up += 1
+        elif cp < 0:
+            dn += 1
+        else:
+            fl += 1
+    if up + dn + fl <= 0:
+        raise ValueError("新浪全市场列表为空")
     try:
-        url = ("https://push2delay.eastmoney.com/api/qt/ulist.np/get?fltt=2"
-               "&secids=1.000001,0.399106&fields=f2,f3,f104,f105,f106")
-        d = json.loads(em_get(url).decode("utf-8", "ignore"))
-        for it in d["data"]["diff"]:
-            up += int(it.get("f104", 0) or 0)
-            dn += int(it.get("f105", 0) or 0)
-            fl += int(it.get("f106", 0) or 0)
+        atomic_json(data_path("breadth_cache.json"),
+                    {"ts": time.time(), "day": datetime.now().strftime("%Y-%m-%d"),
+                     "up": up, "dn": dn, "flat": fl, "src": "新浪全市场扫描"})
+    except Exception:
+        pass
+    return up, dn, fl, "新浪全市场扫描"
+
+def breadth_from_rows(rows):
+    """把调用方已拉取的全市场列表(含北交所/ST，未过滤)折算成涨跌家数，供池链复用避免二次拉取。"""
+    up = dn = fl = 0
+    for row in rows:
+        try:
+            cp = float(row.get("changepercent"))
+        except (TypeError, ValueError):
+            continue
+        if cp > 0:
+            up += 1
+        elif cp < 0:
+            dn += 1
+        else:
+            fl += 1
+    if up + dn + fl <= 0:
+        return None
+    return up, dn, fl, "本轮全市场扫描"
+
+def _breadth_score(breadth=None):
+    """② 赚钱效应分(30)：涨跌家数15 + 涨停/跌停15。
+    breadth=None → 自行取数（东财 → 新浪全市场扫描兜底）；
+    breadth=(up,dn,flat,src) → 直接用调用方已取到的统计（池链复用本轮扫描，零额外请求）。"""
+    score, detail = 0, []
+    # 涨跌家数（主源东财 ulist；push2delay 黑洞时切新浪全市场扫描）
+    up = dn = fl = None
+    src = ""
+    if breadth:
+        up, dn, fl = breadth[0], breadth[1], breadth[2]
+        src = breadth[3] if len(breadth) > 3 else "外部传入"
+    else:
+        for provider in (_em_breadth_counts, _sina_breadth_counts):
+            try:
+                up, dn, fl, src = provider()
+                break
+            except Exception:
+                continue
+    if up is None:
+        score += 8
+        detail.append("涨跌家数数据缺失(中性8分)")
+    else:
         total = up + dn + fl
-        if total <= 0:
-            raise ValueError("涨跌家数缺失")
         ratio = up / total if total else 0
         if ratio >= 0.65: s = 15
         elif ratio >= 0.55: s = 12
@@ -515,10 +607,7 @@ def _breadth_score():
         elif ratio >= 0.35: s = 4
         else: s = 0
         score += s
-        detail.append(f"涨{up}/跌{dn}/平{fl}(上涨{ratio*100:.0f}%得{s}分)")
-    except Exception:
-        score += 8
-        detail.append("涨跌家数数据缺失(中性8分)")
+        detail.append(f"涨{up}/跌{dn}/平{fl}(上涨{ratio*100:.0f}%得{s}分·{src})")
     # 涨停/跌停家数（东财涨停池/跌停池 data.tc，无数据自动回退前一交易日）
     def pool_count(path):
         for back in range(1):
@@ -586,33 +675,49 @@ def _volume_score():
     except Exception:
         return 10, "量能数据缺失(中性10分)"
 
+def _sina_us_change(symbol):
+    """新浪美股接口兜底：gb_ndx / gb_nvda → 涨跌幅%（实测 2026-09-23 push2delay 黑洞时可用）。"""
+    raw = sina_get(f"https://hq.sinajs.cn/list=gb_{symbol}").decode("gbk", "ignore")
+    body = raw.split('="', 1)[1].split('"', 1)[0] if '="' in raw else ""
+    parts = body.split(",")
+    if len(parts) < 3 or not parts[2].strip():
+        raise ValueError("新浪美股行情缺失")
+    return float(parts[2])
+
 def _external_score():
-    """④ 外部环境分(20)：隔夜纳指11 + 英伟达9（东财f170=涨跌幅×100）。"""
+    """④ 外部环境分(20)：隔夜纳指11 + 英伟达9（东财f170=涨跌幅×100；失败切新浪 gb_ 兜底）。"""
     score, detail = 0, []
     def f170(sec):
         url = f"https://push2delay.eastmoney.com/api/qt/stock/get?secid={sec}&fields=f170,f58"
-        d = json.loads(em_get(url).decode("utf-8", "ignore"))
+        d = json.loads(em_get(url, timeout=6).decode("utf-8", "ignore"))
         return d["data"]["f170"] / 100.0
+    def overnight(sec, sina_sym):
+        """返回 (涨跌幅, 来源标签)：东财优先，失败切新浪。"""
+        try:
+            return f170(sec), ""
+        except Exception:
+            return _sina_us_change(sina_sym), "·新浪"
     try:
-        ndx = f170("100.NDX")
+        ndx, tag = overnight("100.NDX", "ndx")
         s = 11 if ndx >= 1 else 8 if ndx >= 0 else 3 if ndx >= -1 else 0
         score += s
-        detail.append(f"纳指{ndx:+.2f}%({s}分)")
+        detail.append(f"纳指{ndx:+.2f}%({s}分{tag})")
     except Exception:
         score += 6
         detail.append("纳指缺失(中性6分)")
     try:
-        nvda = f170("105.NVDA")
+        nvda, tag = overnight("105.NVDA", "nvda")
         s = 9 if nvda >= 1 else 6 if nvda >= 0 else 2 if nvda >= -1 else 0
         score += s
-        detail.append(f"英伟达{nvda:+.2f}%({s}分)")
+        detail.append(f"英伟达{nvda:+.2f}%({s}分{tag})")
     except Exception:
         score += 5
         detail.append("英伟达缺失(中性5分)")
     return score, detail
 
-def market_score(indices=None):
-    """市场环境评分主函数：返回 dict{score,state,position,parts,lines} 并存入全局 MARKET"""
+def market_score(indices=None, breadth=None):
+    """市场环境评分主函数：返回 dict{score,state,position,parts,lines} 并存入全局 MARKET
+    breadth=(up,dn,flat,src) 可让调用方（池链）复用本轮已拉取的全市场统计，避免二次全量请求。"""
     global MARKET
     MARKET.clear()
     if indices is None:
@@ -621,7 +726,7 @@ def market_score(indices=None):
         except Exception:
             indices = {}
     t, t_d = _trend_score(indices)
-    b, b_d = _breadth_score()
+    b, b_d = _breadth_score(breadth)
     v, v_d = _volume_score()
     e, e_d = _external_score()
     missing = ["指数实时报价缺失"] if not indices else []
@@ -662,7 +767,7 @@ def market_score(indices=None):
 EM_EXTRA = {}  # code -> {"turnover": 换手率%, "inflow_pct": 主力净流入占比%}（东财，失败时为空走中性分）
 
 def _secid(code):
-    return ("1." if code.startswith(("5", "6", "9")) else "0.") + code
+    return board_policy.em_secid(code)
 
 def fetch_em_extra(codes):
     """东财 ulist 单次批量抓取 换手率(f8)+主力净流入占比(f184)，供资金因子使用"""

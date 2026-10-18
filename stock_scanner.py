@@ -3,8 +3,8 @@
 股票池V1.1 — 第一层：全市场拉取 + 基础过滤（stock_scanner）
 ============================================================
 数据源：新浪 Market_Center（实测 26s 拉全市场 5538 只，稳定）
-权限硬条件：只做沪深主板 600/601/603/605/000/001/002/003
-           （用户未开通创业板300/301、科创板688/689、北交所）
+板块口径：2026-10-17 起取消板块过滤，全 A 股（主板/创业板/科创板/北交所）统一入扫描。
+           前缀、涨跌幅限制见 board_policy.py；BOARD_FILTER=main 可回滚为只做沪深主板。
 
 设计依据：~/.hermes/scripts/stock_pool_design_v1.md §4.1 + V1.1修改四
 """
@@ -13,12 +13,14 @@ import math
 import time
 import urllib.request
 
+import board_policy
+
 SINA_HQ = ("https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/"
            "Market_Center.getHQNodeData")
-MAIN_BOARD_PREFIX = ("600", "601", "603", "605", "000", "001", "002", "003")
+MAIN_BOARD_PREFIX = board_policy.MAIN_BOARD_PREFIX   # 兼容旧引用（现仅作主板口径判定）
 MIN_PRICE = 5.0            # 股价门槛
 MIN_AMOUNT = 2e8           # 成交额门槛 ≥2亿（V1.1 修改四：原5亿→2亿，当日近似）
-LIMIT_DOWN = -9.9          # 当天跌停线（ST已剔除，主板非ST跌停=-10%）
+LIMIT_DOWN = -9.9          # 兼容旧引用；实际按 board_policy.limit_pct 逐票计算
 PAGE_SIZE = 100
 LAST_FETCH_COMPLETE = False
 MAX_PAGE = 70              # 全市场 hs_a 约 56 页
@@ -81,13 +83,18 @@ def fetch_all_stocks(max_page=MAX_PAGE):
 
 
 def is_main_board(code):
-    return code.startswith(MAIN_BOARD_PREFIX)
+    """兼容旧调用：板块过滤已取消，等价于 is_allowed（全A股放行）。"""
+    return board_policy.is_allowed(code)
+
+
+def is_allowed(code):
+    return board_policy.is_allowed(code)
 
 
 def basic_filter(stocks, early_setups=False):
     """
     基础过滤：
-      ① 主板白名单（硬条件）
+      ① 板块过滤（2026-10-17 取消：全A股放行；BOARD_FILTER=main 可回滚）
       ② 剔除 ST/*ST/退市整理
       ③ 股价 ≥5 元
       ④ 成交额 ≥2亿（当日近似 20 日均额）
@@ -97,7 +104,7 @@ def basic_filter(stocks, early_setups=False):
     kept, dropped = [], {"perm": 0, "st": 0, "price": 0, "amount": 0, "limitdown": 0, "other": 0}
     for s in stocks:
         code = str(s.get("code", ""))
-        if not is_main_board(code):
+        if not board_policy.is_allowed(code):
             dropped["perm"] += 1
             continue
         name = str(s.get("name", ""))
@@ -121,7 +128,8 @@ def basic_filter(stocks, early_setups=False):
         if not early_setups and amount < MIN_AMOUNT:
             dropped["amount"] += 1
             continue
-        if chg <= LIMIT_DOWN:
+        # 跌停剔除按板块口径：主板-10% / 创业板科创板-20% / 北交所-30%
+        if chg <= -(board_policy.limit_pct(code) - 0.1):
             dropped["limitdown"] += 1
             continue
         kept.append({

@@ -14,6 +14,7 @@ bottom_scan.py — 底部窄幅横盘形态扫描（用户需求 2026-08-05）
 用法：python3 bottom_scan.py [--top N]   # 默认输出前15只，按振幅升序
 """
 import json, urllib.request, sys, os, time
+import board_policy
 from datetime import datetime
 
 DRAW_DOWN_PCT = 0.30      # 回撤≥30%
@@ -27,7 +28,7 @@ def sina_get(url, gbk=True):
     return raw.decode("gbk") if gbk else raw.decode("utf-8", "ignore")
 
 def get_prefix(code):
-    return "sh" if code.startswith(("5", "6", "9")) else "sz"
+    return board_policy.sina_prefix(code)
 
 def get_kline(code, days=130):
     pref = get_prefix(code)
@@ -47,8 +48,8 @@ def get_market_list(page, num=100):
         return []
 
 def is_main_board(code):
-    """沪深主板白名单（用户可交易权限）"""
-    return code.startswith(("600", "601", "603", "605", "000", "001", "002", "003"))
+    """板块过滤已取消（2026-10-17）：全A股放行；BOARD_FILTER=main 可回滚。"""
+    return board_policy.is_allowed(code)
 
 def scan():
     """全市场扫描，返回符合底部窄幅横盘的标的列表"""

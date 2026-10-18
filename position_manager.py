@@ -6,6 +6,7 @@
 import json, os, csv
 from datetime import datetime, date
 from runtime import data_path, atomic_json, read_json, lot_quantity, exclusive, available_quantity, positive
+from board_policy import sina_prefix
 
 POSITIONS_FILE = data_path("positions.json")
 TRADE_LOG = data_path("trade_log.csv")
@@ -482,7 +483,7 @@ def _sina_kline(code, days=120):
     try:
         import json as _json
         import urllib.request as _ur
-        pref = "sh" if code.startswith(("5", "6", "9")) else "sz"
+        pref = sina_prefix(code)
         url = (f"https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/"
                f"CN_MarketData.getKLineData?symbol={pref}{code}&scale=240&ma=5&datalen={days}")
         req = _ur.Request(url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://finance.sina.com.cn"})

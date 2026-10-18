@@ -304,11 +304,13 @@ class PipelineTests(unittest.TestCase):
             stack.enter_context(patch.object(stock_pool, "KLINE_SLEEP", 0))
             with self.assertRaisesRegex(RuntimeError, "候选行情失败过多"):
                 stock_pool.main()
-            self.assertEqual(scorer.call_count, 16)
+            # 2026-10-18 并发评分：并发阶段会先打满全部候选（30 次），
+            # 关键是**不再进入串行重试**（否则全A口径 3000+ 只会白跑几十分钟）。
+            self.assertEqual(scorer.call_count, len(candidates))
             save.assert_not_called()
         self.assertEqual(previous, (self.root / pool_batch.POINTER).read_bytes())
         metrics = runtime.read_json(directory / "scan_metrics.json", {})
-        self.assertEqual(metrics["processed"], 16)
+        self.assertEqual(metrics["processed"], len(candidates))
         self.assertFalse(metrics["complete"])
 
     def history(self):

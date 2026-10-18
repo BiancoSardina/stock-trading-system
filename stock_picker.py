@@ -6,6 +6,7 @@
 规则基于 stock-short-term-trading 强势股框架 + 威科夫择时 + 趋势三要件
 """
 import json, urllib.request, sys, os, time
+import board_policy
 from datetime import datetime
 
 def sina_get(url, gbk=True):
@@ -14,7 +15,7 @@ def sina_get(url, gbk=True):
     return raw.decode("gbk") if gbk else raw.decode("utf-8", "ignore")
 
 def get_prefix(code):
-    return "sh" if code.startswith(("5", "6", "9")) else "sz"
+    return board_policy.sina_prefix(code)
 
 def get_rt(code):
     pref = get_prefix(code)
@@ -146,8 +147,8 @@ def main():
             seen.add(code)
             # 粗筛：排除ST/退市/异常
             if "ST" in name.upper() or "退" in name: continue
-            # 只保留沪深主板：创业板(300/301)需10万资产门槛、科创板(688/689)需50万、北交所(8/4/920)需50万——用户资金不足未开通，一律排除
-            if not code.startswith(("600", "601", "603", "605", "000", "001", "002", "003")): continue
+            # 板块过滤已取消(2026-10-17)：全A股（主板/创业板/科创板/北交所）一律放行，仅拦非A股
+            if not board_policy.is_allowed(code): continue
             try:
                 amount = float(s.get("amount", 0))
                 chg = float(s.get("changepercent", 0))

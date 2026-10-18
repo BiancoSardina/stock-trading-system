@@ -152,6 +152,41 @@ def archive(task: str, dry_run: bool = False, files: "list | None" = None, sourc
     return ts, archived, note
 
 
+def _reconcile_remote_before_push(_run) -> str:
+    """push 被 'fetch first' 拒绝时的自愈：只有远程领先改动**全是数据文件**才自动合并重推。
+
+    背景（2026-09-23 实测）：本机只推 data_packages/ 归档，开发机推裁决结果
+    （watchlist.json 等）→ 两边分叉后 push 恒被拒，当天 13:30/14:30/14:45/18:00
+    四个任务的归档上传全失败（池链 exit 1"流程未全部完成"）。
+    安全边界：远程领先若含任何代码/配置（.py/.sh/.md/.yml/.yaml/.toml/.cfg/.ini/
+    .gitignore/tests/），一律拒绝合并并抛错——代码部署必须人工拉取复核。
+    env PACKAGE_AUTOMERGE=0 可一键关闭该自愈（回到"失败留痕 + 手动重试"）。
+    """
+    if os.environ.get("PACKAGE_AUTOMERGE", "1") != "1":
+        raise RuntimeError("push 被拒（fetch first）且 PACKAGE_AUTOMERGE=0：需人工合并远程后重试")
+    ssh = os.environ.get("GIT_SSH_COMMAND")
+    fetch = ["git", "fetch", "origin", "main"]
+    proc = subprocess.run(fetch, cwd=SCRIPT_DIR, capture_output=True, text=True, timeout=120,
+                          env=dict(os.environ, GIT_SSH_COMMAND=ssh) if ssh else None)
+    if proc.returncode != 0:
+        raise RuntimeError(f"push 被拒后 fetch 失败：{proc.stderr.strip()[:300]}")
+    ahead = _run(["git", "diff", "--name-only", "HEAD", "origin/main"]).stdout.split()
+    data_only = {".json", ".csv", ".txt", ".log"}
+    code_files = [p for p in ahead if Path(p).suffix.lower() not in data_only]
+    if code_files:
+        raise RuntimeError("push 被拒：远程领先包含代码/配置文件（需人工拉取复核），" +
+                           "、".join(code_files[:8]))
+    if not ahead:
+        return "already-synced"
+    proc = subprocess.run(["git", "merge", "origin/main", "--no-edit"], cwd=SCRIPT_DIR,
+                          capture_output=True, text=True, timeout=120)
+    if proc.returncode != 0:
+        raise RuntimeError("push 被拒：自动合并远程数据文件失败（可能有本地未提交改动），" +
+                           proc.stderr.strip()[:300])
+    print(f"[upload] ♻️ 远程领先数据文件已自动合并（{len(ahead)}项）：{'、'.join(ahead[:6])}",
+          file=sys.stderr)
+    return "merged"
+
 def git_push(task: str, ts: str, archived) -> str:
     """只提交本批指定文件并推送；无diff时仍重试之前未成功的push。"""
     def _run(cmd, check=True):
@@ -185,7 +220,16 @@ def git_push(task: str, ts: str, archived) -> str:
     proc = _run(["git", "rev-parse", "--short", "HEAD"])
     short_hash = proc.stdout.strip()
     # push 到远程（认证失败/无写权限会在这里抛错）
-    proc = _run(["git", "push", "origin", "main"])
+    proc = _run(["git", "push", "origin", "main"], check=False)
+    if proc.returncode != 0:
+        blob = (proc.stderr or "") + (proc.stdout or "")
+        if ("fetch first" in blob or "non-fast-forward" in blob
+                or "Updates were rejected" in blob):
+            _reconcile_remote_before_push(_run)
+            _run(["git", "push", "origin", "main"])  # 合并后重推；仍失败则抛错留痕
+            short_hash = _run(["git", "rev-parse", "--short", "HEAD"]).stdout.strip()
+        else:
+            raise RuntimeError(f"git 命令失败: git push origin main\n{proc.stderr.strip()[:500]}")
     print(f"[upload] ✅ git push 成功 commit={short_hash}", file=sys.stderr)
     return short_hash
 

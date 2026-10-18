@@ -35,6 +35,7 @@ from datetime import datetime, date
 BASE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE)
 import position_manager
+from board_policy import sina_prefix
 from runtime import data_path, atomic_json, read_json, exclusive, available_quantity, lot_quantity, positive, analysis_only, quote_is_fresh
 
 STATE_FILE = data_path("t_state.json")
@@ -83,7 +84,7 @@ def fetch_quote(code):
     """新浪实时行情 → dict；失败返回 None"""
     try:
         import urllib.request
-        pref = "sh" if code.startswith(("5", "6", "9")) else "sz"
+        pref = sina_prefix(code)
         url = f"https://hq.sinajs.cn/list={pref}{code}"
         req = urllib.request.Request(url, headers={
             "User-Agent": "Mozilla/5.0", "Referer": "https://finance.sina.com.cn"})
@@ -114,7 +115,7 @@ def _kline(code, days=120):
     try:
         import json as _json
         import urllib.request as _ur
-        pref = "sh" if code.startswith(("5", "6", "9")) else "sz"
+        pref = sina_prefix(code)
         url = (f"https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/"
                f"CN_MarketData.getKLineData?symbol={pref}{code}&scale=240&ma=5&datalen={days}")
         req = _ur.Request(url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://finance.sina.com.cn"})
@@ -128,7 +129,7 @@ def _kline5(code, days=96):
     try:
         import json as _json
         import urllib.request as _ur
-        pref = "sh" if code.startswith(("5", "6", "9")) else "sz"
+        pref = sina_prefix(code)
         url = (f"https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/"
                f"CN_MarketData.getKLineData?symbol={pref}{code}&scale=5&ma=5&datalen={days}")
         req = _ur.Request(url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://finance.sina.com.cn"})

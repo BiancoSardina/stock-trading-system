@@ -25,6 +25,7 @@ import urllib.request
 from datetime import datetime, date
 from runtime import data_path, positive
 from signal_store import read_signals
+from board_policy import sina_prefix
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SIGNAL_LOG = data_path("signal_log_v32.csv")
@@ -39,7 +40,7 @@ def sina_get(url):
 
 
 def get_prefix(code):
-    return "sh" if code.startswith(("5", "6", "9")) else "sz"
+    return sina_prefix(code)
 
 
 def get_rt(code):

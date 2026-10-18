@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """超跌池候选深度校验：趋势三要件 + RS强度 + ATR + 动态支撑/追涨位"""
 import json, urllib.request, sys
+import board_policy
 
 def sina_get(url, gbk=True):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://finance.sina.com.cn"})
@@ -29,7 +30,7 @@ def calc_atr(highs, lows, closes, n=14):
     return sum(trs[-n:]) / n
 
 def get_realtime(code):
-    pref = "sh" if code.startswith(("5","6","9")) else "sz"
+    pref = board_policy.sina_prefix(code)
     url = f"https://hq.sinajs.cn/list={pref}{code}"
     try:
         raw = sina_get(url)

@@ -25,6 +25,8 @@ import sys
 import time
 import urllib.request
 
+import board_policy
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SINA_NODES = ("https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/"
               "Market_Center.getHQNodes")
@@ -35,6 +37,9 @@ SINA_KLINE = ("https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/
 INDUSTRY_MAP_PATH = os.path.join(SCRIPT_DIR, "industry_map.json")
 REP_STOCKS_N = 3          # 每行业代表股数（成交额前N）
 INDUSTRY_KEEP = 70        # 行业评分保留线
+# 行业分类源：sw2=申万二级（131个，全A股覆盖，2026-10-17 起默认）/ sina=新浪行业（49个，兜底）
+INDUSTRY_SOURCE = os.environ.get("INDUSTRY_SOURCE", "sw2").strip().lower()
+REP_KLINE_WORKERS = int(os.environ.get("REP_KLINE_WORKERS", "5"))   # 代表股K线并发数
 
 # 最近一次构建统计（供 pool_mode 判断"行业数据是否失真"；2026-09-22 新增）
 LAST_BUILD = {"count": 0, "failed": [], "total": 0, "source": ""}
@@ -54,12 +59,12 @@ def _fetch(url, retries=3, timeout=25):
 
 
 def _get_prefix(code):
-    return "sh" if code.startswith(("60", "68")) else "sz"
+    return board_policy.sina_prefix(code)
 
 
 def get_kline(code, days=30):
     """新浪日K线（quotes.sina.cn 端点，抗456限流；25根够算5日/20日）"""
-    pref = "sh" if code.startswith(("60", "68")) else "sz"
+    pref = board_policy.sina_prefix(code)
     url = (f"https://quotes.sina.cn/cn/api/json_v2.php/CN_MarketDataService.getKLineData"
            f"?symbol={pref}{code}&scale=240&ma=no&datalen={days}")
     raw = _fetch(url)
@@ -71,8 +76,8 @@ def get_kline(code, days=30):
         return []
 
 
-def fetch_industry_list():
-    """新浪行业列表：[(行业名, node), ...]（约49个）"""
+def _fetch_node_list(node_prefix):
+    """从 getHQNodes 节点树解析指定前缀的板块列表：[(名称, node), ...]"""
     raw = _fetch(SINA_NODES)
     if not raw:
         return []
@@ -80,19 +85,29 @@ def fetch_industry_list():
         tree = json.loads(raw)
     except json.JSONDecodeError:
         return []
-    industries = []
+    out = []
 
     def walk(node):
         if isinstance(node, list) and len(node) >= 2 and isinstance(node[1], list):
             for sub in node[1]:
                 if (isinstance(sub, list) and len(sub) >= 3
                         and isinstance(sub[0], str) and isinstance(sub[2], str)
-                        and sub[2].startswith("new_")):
-                    industries.append((sub[0], sub[2]))
+                        and sub[2].startswith(node_prefix)):
+                    out.append((sub[0], sub[2]))
                 else:
                     walk(sub)
     walk(tree)
-    return industries
+    return out
+
+
+def fetch_industry_list():
+    """新浪行业列表：[(行业名, node), ...]（49个，仅覆盖约3000只，作降级源）"""
+    return _fetch_node_list("new_")
+
+
+def fetch_sw2_list():
+    """申万二级行业列表：[(行业名, node), ...]（131个，实测覆盖全A股 5576/5576）"""
+    return _fetch_node_list("sw2_")
 
 
 def fetch_industry_members(node, max_page=3):
@@ -145,13 +160,24 @@ def build_industry_map(force=False):
         try:
             with open(INDUSTRY_MAP_PATH, encoding="utf-8") as f:
                 old = json.load(f)
-            if old.get("updated") == time.strftime("%Y-%m-%d") and old.get("industries"):
+            if (old.get("updated") == time.strftime("%Y-%m-%d") and old.get("industries")
+                    and old.get("source") == INDUSTRY_SOURCE):
                 LAST_BUILD = {"count": len(old["industries"]), "failed": [], "total": len(old["industries"]),
                               "source": "cache"}
                 return old
         except Exception:
             pass
-    industries_list = fetch_industry_list()
+    # 2026-10-17 全板块口径：主源改申万二级（sw2，131个，覆盖全A股含创业板/科创板/北交所），
+    # 新浪行业（new_，49个，仅约3000只）降级为兜底源。
+    industries_list, source = [], "sw2"
+    if INDUSTRY_SOURCE == "sw2":
+        industries_list = fetch_sw2_list()
+        if len(industries_list) < 100:
+            print(f"[industry_rank] ⚠️ 申万二级行业列表不足（{len(industries_list)}/131），降级新浪行业",
+                  file=sys.stderr)
+            industries_list, source = fetch_industry_list(), "sina"
+    else:
+        industries_list, source = fetch_industry_list(), "sina"
     if not industries_list:
         print("[industry_rank] ❌ 行业列表拉取失败（getHQNodes 无数据）", file=sys.stderr)
         LAST_BUILD = {"count": 0, "failed": [], "total": 0, "source": "error"}
@@ -177,7 +203,8 @@ def build_industry_map(force=False):
         industries[name] = {"node": node, "total": len(stocks), "stocks": stocks, "reps": reps}
         time.sleep(0.3)
     # V2.0 完整性校验：行业数明显不足 → 回退旧缓存（防限流期把完整缓存覆盖成残缺版）
-    if len(industries) < 40 and failed:
+    min_ind = 100 if source == "sw2" else 40
+    if len(industries) < min_ind and failed:
         try:
             with open(INDUSTRY_MAP_PATH, encoding="utf-8") as f:
                 old = json.load(f)
@@ -195,11 +222,12 @@ def build_industry_map(force=False):
               f"失败行业: {failed[:10]}{'...' if len(failed) > 10 else ''}", file=sys.stderr)
     else:
         print(f"[industry_rank] ✅ 行业映射完整 {len(industries)}/{len(industries_list)}", file=sys.stderr)
-    data = {"updated": time.strftime("%Y-%m-%d"), "industries": industries}
+    data = {"updated": time.strftime("%Y-%m-%d"), "source": source,
+            "coverage": sum(v["total"] for v in industries.values()), "industries": industries}
     with open(INDUSTRY_MAP_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     LAST_BUILD = {"count": len(industries), "failed": failed,
-                  "total": len(industries_list), "source": "build"}
+                  "total": len(industries_list), "source": source}
     return data
 
 
@@ -252,15 +280,36 @@ def score_industries(all_stocks, industry_map):
     def rank_pct(i):
         return (i + 1) / n
 
-    # 代表股 5日/20日 涨幅（K线聚合，约 49×3=147 次请求）
+    # 代表股 5日/20日 涨幅（K线聚合）。2026-10-17：行业数 49→131，改为并发抓取，
+    # 5路并发把 393 次请求压到 ~1 分钟内；单只失败只降级该行业（period_strength 用当日涨幅折算）。
     rep_period = {}
+    tasks = [(r["name"], code) for r in rows for code in r["reps"]]
+    kl_map = {}
+
+    def _one(item):
+        name, code = item
+        try:
+            return (name, code, get_kline(code, 30))
+        except Exception:
+            return (name, code, [])
+
+    try:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=REP_KLINE_WORKERS) as ex:
+            for name, code, kl in ex.map(_one, tasks):
+                kl_map[(name, code)] = kl
+    except Exception:
+        kl_map = {}
+        for name, code in tasks:
+            kl_map[(name, code)] = get_kline(code, 30)
+            time.sleep(0.15)
+
     for r in rows:
         closes_list = []
         for code in r["reps"]:
-            kl = get_kline(code, 30)
+            kl = kl_map.get((r["name"], code)) or []
             if len(kl) >= 21:
                 closes_list.append([float(k["close"]) for k in kl])
-            time.sleep(0.15)
         chg5 = chg20 = None
         if closes_list:
             # 各代表股涨幅均值

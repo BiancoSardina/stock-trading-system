@@ -145,7 +145,9 @@ class StartupTests(unittest.TestCase):
         sample = dict(code="000690", name="测试", trade=4.95, amount=100000, changepercent=.1)
         self.assertFalse(scanner.basic_filter([sample])[0])
         self.assertTrue(scanner.basic_filter([sample], early_setups=True)[0])
-        for change in (dict(name="ST测试"), dict(code="300001"), dict(trade=0), dict(trade=float('nan')), dict(changepercent=-10)):
+        # 2026-10-17 起板块过滤取消：300001(创业板)应放行，只拦 ST/无价/跌停
+        self.assertTrue(scanner.basic_filter([dict(sample, code="300001")], early_setups=True)[0])
+        for change in (dict(name="ST测试"), dict(code="900901"), dict(trade=0), dict(trade=float('nan')), dict(changepercent=-10)):
             self.assertFalse(scanner.basic_filter([dict(sample, **change)], early_setups=True)[0])
 
     def test_pool_both_paths_survive_below_ma60_and_D_has_no_core(self):

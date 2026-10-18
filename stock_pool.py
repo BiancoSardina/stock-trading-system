@@ -7,9 +7,9 @@ MA20/MA60与传统强势分仅作背景。下述V1.x说明及generate_pool旧分
 股票池V1.3 — 主程序（stock_pool.py）
 ====================================
 每日 17:30 运行：全流程串行 8-12 分钟
-  ① 市场状态（复用 short_term.market_score）
-  ② 全市场拉取 + 基础过滤（stock_scanner）
-  ③ 行业映射 + 行业强度评分（industry_rank，不再硬过滤）
+  ① 全市场拉取（新浪，供涨跌家数统计；2026-09-23 起市场评分复用本轮列表）
+  ② 市场状态（复用 short_term.market_score，涨跌家数由①统计传入）
+  ③ 基础过滤（stock_scanner）→ 行业映射 + 行业强度评分（industry_rank，不再硬过滤）
   ④ 候选=全量基础过滤股票（附行业标签；--fast 按成交额粗筛前N只）
   ⑤ 全量五因子评分（复用 short_term 五因子函数 + 新浪K线，K线加间隔防456限流）
   ⑥ 位置风险修正（rise20/偏离MA20/RSI）+ 位置硬排除（>30%涨幅/偏离>12% 出局）
@@ -56,6 +56,7 @@ sys.path.insert(0, SCRIPT_DIR)
 import short_term
 from runtime import macd, positive, exclusive, data_path, quote_is_fresh, weekly_averages, align_daily_bars
 import stock_scanner
+import board_policy
 import industry_rank
 import pool_mode
 import stock_pool_manager as spm
@@ -77,7 +78,9 @@ WATCH_STOCK_MIN = 60        # 个股底线：watch 需个股五因子≥60（B�
 WATCH_TOTAL_MIN = 65        # watch 综合分底线（设计文档v1：watch 65≤总分<core门槛；2026-08-12修复空池bug）
 POS_EXCLUDE_RISE20 = 30     # 位置硬排除：20日涨幅>30% 直接出局（V1.3收紧，原50%放行太多高位票）
 POS_EXCLUDE_DIST = 12       # 位置硬排除：偏离MA20>12% 直接出局（原20%）
-KLINE_SLEEP = 0.05          # K线请求间隔（秒，全量781只防456限流）
+KLINE_SLEEP = 0.05          # K线请求间隔（秒，串行/重试路径防456限流）
+SCORE_WORKERS = int(os.environ.get("SCORE_WORKERS", "6"))   # 并发评分数（2026-10-17 全板块候选3000+）
+
 FAST_PRESCREEN = 400        # --fast 模式：实时行情粗筛前N只再精评（降级用）
 MAX_POS_DEDUCT = 30         # 位置扣分上限
 
@@ -131,7 +134,7 @@ def position_deduct(rise20, dist_ma20, rsi14):
 
 def _get_kline(code, days=120):
     """个股日K线（quotes.sina.cn 端点——实测连续20次无456限流；money.finance 端点会限流）"""
-    pref = "sh" if code.startswith(("60", "68")) else "sz"
+    pref = board_policy.sina_prefix(code)
     url = (f"https://quotes.sina.cn/cn/api/json_v2.php/CN_MarketDataService.getKLineData"
            f"?symbol={pref}{code}&scale=240&ma=no&datalen={days}")
     req = urllib.request.Request(url, headers={
@@ -478,9 +481,18 @@ def main():
     t0 = time.time()
     today = datetime.now().strftime("%Y-%m-%d")
 
-    # ① 市场状态（不再直接 raise：由 pool_mode.classify 决定 正式/降级研究/停止）
+    # ① 全市场快照（列表不完整 = 停止：数据真实性不软化）
+    #    先拉全市场，再算市场评分：涨跌家数直接用本轮列表统计（零额外请求，且与
+    #    池内候选同源）。2026-09-23 起东财 push2delay 域名间歇黑洞，新浪这条路
+    #    是涨跌家数的主保障——否则市场评分缺项会把整轮打成"降级研究"。
+    all_stocks = stock_scanner.fetch_all_stocks()
+    if not stock_scanner.LAST_FETCH_COMPLETE:
+        raise RuntimeError("数据分级=停止：全市场列表不完整，保留上一批正式池")
+    breadth = short_term.breadth_from_rows(all_stocks)
+
+    # ② 市场状态（不再直接 raise：由 pool_mode.classify 决定 正式/降级研究/停止）
     try:
-        short_term.market_score()
+        short_term.market_score(breadth=breadth)
     except Exception as exc:
         short_term.MARKET = {"state": "UNKNOWN", "score": None, "data_ok": False,
                              "missing": [f"市场评分异常：{type(exc).__name__}"]}
@@ -491,11 +503,9 @@ def main():
     market_missing = list(m.get("missing") or [])
     print(f"[stock_pool] 市场状态: {market_status}级({market_score_val}分) "
           f"data_ok={m.get('data_ok')} 缺失子项={market_missing}", file=sys.stderr, flush=True)
+    print(f"[stock_pool] 市场子项: {m.get('parts')}", file=sys.stderr, flush=True)
 
-    # ② 全市场 + 基础过滤（列表不完整 = 停止：数据真实性不软化）
-    all_stocks = stock_scanner.fetch_all_stocks()
-    if not stock_scanner.LAST_FETCH_COMPLETE:
-        raise RuntimeError("数据分级=停止：全市场列表不完整，保留上一批正式池")
+    # ③ 基础过滤
     kept, dropped = stock_scanner.basic_filter(all_stocks, early_setups=True)
     print(f"[stock_pool] 全市场{len(all_stocks)} → 基础过滤后{len(kept)}只 "
           f"(剔除:{json.dumps(dropped, ensure_ascii=False)})", file=sys.stderr, flush=True)
@@ -565,12 +575,63 @@ def main():
         print("[stock_pool] scan_metrics=" + json.dumps(metrics, ensure_ascii=False), file=sys.stderr, flush=True)
 
     save_progress()
+
+    def _score_one(item):
+        i, c = item
+        try:
+            return i, score_stock(c["code"], c["name"], c["industry_score"], bench_chg20,
+                                  bench300_chg20, amount=c.get("amount"), turnover=c.get("turnover"))
+        except Exception:
+            return i, None
+
+    # 2026-10-17 全板块口径（候选 1200 → 3000+）：并发评分压时间，失败项串行重试兜底。
+    results = [None] * len(candidates)
+    if SCORE_WORKERS > 1 and len(candidates) > 1:
+        from concurrent.futures import ThreadPoolExecutor
+        par_started = time.monotonic()
+        with ThreadPoolExecutor(max_workers=SCORE_WORKERS) as ex:
+            for i, e in ex.map(_score_one, list(enumerate(candidates))):
+                results[i] = e
+                metrics["processed"] = i + 1
+                if (i + 1) % 200 == 0:
+                    metrics["success"] = sum(1 for x in results[:i + 1] if x)
+                    if os.environ.get("POOL_BATCH_DIR"):
+                        atomic_json(os.path.join(os.environ["POOL_BATCH_DIR"], "scan_metrics.json"), metrics)
+                    print(f"[stock_pool] 并发评分进度 {i+1}/{len(candidates)} "
+                          f"({time.monotonic()-par_started:.0f}s)", file=sys.stderr, flush=True)
+        retry = [i for i, e in enumerate(results) if e is None]
+        if retry:
+            # 并发阶段全失败 = 数据源整体不可用（或全市场跨天/限流）：串行重试只会
+            # 白跑 3000+ 只（全A口径每只 ~0.3s，等于几十分钟），直接按硬闸门中止。
+            if len(retry) == len(candidates):
+                save_progress()
+                raise RuntimeError(
+                    f"候选行情失败过多（失败{len(retry)}/{len(candidates)}）；"
+                    "并发阶段全部失败，跳过串行重试并保留旧批次")
+            print(f"[stock_pool] 并发评分未成功{len(retry)}只 → 串行重试（限流/瞬时失败兜底）",
+                  file=sys.stderr, flush=True)
+            for i in retry:
+                if time.monotonic() >= step_deadline:
+                    save_progress()
+                    raise TimeoutError("评分阶段预算耗尽；未发布部分股票池")
+                c = candidates[i]
+                results[i] = score_stock(c["code"], c["name"], c["industry_score"], bench_chg20,
+                                         bench300_chg20, amount=c.get("amount"), turnover=c.get("turnover"))
+                time.sleep(KLINE_SLEEP)
+    else:
+        for i, c in enumerate(candidates):
+            if time.monotonic() >= step_deadline:
+                save_progress()
+                raise TimeoutError("评分阶段预算耗尽；未发布部分股票池")
+            results[i] = score_stock(c["code"], c["name"], c["industry_score"], bench_chg20,
+                                     bench300_chg20, amount=c.get("amount"), turnover=c.get("turnover"))
+            time.sleep(KLINE_SLEEP)
+
     for i, c in enumerate(candidates):
         if time.monotonic() >= step_deadline:
             save_progress()
             raise TimeoutError("评分阶段预算耗尽；未发布部分股票池")
-        e = score_stock(c["code"], c["name"], c["industry_score"], bench_chg20, bench300_chg20,
-                        amount=c.get("amount"), turnover=c.get("turnover"))
+        e = results[i]
         if e:
             if e.get("_exclude"):
                 pos_excluded.append(f"{e['code']} {e['name']}: {e['_exclude']}")
@@ -586,9 +647,6 @@ def main():
         if fail > max(15, int(len(candidates) * 0.02)):
             save_progress()
             raise RuntimeError(f"候选行情失败过多（失败{fail}/{len(candidates)}）；停止扫描并保留旧批次")
-        time.sleep(KLINE_SLEEP)
-        if (i + 1) % 100 == 0:
-            save_progress()
     metrics["complete"] = True
     save_progress()
     print(f"[stock_pool] 评分完成: 成功{len(scored)} 失败{fail} 位置硬排除{len(pos_excluded)}",

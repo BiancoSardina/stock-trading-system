@@ -1678,5 +1678,173 @@
   "change_reason": [
    "S级建仓信号成立"
   ]
+ },
+ {
+  "code": "002612",
+  "name": "朗姿股份",
+  "time": "2026-09-03 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 16.73,
+  "quality": "S",
+  "score": 88,
+  "state": "BUYING",
+  "change_reason": [
+   "S级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600893",
+  "name": "航发动力",
+  "time": "2026-09-03 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 38.97,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000738",
+  "name": "航发控制",
+  "time": "2026-09-03 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 19.07,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601890",
+  "name": "亚星锚链",
+  "time": "2026-09-03 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 8.91,
+  "quality": "A",
+  "score": 73,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002237",
+  "name": "恒邦股份",
+  "time": "2026-09-03 12:43",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 15.28,
+  "quality": "A",
+  "score": 76,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000807",
+  "name": "云铝股份",
+  "time": "2026-09-04 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 27.32,
+  "quality": "A",
+  "score": 71,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000957",
+  "name": "中通客车",
+  "time": "2026-09-04 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 10.38,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "601628",
+  "name": "中国人寿",
+  "time": "2026-09-04 09:35",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 39.4,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600685",
+  "name": "中船防务",
+  "time": "2026-09-04 12:44",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 27.35,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "002174",
+  "name": "游族网络",
+  "time": "2026-09-04 12:44",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 12.29,
+  "quality": "A",
+  "score": 75,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "000776",
+  "name": "广发证券",
+  "time": "2026-09-04 12:44",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 22.36,
+  "quality": "A",
+  "score": 77,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
+ },
+ {
+  "code": "600601",
+  "name": "方正科技",
+  "time": "2026-09-04 14:26",
+  "old_action": "持有",
+  "new_action": "买入",
+  "price": 13.08,
+  "quality": "A",
+  "score": 79,
+  "state": "BUYING",
+  "change_reason": [
+   "A级建仓信号成立"
+  ]
  }
 ]
