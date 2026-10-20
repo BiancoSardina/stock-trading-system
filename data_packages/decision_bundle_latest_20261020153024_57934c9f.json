@@ -1,0 +1,1625 @@
+{
+  "schema": "external-ai-decision-bundle/v1",
+  "batch_id": "20261020153024_57934c9f",
+  "generated_at": "2026-10-20 15:32:28",
+  "valid_until": "2026-10-21 15:32:28",
+  "integrity": {
+    "pool_data_ok": true,
+    "analysis_only": true,
+    "local_ai_called": false
+  },
+  "market": {
+    "date": "2026-10-20",
+    "generated_at": "2026-10-20 15:32:20",
+    "market_status": "C",
+    "market_score": 62
+  },
+  "stock_pool": {
+    "core_pool": [
+      {
+        "code": "688111",
+        "name": "金山办公",
+        "stock_score": 100,
+        "level": "core",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 65,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "超跌企稳型",
+          "score": 100,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 15,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 225.77,
+            "entry_high": 227.12,
+            "stop": 222.23,
+            "target": 234.48,
+            "min_price_rr": 1.5,
+            "price_rr": 0.052,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 224.0,
+            "pivot": 234.48,
+            "stop": 222.23,
+            "atr": 7.0779,
+            "width_pct": 4.68,
+            "volume_ratio_5v5": 1.045,
+            "drawdown_pct": -19.86,
+            "rs5": 3.569157003054324,
+            "previous_rs5": 3.2574633496024297
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:08",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 968738835.1,
+        "total_score": 100.0,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "position": {
+          "rise20": 2.31,
+          "distance_ma20": 3.41,
+          "rsi14": 53.0,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": true,
+          "above_ma60": false,
+          "ma20_gt_ma60": false
+        },
+        "chg20": 2.31,
+        "price": 233.88,
+        "levels": {
+          "ma5": 231.788,
+          "ma10": 228.582,
+          "ma20": 226.162,
+          "ma60": 240.237,
+          "ma60_slope": -0.04,
+          "atr14": 6.9443,
+          "support": 224.0,
+          "resistance": 234.48,
+          "stop": 222.23
+        },
+        "quote_time": "2026-10-20 15:31:03",
+        "industry": "软件开发",
+        "industry_score": 100,
+        "reason": [
+          "超跌企稳型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业100分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间"
+        ],
+        "first_seen": "2026-10-20",
+        "days_in_pool": 1,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "600660",
+        "name": "福耀玻璃",
+        "stock_score": 95,
+        "level": "core",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 61,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "整理启动型",
+          "score": 95,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 10,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 54.14,
+            "entry_high": 54.42,
+            "stop": 53.46,
+            "target": 55.88,
+            "min_price_rr": 1.5,
+            "price_rr": 0.352,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 53.8,
+            "pivot": 55.88,
+            "stop": 53.46,
+            "atr": 1.3386,
+            "width_pct": 3.87,
+            "volume_ratio_5v5": 0.784,
+            "drawdown_pct": -7.57,
+            "rs5": 2.9140405737837605,
+            "previous_rs5": 4.299799391938485
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:20",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 502380761.3,
+        "total_score": 95.0,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "position": {
+          "rise20": 2.54,
+          "distance_ma20": 2.31,
+          "rsi14": 57.2,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": true,
+          "above_ma60": false,
+          "ma20_gt_ma60": false
+        },
+        "chg20": 2.54,
+        "price": 55.25,
+        "levels": {
+          "ma5": 54.952,
+          "ma10": 54.295,
+          "ma20": 54.002,
+          "ma60": 55.613,
+          "ma60_slope": 0.28,
+          "atr14": 1.3486,
+          "support": 53.8,
+          "resistance": 55.88,
+          "stop": 53.46
+        },
+        "quote_time": "2026-10-20 15:31:14",
+        "industry": "汽车零部件",
+        "industry_score": 95,
+        "reason": [
+          "整理启动型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业95分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "first_seen": "2026-10-19",
+        "days_in_pool": 2,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "600930",
+        "name": "华电新能",
+        "stock_score": 95,
+        "level": "core",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 59,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "超跌企稳型",
+          "score": 95,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 10,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 3.93,
+            "entry_high": 3.95,
+            "stop": 3.89,
+            "target": 4.04,
+            "min_price_rr": 1.5,
+            "price_rr": 0.875,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 3.91,
+            "pivot": 4.04,
+            "stop": 3.89,
+            "atr": 0.0686,
+            "width_pct": 2.81,
+            "volume_ratio_5v5": 0.993,
+            "drawdown_pct": -9.32,
+            "rs5": 1.7465834413503356,
+            "previous_rs5": 5.414305230853788
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:17",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 496208328.32,
+        "total_score": 91.4,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "position": {
+          "rise20": 0.76,
+          "distance_ma20": 0.71,
+          "rsi14": 51.0,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": true,
+          "above_ma60": false,
+          "ma20_gt_ma60": false
+        },
+        "chg20": 0.76,
+        "price": 3.97,
+        "levels": {
+          "ma5": 3.978,
+          "ma10": 3.968,
+          "ma20": 3.942,
+          "ma60": 4.038,
+          "ma60_slope": -0.98,
+          "atr14": 0.07,
+          "support": 3.91,
+          "resistance": 4.04,
+          "stop": 3.89
+        },
+        "quote_time": "2026-10-20 15:31:11",
+        "industry": "电力",
+        "industry_score": 71,
+        "reason": [
+          "超跌企稳型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业71分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "first_seen": "2026-10-19",
+        "days_in_pool": 2,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "601288",
+        "name": "农业银行",
+        "stock_score": 100,
+        "level": "core",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 80,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "整理启动型",
+          "score": 100,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 15,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 7.15,
+            "entry_high": 7.22,
+            "stop": 7.07,
+            "target": 7.52,
+            "min_price_rr": 1.5,
+            "price_rr": 0.324,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 7.11,
+            "pivot": 7.52,
+            "stop": 7.07,
+            "atr": 0.1507,
+            "width_pct": 5.77,
+            "volume_ratio_5v5": 1.069,
+            "drawdown_pct": -0.4,
+            "rs5": 5.919045193784267,
+            "previous_rs5": 5.500391408857041
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:05",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 2143881467.86,
+        "total_score": 90.7,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "position": {
+          "rise20": 5.86,
+          "distance_ma20": 5.29,
+          "rsi14": 74.8,
+          "deduct": 5,
+          "reasons": [
+            "RSI75>70扣5"
+          ]
+        },
+        "trend": {
+          "above_ma20": true,
+          "above_ma60": true,
+          "ma20_gt_ma60": true
+        },
+        "chg20": 5.86,
+        "price": 7.41,
+        "levels": {
+          "ma5": 7.316,
+          "ma10": 7.199,
+          "ma20": 7.038,
+          "ma60": 6.845,
+          "ma60_slope": 1.12,
+          "atr14": 0.1636,
+          "support": 7.11,
+          "resistance": 7.52,
+          "stop": 7.07
+        },
+        "quote_time": "2026-10-20 15:30:59",
+        "industry": "国有大型银行Ⅱ",
+        "industry_score": 71,
+        "reason": [
+          "整理启动型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业71分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "first_seen": "2026-10-20",
+        "days_in_pool": 1,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "000001",
+        "name": "平安银行",
+        "stock_score": 95,
+        "level": "core",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 55,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "整理启动型",
+          "score": 95,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 10,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 11.32,
+            "entry_high": 11.43,
+            "stop": 11.2,
+            "target": 11.89,
+            "min_price_rr": 1.5,
+            "price_rr": 1.875,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 11.26,
+            "pivot": 11.89,
+            "stop": 11.2,
+            "atr": 0.2379,
+            "width_pct": 4.53,
+            "volume_ratio_5v5": 1.093,
+            "drawdown_pct": -3.56,
+            "rs5": 1.0645715061414651,
+            "previous_rs5": 4.49520551654815
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:07",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 1127404294.48,
+        "total_score": 89.9,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "position": {
+          "rise20": -3.46,
+          "distance_ma20": -1.19,
+          "rsi14": 43.2,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": false,
+          "above_ma60": false,
+          "ma20_gt_ma60": true
+        },
+        "chg20": -3.46,
+        "price": 11.44,
+        "levels": {
+          "ma5": 11.5,
+          "ma10": 11.574,
+          "ma20": 11.578,
+          "ma60": 11.494,
+          "ma60_slope": 0.51,
+          "atr14": 0.25,
+          "support": 11.26,
+          "resistance": 11.89,
+          "stop": 11.2
+        },
+        "quote_time": "2026-10-20 15:31:00",
+        "industry": "股份制银行Ⅱ",
+        "industry_score": 61,
+        "reason": [
+          "整理启动型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业61分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "first_seen": "2026-10-20",
+        "days_in_pool": 1,
+        "last_evaluated": "2026-10-20"
+      }
+    ],
+    "watch_pool": [
+      {
+        "code": "000166",
+        "name": "申万宏源",
+        "stock_score": 95,
+        "level": "watch",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 47,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "整理启动型",
+          "score": 95,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 10,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 4.42,
+            "entry_high": 4.42,
+            "stop": 4.37,
+            "target": 4.51,
+            "min_price_rr": 1.5,
+            "price_rr": 13.0,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强",
+            "当日低点缺失或已触及失效位，取消本轮触发"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 4.4,
+            "pivot": 4.51,
+            "stop": 4.37,
+            "atr": 0.0707,
+            "width_pct": 2.5,
+            "volume_ratio_5v5": 1.165,
+            "drawdown_pct": -6.9,
+            "rs5": 1.7465834413503356,
+            "previous_rs5": 3.224457994016461
+          }
+        },
+        "buy_state": {
+          "state": "失效",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强",
+            "当日低点缺失或已触及失效位，取消本轮触发"
+          ],
+          "note": "结构失效位被跌破或形态不成立：本轮不形成买点结论",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:22",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 242945617.62,
+        "total_score": 89.9,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "position": {
+          "rise20": -1.35,
+          "distance_ma20": -0.75,
+          "rsi14": 40.0,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": false,
+          "above_ma60": false,
+          "ma20_gt_ma60": false
+        },
+        "chg20": -1.35,
+        "price": 4.38,
+        "levels": {
+          "ma5": 4.438,
+          "ma10": 4.417,
+          "ma20": 4.413,
+          "ma60": 4.515,
+          "ma60_slope": -0.36,
+          "atr14": 0.0743,
+          "support": 4.4,
+          "resistance": 4.51,
+          "stop": 4.37
+        },
+        "quote_time": "2026-10-20 15:31:00",
+        "industry": "证券Ⅱ",
+        "industry_score": 61,
+        "reason": [
+          "整理启动型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业61分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强",
+          "当日低点缺失或已触及失效位，取消本轮触发"
+        ],
+        "first_seen": "2026-10-20",
+        "days_in_pool": 1,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "002271",
+        "name": "东方雨虹",
+        "stock_score": 95,
+        "level": "watch",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 53,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "超跌企稳型",
+          "score": 95,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 10,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 10.44,
+            "entry_high": 10.57,
+            "stop": 10.26,
+            "target": 11.04,
+            "min_price_rr": 1.5,
+            "price_rr": 1.053,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 10.35,
+            "pivot": 11.04,
+            "stop": 10.26,
+            "atr": 0.355,
+            "width_pct": 6.67,
+            "volume_ratio_5v5": 0.911,
+            "drawdown_pct": -10.87,
+            "rs5": 1.6542473379339007,
+            "previous_rs5": 7.705706058714734
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:20",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 414574514.13,
+        "total_score": 89.8,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "position": {
+          "rise20": 2.7,
+          "distance_ma20": 0.78,
+          "rsi14": 48.4,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": true,
+          "above_ma60": false,
+          "ma20_gt_ma60": false
+        },
+        "chg20": 2.7,
+        "price": 10.64,
+        "levels": {
+          "ma5": 10.698,
+          "ma10": 10.724,
+          "ma20": 10.558,
+          "ma60": 11.061,
+          "ma60_slope": -0.12,
+          "atr14": 0.3586,
+          "support": 10.35,
+          "resistance": 11.04,
+          "stop": 10.26
+        },
+        "quote_time": "2026-10-20 15:31:15",
+        "industry": "装修建材",
+        "industry_score": 60,
+        "reason": [
+          "超跌企稳型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业60分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "first_seen": "2026-10-19",
+        "days_in_pool": 2,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "300339",
+        "name": "润和软件",
+        "stock_score": 95,
+        "level": "watch",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 50,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "超跌企稳型",
+          "score": 95,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 10,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 33.74,
+            "entry_high": 34.04,
+            "stop": 33.34,
+            "target": 35.1,
+            "min_price_rr": 1.5,
+            "price_rr": 1.256,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 33.54,
+            "pivot": 35.1,
+            "stop": 33.34,
+            "atr": 0.7607,
+            "width_pct": 4.56,
+            "volume_ratio_5v5": 0.925,
+            "drawdown_pct": -16.89,
+            "rs5": 0.04285834750106243,
+            "previous_rs5": 3.6940599700182264
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:17",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 396961949.29,
+        "total_score": 89.0,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "position": {
+          "rise20": -1.39,
+          "distance_ma20": -0.64,
+          "rsi14": 39.7,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": false,
+          "above_ma60": false,
+          "ma20_gt_ma60": false
+        },
+        "chg20": -1.39,
+        "price": 34.12,
+        "levels": {
+          "ma5": 34.006,
+          "ma10": 34.257,
+          "ma20": 34.339,
+          "ma60": 35.699,
+          "ma60_slope": -0.38,
+          "atr14": 0.7679,
+          "support": 33.54,
+          "resistance": 35.1,
+          "stop": 33.34
+        },
+        "quote_time": "2026-10-20 15:30:00",
+        "industry": "IT服务Ⅱ",
+        "industry_score": 55,
+        "reason": [
+          "超跌企稳型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业55分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "first_seen": "2026-10-20",
+        "days_in_pool": 1,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "600050",
+        "name": "中国联通",
+        "stock_score": 95,
+        "level": "watch",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 76,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "整理启动型",
+          "score": 95,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 10,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": null,
+          "triggered": false,
+          "reasons": [
+            "市场C级仅低吸，不做突破追涨",
+            "非连续交易时段，仅生成预案",
+            "历史压力空间不足，暂无合格买入区间"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 4.31,
+            "pivot": 4.46,
+            "stop": 4.28,
+            "atr": 0.0693,
+            "width_pct": 3.48,
+            "volume_ratio_5v5": 1.191,
+            "drawdown_pct": -1.98,
+            "rs5": 4.281145653331919,
+            "previous_rs5": 5.77464154474675
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "市场C级仅低吸，不做突破追涨",
+            "非连续交易时段，仅生成预案",
+            "历史压力空间不足，暂无合格买入区间"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:10",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 553597609.65,
+        "total_score": 88.5,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "position": {
+          "rise20": 5.92,
+          "distance_ma20": 4.66,
+          "rsi14": 78.3,
+          "deduct": 5,
+          "reasons": [
+            "RSI78>70扣5"
+          ]
+        },
+        "trend": {
+          "above_ma20": true,
+          "above_ma60": true,
+          "ma20_gt_ma60": false
+        },
+        "chg20": 5.92,
+        "price": 4.47,
+        "levels": {
+          "ma5": 4.418,
+          "ma10": 4.36,
+          "ma20": 4.271,
+          "ma60": 4.305,
+          "ma60_slope": 0.25,
+          "atr14": 0.0707,
+          "support": 4.31,
+          "resistance": 4.46,
+          "stop": 4.28
+        },
+        "quote_time": "2026-10-20 15:31:05",
+        "industry": "通信服务",
+        "industry_score": 85,
+        "reason": [
+          "整理启动型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业85分",
+          "候选待确认",
+          "市场C级仅低吸，不做突破追涨",
+          "非连续交易时段，仅生成预案",
+          "历史压力空间不足，暂无合格买入区间"
+        ],
+        "first_seen": "2026-10-20",
+        "days_in_pool": 1,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "600031",
+        "name": "三一重工",
+        "stock_score": 95,
+        "level": "watch",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 46,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "超跌企稳型",
+          "score": 95,
+          "factors": {
+            "trend": 20,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 15,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": null,
+          "triggered": false,
+          "reasons": [
+            "市场C级仅低吸，不做突破追涨",
+            "非连续交易时段，仅生成预案",
+            "历史压力空间不足，暂无合格买入区间"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 17.39,
+            "pivot": 18.09,
+            "stop": 17.27,
+            "atr": 0.46,
+            "width_pct": 4.03,
+            "volume_ratio_5v5": 1.058,
+            "drawdown_pct": -14.49,
+            "rs5": 3.458912208473619,
+            "previous_rs5": 2.609616549923166
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "市场C级仅低吸，不做突破追涨",
+            "非连续交易时段，仅生成预案",
+            "历史压力空间不足，暂无合格买入区间"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:08",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 1339425989.28,
+        "total_score": 86.8,
+        "factor": {
+          "trend": 20,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "position": {
+          "rise20": -8.63,
+          "distance_ma20": 2.81,
+          "rsi14": 57.3,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": true,
+          "above_ma60": false,
+          "ma20_gt_ma60": false
+        },
+        "chg20": -8.63,
+        "price": 18.2,
+        "levels": {
+          "ma5": 17.83,
+          "ma10": 17.598,
+          "ma20": 17.702,
+          "ma60": 18.942,
+          "ma60_slope": -0.51,
+          "atr14": 0.4771,
+          "support": 17.39,
+          "resistance": 18.09,
+          "stop": 17.27
+        },
+        "quote_time": "2026-10-20 15:31:03",
+        "industry": "工程机械",
+        "industry_score": 40,
+        "reason": [
+          "超跌企稳型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业40分",
+          "候选待确认",
+          "市场C级仅低吸，不做突破追涨",
+          "非连续交易时段，仅生成预案",
+          "历史压力空间不足，暂无合格买入区间"
+        ],
+        "first_seen": "2026-10-20",
+        "days_in_pool": 1,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "300760",
+        "name": "迈瑞医疗",
+        "stock_score": 95,
+        "level": "watch",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 83,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "整理启动型",
+          "score": 95,
+          "factors": {
+            "trend": 25,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 10,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 164.09,
+            "entry_high": 166.01,
+            "stop": 162.07,
+            "target": 171.92,
+            "min_price_rr": 1.5,
+            "price_rr": 0.281,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 163.08,
+            "pivot": 171.92,
+            "stop": 162.07,
+            "atr": 4.0364,
+            "width_pct": 5.42,
+            "volume_ratio_5v5": 1.088,
+            "drawdown_pct": -2.58,
+            "rs5": 2.68031838110937,
+            "previous_rs5": 5.560702529144612
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:07",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 1062091912.41,
+        "total_score": 86.4,
+        "factor": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "position": {
+          "rise20": 6.03,
+          "distance_ma20": 5.42,
+          "rsi14": 72.5,
+          "deduct": 5,
+          "reasons": [
+            "RSI72>70扣5"
+          ]
+        },
+        "trend": {
+          "above_ma20": true,
+          "above_ma60": true,
+          "ma20_gt_ma60": true
+        },
+        "chg20": 6.03,
+        "price": 169.76,
+        "levels": {
+          "ma5": 167.232,
+          "ma10": 164.742,
+          "ma20": 161.039,
+          "ma60": 158.908,
+          "ma60_slope": 1.02,
+          "atr14": 4.1571,
+          "support": 163.08,
+          "resistance": 171.92,
+          "stop": 162.07
+        },
+        "quote_time": "2026-10-20 15:30:00",
+        "industry": "医疗器械",
+        "industry_score": 71,
+        "reason": [
+          "整理启动型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业71分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间"
+        ],
+        "first_seen": "2026-10-19",
+        "days_in_pool": 2,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "601717",
+        "name": "中创智领",
+        "stock_score": 90,
+        "level": "watch",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 53,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "超跌企稳型",
+          "score": 90,
+          "factors": {
+            "trend": 20,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 10,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 13.5,
+            "entry_high": 13.58,
+            "stop": 13.34,
+            "target": 13.96,
+            "min_price_rr": 1.5,
+            "price_rr": 0.409,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 13.42,
+            "pivot": 13.96,
+            "stop": 13.34,
+            "atr": 0.3043,
+            "width_pct": 3.58,
+            "volume_ratio_5v5": 0.702,
+            "drawdown_pct": -16.57,
+            "rs5": 0.8845144758330981,
+            "previous_rs5": 7.030613887458859
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:33",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 211215629.28,
+        "total_score": 82.5,
+        "factor": {
+          "trend": 20,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "position": {
+          "rise20": -1.43,
+          "distance_ma20": 1.12,
+          "rsi14": 52.6,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": true,
+          "above_ma60": false,
+          "ma20_gt_ma60": false
+        },
+        "chg20": -1.43,
+        "price": 13.78,
+        "levels": {
+          "ma5": 13.69,
+          "ma10": 13.651,
+          "ma20": 13.628,
+          "ma60": 14.689,
+          "ma60_slope": -0.71,
+          "atr14": 0.3079,
+          "support": 13.42,
+          "resistance": 13.96,
+          "stop": 13.34
+        },
+        "quote_time": "2026-10-20 15:31:28",
+        "industry": "专用设备",
+        "industry_score": 40,
+        "reason": [
+          "超跌企稳型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业40分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "first_seen": "2026-10-20",
+        "days_in_pool": 1,
+        "last_evaluated": "2026-10-20"
+      },
+      {
+        "code": "002739",
+        "name": "儒意电影",
+        "stock_score": 80,
+        "level": "watch",
+        "grade": "S",
+        "score_basis": "startup/v1",
+        "strength_score": 41,
+        "opportunity": {
+          "version": "startup/v1",
+          "candidate": true,
+          "setup": "超跌企稳型",
+          "score": 80,
+          "factors": {
+            "trend": 20,
+            "momentum": 20,
+            "capital": 20,
+            "rs": 0,
+            "risk": 20
+          },
+          "status": "候选待确认",
+          "plan": {
+            "mode": "支撑附近转强",
+            "entry_low": 8.18,
+            "entry_high": 8.25,
+            "stop": 8.04,
+            "target": 8.58,
+            "min_price_rr": 1.5,
+            "price_rr": 1.0,
+            "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+            "valid_on": "2026-10-20"
+          },
+          "triggered": false,
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "limitations": [
+            "日线与报价快照不证明分钟级企稳；不预测涨停",
+            "价格盈亏比未扣手续费及滑点；不含下单数量"
+          ],
+          "analysis_only": true,
+          "evidence": {
+            "as_of": "2026-10-19",
+            "support": 8.11,
+            "pivot": 8.58,
+            "stop": 8.04,
+            "atr": 0.2514,
+            "width_pct": 5.18,
+            "volume_ratio_5v5": 0.767,
+            "drawdown_pct": -25.7,
+            "rs5": -0.9592989115908446,
+            "previous_rs5": 4.474999567138671
+          }
+        },
+        "buy_state": {
+          "state": "等待",
+          "reasons": [
+            "非连续交易时段，仅生成预案",
+            "现价不在条件买入区间，不随现价上移区间",
+            "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+          ],
+          "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+          "off_session": true,
+          "as_of": "2026-10-20 15:31:26",
+          "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+        },
+        "historical_amount_20": 320057281.32,
+        "total_score": 82.4,
+        "factor": {
+          "trend": 20,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 0,
+          "risk": 20
+        },
+        "position": {
+          "rise20": -4.59,
+          "distance_ma20": -0.89,
+          "rsi14": 41.5,
+          "deduct": 0,
+          "reasons": []
+        },
+        "trend": {
+          "above_ma20": false,
+          "above_ma60": false,
+          "ma20_gt_ma60": false
+        },
+        "chg20": -4.59,
+        "price": 8.31,
+        "levels": {
+          "ma5": 8.298,
+          "ma10": 8.296,
+          "ma20": 8.385,
+          "ma60": 8.703,
+          "ma60_slope": -1.12,
+          "atr14": 0.2514,
+          "support": 8.11,
+          "resistance": 8.58,
+          "stop": 8.04
+        },
+        "quote_time": "2026-10-20 15:31:15",
+        "industry": "影视院线",
+        "industry_score": 96,
+        "reason": [
+          "超跌企稳型",
+          "启动潜力与位置评分，不以放量大涨为前提",
+          "行业96分",
+          "候选待确认",
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "first_seen": "2026-10-20",
+        "days_in_pool": 1,
+        "last_evaluated": "2026-10-20"
+      }
+    ],
+    "stats": {}
+  },
+  "positions": {
+    "etf": [],
+    "stock": []
+  },
+  "existing_watchlist": [
+    {
+      "code": "000568",
+      "name": "泸州老窖",
+      "added": "2026-10-19",
+      "tier": "quality",
+      "reason": "外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=20、momentum=20、capital=20、rs=15、risk=20。行业86分、振幅3.94%、均量比1.175，RS5为3.172较前期增强；结构稳定、企稳与抛压因子均满分。回撤22.43%仍有趋势损伤，快照价格盈亏比0.216，等待位置改善。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。"
+    },
+    {
+      "code": "600276",
+      "name": "恒瑞医药",
+      "added": "2026-10-19",
+      "tier": "quality",
+      "reason": "外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。行业80分、振幅6.25%、均量比0.694显示抛压减弱，结构及企稳因子满分。RS5由6.354降至2.087、回撤17.45%，修复延续需确认，快照价格盈亏比0.904。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。"
+    },
+    {
+      "code": "300059",
+      "name": "东方财富",
+      "added": "2026-10-19",
+      "tier": "candidate",
+      "reason": "外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=20、momentum=20、capital=20、rs=15、risk=20。行业71分、振幅4.70%、均量比1.111，RS5由0.113升至3.448；结构及抛压成立，但短期转强未确认、趋势仍在修复，快照价格盈亏比0.741。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。"
+    },
+    {
+      "code": "002271",
+      "name": "东方雨虹",
+      "added": "2026-10-19",
+      "tier": "candidate",
+      "reason": "外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。行业70分、振幅6.67%、均量比0.913，结构企稳和抛压因子满分；RS5由6.726降至2.190，快照价格盈亏比0.386，延续与位置仍需观察。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。"
+    },
+    {
+      "code": "300760",
+      "name": "迈瑞医疗",
+      "added": "2026-10-19",
+      "tier": "candidate",
+      "reason": "外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。整理启动型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。行业61分、振幅5.35%、均量比1.137，结构企稳和抛压因子满分；RS5为6.212较前期6.819略弱，快照价格盈亏比0.358，等待风险收益改善。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。"
+    },
+    {
+      "code": "601229",
+      "name": "上海银行",
+      "added": "2026-10-19",
+      "tier": "candidate",
+      "reason": "外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。整理启动型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。振幅2.83%、均量比0.988，结构企稳和抛压因子满分，快照价格盈亏比1.600；行业55分支持一般，RS5由3.180降至2.349，转强未确认。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。"
+    },
+    {
+      "code": "600930",
+      "name": "华电新能",
+      "added": "2026-10-19",
+      "tier": "candidate",
+      "reason": "外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。振幅3.32%、均量比1.153，结构企稳和抛压因子满分；行业51分偏弱，RS5由4.238降至3.060，快照价格盈亏比0.500，保留候补观察。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。"
+    }
+  ],
+  "python_analysis": {
+    "generated_at": "2026-10-20 15:32:28",
+    "report": "╔═══════════════════════════════╗\n║  ⚡ 短线套利信号 盘后预案            ║\n║  2026-10-20                      ║\n╚═══════════════════════════════╝\n\n📊 【大盘】\n  🟢 上证指数: +0.12%\n  🔴 创业板指: -0.26%\n  🟢 科创50: +1.00%\n\n🏛️ 【市场环境评分】Market Score\n  市场状态: 🟠 C  |  市场评分: 62分  |  允许仓位: 30%\n  ① 指数趋势 0/30 | 上证指数破MA60✗ | 创业板指破MA60✗ | 科创50破MA60✗\n  ② 赚钱效应 27/30 | 涨3456/跌1700/平138(上涨65%得15分·东财) | 涨停54/跌停6(净+48得12分)\n  ③ 成交量   15/20 | 平量上涨：昨日量比0.99(473亿股/折算日均)得15分\n  ④ 外部环境 20/20 | 纳指+1.17%(11分·新浪) | 英伟达+1.38%(9分·新浪)\n  💡 市场防守，仓位上限30%，只低吸不追涨\n\n📈 【ETF核心池 (8只)】\n=======================================================\n\n🔴 【沪深300ETF(510300)】👀 观察中 评分:26/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金8/20 强度9/20 风险8/10\n  价:4.22  涨跌:-0.47%  RSI14=4.6  量比=0.62\n  MA5=4.246 MA10=4.314 MA20=4.424 MA60=4.594\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.88%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘3.25% (标的-7.29% vs 大盘-4.04%)\n  📏 ATR波动率: 1.70%/日 (止损参考≈0.144)\n  布林:上4.685 中4.424 下4.163\n  🎯 支撑4.22  压力4.613\n  📈 价破MA60 MA20<MA60 MA60↓-0.9% 周线空头\n  ⚡ RSI4.6超卖(无动量) MACD零轴下死叉 20日-7.3%(弱)\n  💰 量比0.62 换手3.62% 主力净-20.4%\n  🏆 跑输上证-3.2% 跑赢沪深300 +0.1% 20日-7.3%弱\n  🛡️ ATR1.7% 20日回撤-8.5%\n  🔴 0/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(4.246)，破前低4.22则放弃\n  📋 状态机: WATCH ｜ 上次动作: 持有 → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入4.187~4.250后重新核验入场资格 / 破4.061放弃\n\n🟢 【科创50ETF(588000)】👀 观察中 评分:20/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金13/20 强度2/20 风险4/10\n  价:1.417  涨跌:+0.85%  RSI14=7.7  量比=1.2\n  MA5=1.43 MA10=1.485 MA20=1.596 MA60=1.71\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-2.47%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘8.11% (标的-12.15% vs 大盘-4.04%)\n  📏 ATR波动率: 3.87%/日 (止损参考≈0.11)\n  布林:上1.842 中1.596 下1.35\n  🎯 支撑1.405  压力1.758\n  📈 价破MA60 MA20<MA60 MA60↓-2.5% 周线空头\n  ⚡ RSI7.7超卖(无动量) MACD零轴下死叉 20日-12.2%(弱)\n  💰 量比1.2温和放量涨 换手10.39% 主力净-3.1%\n  🏆 大幅跑输上证-8.1% 跑输沪深300 -4.7% 20日-12.2%很弱\n  🛡️ ATR3.87% 20日回撤-20.1%\n  🔴 1/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(1.43)，破前低1.405则放弃\n  📋 状态机: WATCH ｜ 上次动作: 持有 → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入1.398~1.419后重新核验入场资格 / 破1.356放弃\n\n🟢 【消费电子ETF(159732)】👀 观察中 评分:19/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金15/20 强度0/20 风险3/10\n  价:1.1  涨跌:+2.52%  RSI14=9.9  量比=1.04\n  MA5=1.086 MA10=1.138 MA20=1.235 MA60=1.32\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-2.52%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘10.49% (标的-14.53% vs 大盘-4.04%)\n  📏 ATR波动率: 4.26%/日 (止损参考≈0.094)\n  布林:上1.456 中1.235 下1.014\n  🎯 支撑1.073  压力1.385\n  📈 价破MA60 MA20<MA60 MA60↓-2.5% 周线空头\n  ⚡ RSI9.9超卖(无动量) MACD零轴下死叉 20日-14.5%(弱)\n  💰 量比1.04温和放量涨 换手12.52% 主力净+10.4%\n  🏆 大幅跑输上证-10.5% 跑输沪深300 -7.1% 20日-14.5%很弱\n  🛡️ ATR4.26% 20日回撤-22.5%\n  🔴 1/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(1.086)，破前低1.073则放弃\n  📋 状态机: WATCH ｜ 上次动作: 持有 → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入1.042~1.058后重新核验入场资格 / 破1.011放弃\n\n🔴 【黄金ETF(518880)】👀 观察中 评分:38/100 | 等级:C\n  🧮 五因子: 趋势6/30 动量4/20 资金10/20 强度9/20 风险9/10\n  价:8.457  涨跌:-1.12%  RSI14=33.0  量比=1.06\n  MA5=8.507 MA10=8.544 MA20=8.68 MA60=8.844\n  📐 趋势三要件: ⚠️未全满足 | MA60↑(+0.15%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘0.67% (标的-4.71% vs 大盘-4.04%)\n  📏 ATR波动率: 1.29%/日 (止损参考≈0.218)\n  布林:上9.034 中8.68 下8.326\n  🎯 支撑8.457  压力9.009\n  📈 价破MA60 MA20<MA60 MA60微↑+0.1% 周线空头\n  ⚡ RSI33.0偏弱 MACD零轴下死叉 20日-4.7%\n  💰 量比1.06 换手2.87% 主力净-11.5%\n  🏆 跑输上证-0.7% 跑赢沪深300 +2.7% 20日-4.7%弱\n  🛡️ ATR1.29% 20日回撤-6.1%\n  🔴 1/8项偏多 → 偏空承压\n  ▶ ⚪ 继续观察：回踩8.468企稳买 / 破8.214弃\n  📋 状态机: READY ｜ 上次动作: 买入(14:26) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入8.468~8.595后重新核验入场资格 / 破8.214放弃\n\n🔴 【半导体设备ETF(159516)】👀 观察中 评分:14/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金11/20 强度0/20 风险2/10\n  价:0.562  涨跌:-0.71%  RSI14=5.8  量比=1.03\n  MA5=0.585 MA10=0.606 MA20=0.653 MA60=0.691\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-2.00%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘9.23% (标的-13.27% vs 大盘-4.04%)\n  📏 ATR波动率: 5.14%/日 (止损参考≈0.058)\n  布林:上0.759 中0.653 下0.547\n  🎯 支撑0.562  压力0.729\n  📈 价破MA60 MA20<MA60 MA60↓-2.0% 周线空头\n  ⚡ RSI5.8超卖(无动量) MACD零轴下死叉 20日-13.3%(弱)\n  💰 量比1.03 换手7.17% 主力净-2.4%\n  🏆 大幅跑输上证-9.2% 跑输沪深300 -5.8% 20日-13.3%很弱\n  🛡️ ATR5.14% 20日回撤-22.9%\n  🔴 0/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(0.585)，破前低0.562则放弃\n  📋 状态机: WATCH ｜ 上次动作: 清仓(18:27) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入0.566~0.574后重新核验入场资格 / 破0.549放弃\n\n🟢 【创新药指ETF(159858)】👀 观察中 评分:35/100 | 等级:C\n  🧮 五因子: 趋势0/30 动量4/20 资金12/20 强度13/20 风险6/10\n  价:0.66  涨跌:+1.38%  RSI14=35.5  量比=0.94\n  MA5=0.653 MA10=0.667 MA20=0.675 MA60=0.691\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.69%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘2.40% (标的-1.64% vs 大盘-4.04%)\n  📏 ATR波动率: 3.42%/日 (止损参考≈0.045)\n  布林:上0.711 中0.675 下0.639\n  🎯 支撑0.645  压力0.707\n  📈 价破MA60 MA20<MA60 MA60↓-0.7% 周线空头\n  ⚡ RSI35.5偏弱 MACD零轴下死叉 20日-1.6%\n  💰 量比0.94 换手3.49% 主力净+1.4%\n  🏆 跑赢上证+2.4% 跑赢沪深300 +5.8% 20日-1.6%弱\n  🛡️ ATR3.42% 20日回撤-8.8%\n  🔴 1/8项偏多 → 偏空承压\n  ▶ ⚪ 继续观察：回踩0.635企稳买 / 破0.616弃\n  📋 状态机: WATCH ｜ 上次动作: 清仓(14:49) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入0.635~0.645后重新核验入场资格 / 破0.616放弃\n\n🟢 【医疗ETF(512170)】👀 观察中 评分:48/100 | 等级:C\n  🧮 五因子: 趋势10/30 动量4/20 资金14/20 强度13/20 风险7/10\n  价:0.333  涨跌:+2.15%  RSI14=38.1  量比=0.92\n  MA5=0.328 MA10=0.335 MA20=0.338 MA60=0.338\n  📐 趋势三要件: ⚠️未全满足 | MA60↑(+0.01%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘3.74% (标的-0.30% vs 大盘-4.04%)\n  📏 ATR波动率: 3.03%/日 (止损参考≈0.02)\n  布林:上0.353 中0.338 下0.323\n  🎯 支撑0.322  压力0.349\n  📈 价破MA60 MA20≈MA60粘合 MA60微↑+0.0% 周线空头\n  ⚡ RSI38.1偏弱 MACD零轴下死叉 20日-0.3%\n  💰 量比0.92 换手2.0% 主力净+10.2%\n  🏆 跑赢上证+3.7% 跑赢沪深300 +7.1% 20日-0.3%弱\n  🛡️ ATR3.03% 20日回撤-7.7%\n  🔴 2/8项偏多 → 偏空承压\n  ▶ ⚪ 继续观察：回踩0.317企稳买 / 破0.307弃\n  📋 状态机: READY ｜ 上次动作: 买入(14:28) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入0.317~0.322后重新核验入场资格 / 破0.307放弃\n\n🟢 【科创芯片ETF汇添富(588750)】👀 观察中 评分:16/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金12/20 强度0/20 风险3/10\n  价:1.844  涨跌:+0.82%  RSI14=7.0  量比=0.93\n  MA5=1.871 MA10=1.959 MA20=2.132 MA60=2.277\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-2.63%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘9.83% (标的-13.87% vs 大盘-4.04%)\n  📏 ATR波动率: 4.52%/日 (止损参考≈0.167)\n  布林:上2.517 中2.132 下1.747\n  🎯 支撑1.829  压力2.381\n  📈 价破MA60 MA20<MA60 MA60↓-2.6% 周线空头\n  ⚡ RSI7.0超卖(无动量) MACD零轴下死叉 20日-13.9%(弱)\n  💰 量比0.93 换手3.4% 主力净+0.8%\n  🏆 大幅跑输上证-9.8% 跑输沪深300 -6.4% 20日-13.9%很弱\n  🛡️ ATR4.52% 20日回撤-23.2%\n  🔴 0/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(1.871)，破前低1.829则放弃\n  📋 状态机: WATCH ｜ 上次动作: 清仓(14:49) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入1.817~1.844后重新核验入场资格 / 破1.762放弃\n\n👀 【观察清单 (8只)】\n=======================================================\n\n🟢 【通信ETF(515880)】👀 观察中 评分:16/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金13/20 强度0/20 风险2/10\n  价:0.529  涨跌:+1.15%  RSI14=9.2  量比=1.0\n  MA5=0.529 MA10=0.559 MA20=0.619 MA60=0.643\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-2.30%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘15.44% (标的-19.48% vs 大盘-4.04%)\n  📏 ATR波动率: 5.37%/日 (止损参考≈0.057)\n  布林:上0.755 中0.619 下0.483\n  🎯 支撑0.521  压力0.712\n  📈 价破MA60 MA20<MA60 MA60↓-2.3% 周线空头\n  ⚡ RSI9.2超卖(无动量) MACD零轴下死叉 20日-19.5%(弱)\n  💰 量比1.0温和放量涨 换手7.9% 主力净+2.0%\n  🏆 大幅跑输上证-15.4% 跑输沪深300 -12.0% 20日-19.5%很弱\n  🛡️ ATR5.37% 20日回撤-26.8%\n  🔴 0/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(0.529)，破前低0.521则放弃\n  📋 状态机: WATCH ｜ 上次动作: 清仓(09:25) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入0.507~0.515后重新核验入场资格 / 破0.492放弃\n\n🟢 【稀有金属ETF(562800)】👀 观察中 评分:19/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金13/20 强度0/20 风险5/10\n  价:0.749  涨跌:+0.00%  RSI14=10.6  量比=0.85\n  MA5=0.758 MA10=0.788 MA20=0.828 MA60=0.895\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-1.25%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘10.26% (标的-14.30% vs 大盘-4.04%)\n  📏 ATR波动率: 3.15%/日 (止损参考≈0.047)\n  布林:上0.926 中0.828 下0.73\n  🎯 支撑0.749  压力0.891\n  📈 价破MA60 MA20<MA60 MA60↓-1.2% 周线空头\n  ⚡ RSI10.6超卖(无动量) MACD零轴下死叉 20日-14.3%(弱)\n  💰 量比0.85 换手2.69% 主力净+3.6%\n  🏆 大幅跑输上证-10.3% 跑输沪深300 -6.9% 20日-14.3%很弱\n  🛡️ ATR3.15% 20日回撤-15.9%\n  🔴 0/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(0.758)，破前低0.749则放弃\n  📋 状态机: WATCH ｜ 上次动作: 清仓(09:26) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入0.738~0.749后重新核验入场资格 / 破0.716放弃\n\n🔴 【有色金属ETF(512400)】👀 观察中 评分:17/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金11/20 强度0/20 风险5/10\n  价:1.506  涨跌:-1.25%  RSI14=21.7  量比=0.87\n  MA5=1.528 MA10=1.57 MA20=1.633 MA60=1.79\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.78%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘9.36% (标的-13.40% vs 大盘-4.04%)\n  📏 ATR波动率: 3.10%/日 (止损参考≈0.093)\n  布林:上1.793 中1.633 下1.473\n  🎯 支撑1.506  压力1.753\n  📈 价破MA60 MA20<MA60 MA60↓-0.8% 周线空头\n  ⚡ RSI21.7超卖(无动量) MACD零轴下死叉 20日-13.4%(弱)\n  💰 量比0.87 换手2.13% 主力净-1.8%\n  🏆 大幅跑输上证-9.4% 跑输沪深300 -6.0% 20日-13.4%很弱\n  🛡️ ATR3.1% 20日回撤-14.1%\n  🔴 0/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(1.528)，破前低1.506则放弃\n  📋 状态机: READY ｜ 上次动作: 买入(11:10) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入1.501~1.524后重新核验入场资格 / 破1.456放弃\n\n🔴 【煤炭ETF(515220)】👀 观察中 评分:52/100 | 等级:B\n  🧮 五因子: 趋势15/30 动量6/20 资金9/20 强度13/20 风险9/10\n  价:1.254  涨跌:-1.95%  RSI14=42.9  量比=1.28\n  MA5=1.27 MA10=1.275 MA20=1.271 MA60=1.264\n  📐 趋势三要件: ⚠️未全满足 | MA60↑(+0.64%) 价破MA60 MA20↑MA60\n  🟢 RS强度: 20日跑赢大盘2.55% (标的-1.49% vs 大盘-4.04%)\n  📏 ATR波动率: 2.70%/日 (止损参考≈0.068)\n  布林:上1.304 中1.271 下1.238\n  🎯 支撑1.245  压力1.303\n  📈 价破MA60 MA20>MA60 MA60↑+0.6% 周线空头\n  ⚡ RSI42.9中性 MACD零轴下死叉 20日-1.5%\n  💰 量比1.28放量跌 换手7.88% 主力净-6.8%\n  🏆 跑赢上证+2.5% 跑赢沪深300 +6.0% 20日-1.5%弱\n  🛡️ ATR2.7% 20日回撤-4.1%\n  📊 3/8项偏多\n  ▶ ⚪ 继续观察：回踩1.239企稳买 / 破1.202弃\n  📋 状态机: READY ｜ 上次动作: 买入(14:25) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入1.239~1.258后重新核验入场资格 / 破1.202放弃\n\n🔴 【恒生科技ETF(513180)】👀 观察中 评分:28/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金11/20 强度9/20 风险7/10\n  价:0.509  涨跌:-0.78%  RSI14=23.1  量比=0.92\n  MA5=0.514 MA10=0.519 MA20=0.533 MA60=0.571\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-1.29%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘2.57% (标的-6.61% vs 大盘-4.04%)\n  📏 ATR波动率: 2.20%/日 (止损参考≈0.022)\n  布林:上0.565 中0.533 下0.501\n  🎯 支撑0.509  压力0.558\n  📈 价破MA60 MA20<MA60 MA60↓-1.3% 周线空头\n  ⚡ RSI23.1超卖(无动量) MACD零轴下死叉 20日-6.6%(弱)\n  💰 量比0.92 换手4.67% 主力净-3.5%\n  🏆 跑输上证-2.6% 跑赢沪深300 +0.8% 20日-6.6%弱\n  🛡️ ATR2.2% 20日回撤-8.8%\n  🔴 0/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(0.514)，破前低0.509则放弃\n  📋 状态机: READY ｜ 上次动作: 买入(13:30) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入0.508~0.516后重新核验入场资格 / 破0.493放弃\n\n🔴 【红利ETF(510880)】👀 观察中 评分:76/100 | 等级:A\n  🧮 五因子: 趋势25/30 动量17/20 资金9/20 强度15/20 风险10/10\n  价:3.416  涨跌:-1.36%  RSI14=54.1  量比=1.28\n  MA5=3.443 MA10=3.435 MA20=3.396 MA60=3.366\n  📐 趋势三要件: ✅全满足 | MA60↑(+0.69%) 价在MA60 MA20↑MA60\n  🟢 RS强度: 20日跑赢大盘4.39% (标的+0.35% vs 大盘-4.04%)\n  📏 ATR波动率: 1.48%/日 (止损参考≈0.101)\n  布林:上3.492 中3.396 下3.3\n  🎯 支撑3.325  压力3.499\n  📈 价>MA20 布林中轨上 MA20>MA60 MA60↑+0.7% 周线偏多\n  ⚡ RSI54.1中性偏强 MACD零轴上金叉 20日+0.3%\n  💰 量比1.28放量跌 换手3.71% 主力净-8.8%\n  🏆 跑赢上证+4.4% 跑赢沪深300 +7.8% 20日+0.3%\n  🛡️ ATR1.48% 20日回撤-2.7%\n  ✅ 6/8项偏多 → 共振看多\n  📍 结构买入区3.390~3.441；参考压力3.520；新仓止损参考3.288\n  ⚖️ 按100份估算：净目标收益-0.29元，风险23.47元，净盈亏比-0.01（要求≥1.5）\n  🚦 入场检查：连续交易时段外，仅生成预案；扣除费用和滑点后目标收益不足或净盈亏比不达标\n  📋 状态机: READY ｜ 上次动作: 买入(14:26) → 本次: 持有\n  ⚪ 入场资格未通过，评分不直接转为买入\n  🔄 变化原因: 连续交易时段外，仅生成预案；扣除费用和滑点后目标收益不足或净盈亏比不达标\n  🎯 下一触发: 进入3.390~3.441后重新核验入场资格 / 破3.288放弃\n\n🟢 【中证1000ETF(512100)】👀 观察中 评分:21/100 | 等级:D\n  🧮 五因子: 趋势0/30 动量1/20 资金12/20 强度2/20 风险6/10\n  价:2.752  涨跌:+1.10%  RSI14=12.2  量比=1.12\n  MA5=2.742 MA10=2.82 MA20=2.949 MA60=3.008\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.83%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘5.22% (标的-9.26% vs 大盘-4.04%)\n  📏 ATR波动率: 2.86%/日 (止损参考≈0.157)\n  布林:上3.249 中2.949 下2.649\n  🎯 支撑2.705  压力3.149\n  📈 价破MA60 MA20<MA60 MA60↓-0.8% 周线空头\n  ⚡ RSI12.2超卖(无动量) MACD零轴下死叉 20日-9.3%(弱)\n  💰 量比1.12温和放量涨 换手16.78% 主力净-3.1%\n  🏆 大幅跑输上证-5.2% 跑输沪深300 -1.8% 20日-9.3%很弱\n  🛡️ ATR2.86% 20日回撤-14.1%\n  🔴 1/8项偏多 → 偏空承压\n  ▶ 🔴【D级】偏空，减仓/禁买：观察，企稳信号=缩量止跌+站回MA5(2.742)，破前低2.705则放弃\n  📋 状态机: READY ｜ 上次动作: 买入(14:45) → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入2.677~2.717后重新核验入场资格 / 破2.597放弃\n\n🟢 【游戏ETF(159869)】👀 观察中 评分:36/100 | 等级:C\n  🧮 五因子: 趋势3/30 动量4/20 资金12/20 强度9/20 风险8/10\n  价:1.027  涨跌:+0.59%  RSI14=33.5  量比=0.63\n  MA5=1.032 MA10=1.035 MA20=1.052 MA60=1.082\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.46%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘0.78% (标的-4.82% vs 大盘-4.04%)\n  📏 ATR波动率: 2.92%/日 (止损参考≈0.06)\n  布林:上1.1 中1.052 下1.004\n  🎯 支撑1.012  压力1.096\n  📈 价破MA60 MA20<MA60 MA60微↓-0.5% 周线空头\n  ⚡ RSI33.5偏弱 MACD零轴下死叉 20日-4.8%\n  💰 量比0.63 换手3.28% 主力净+8.7%\n  🏆 跑输上证-0.8% 跑赢沪深300 +2.6% 20日-4.8%弱\n  🛡️ ATR2.92% 20日回撤-7.7%\n  🔴 0/8项偏多 → 偏空承压\n  ▶ ⚪ 继续观察：回踩1.004企稳买 / 破0.974弃\n  📋 状态机: WATCH ｜ 上次动作: 持有 → 本次: 持有\n  ⚪ P3持有：信号未转强，维持现状\n  🎯 下一触发: 进入1.004~1.019后重新核验入场资格 / 破0.974放弃\n\n📈 【个股观察 (11只, 20000元)】\n=======================================================\n\n🟢 【锐明技术(002970)】👀 启动形态研究 | 机会评分:30/100\n  传统强势评分:14/100（D级，仅背景，不是入选或买入门槛）\n  价:38.06  涨跌:+2.01%  RSI14=28.2  量比=1.02\n  MA5=38.026 MA10=39.657 MA20=41.305 MA60=46.604\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-2.22%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘8.93% (标的-12.97% vs 大盘-4.04%)\n  📏 ATR波动率: 5.25%/日 (止损参考≈3.997)\n  布林:上45.997 中41.305 下36.613\n  🎯 支撑37.24  压力45.08\n  📈 价破MA60 MA20<MA60 MA60↓-2.2% 周线空头\n  ⚡ RSI28.2超卖(无动量) MACD零轴下死叉 20日-13.0%(弱)\n  💰 量比1.02温和放量涨 换手1.88% 主力净-1.1%\n  🏆 大幅跑输上证-8.9% 跑输沪深300 -5.5% 20日-13.0%很弱\n  🛡️ ATR5.25% 20日回撤-17.4%\n  🔴 1/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分30/100（非涨停概率）\n  🧮 机会五因子：结构0/25 企稳0/20 抛压10/20 相对强度0/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅14.97%；5日均量/前5日均量0.63；结构低点36.35、整理上沿43.30\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🔴 【中国西电(601179)】👀 启动形态研究 | 机会评分:40/100\n  传统强势评分:14/100（D级，仅背景，不是入选或买入门槛）\n  价:11.1  涨跌:-0.72%  RSI14=30.8  量比=0.67\n  MA5=11.052 MA10=11.37 MA20=11.674 MA60=12.681\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.65%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘5.20% (标的-9.24% vs 大盘-4.04%)\n  📏 ATR波动率: 3.40%/日 (止损参考≈0.754)\n  布林:上12.564 中11.674 下10.784\n  🎯 支撑10.83  压力12.37\n  📈 价破MA60 MA20<MA60 MA60↓-0.7% 周线空头\n  ⚡ RSI30.8偏弱 MACD零轴下死叉 20日-9.2%(弱)\n  💰 量比0.67 换手0.81% 主力净-11.7%\n  🏆 大幅跑输上证-5.2% 跑输沪深300 -1.8% 20日-9.2%很弱\n  🛡️ ATR3.4% 20日回撤-12.4%\n  🔴 0/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分40/100（非涨停概率）\n  🧮 机会五因子：结构0/25 企稳10/20 抛压10/20 相对强度0/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅8.64%；5日均量/前5日均量0.95；结构低点10.76、整理上沿12.30\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🟢 【北方稀土(600111)】👀 启动形态研究 | 机会评分:75/100\n  传统强势评分:33/100（D级，仅背景，不是入选或买入门槛）\n  价:35.58  涨跌:+0.99%  RSI14=34.3  量比=0.73\n  MA5=35.226 MA10=35.186 MA20=36.076 MA60=38.837\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.73%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘0.11% (标的-4.15% vs 大盘-4.04%)\n  📏 ATR波动率: 2.69%/日 (止损参考≈1.913)\n  布林:上38.28 中36.076 下33.872\n  🎯 支撑34.5  压力37.9\n  📈 价>MA10 MA20<MA60 MA60↓-0.7% 周线空头\n  ⚡ RSI34.3偏弱 MACD金叉 20日-4.2%\n  💰 量比0.73 换手0.83% 主力净-4.1%\n  🏆 跑输上证-0.1% 跑赢沪深300 +3.3% 20日-4.2%弱\n  🛡️ ATR2.69% 20日回撤-9.0%\n  🔴 1/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分75/100（非涨停概率）\n  🧮 机会五因子：结构10/25 企稳20/20 抛压10/20 相对强度15/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅7.07%；5日均量/前5日均量1.38；结构低点33.96、整理上沿36.36\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🟢 【通富微电(002156)】👀 启动形态研究 | 机会评分:35/100\n  传统强势评分:13/100（D级，仅背景，不是入选或买入门槛）\n  价:48.11  涨跌:+0.97%  RSI14=12.4  量比=0.86\n  MA5=49.182 MA10=52.132 MA20=56.265 MA60=60.545\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-3.14%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘11.23% (标的-15.27% vs 大盘-4.04%)\n  📏 ATR波动率: 5.66%/日 (止损参考≈5.45)\n  布林:上66.101 中56.265 下46.429\n  🎯 支撑47.65  压力63.52\n  📈 价破MA60 MA20<MA60 MA60↓-3.1% 周线空头\n  ⚡ RSI12.4超卖(无动量) MACD零轴下死叉 20日-15.3%(弱)\n  💰 量比0.86 换手2.68% 主力净-0.1%\n  🏆 大幅跑输上证-11.2% 跑输沪深300 -7.8% 20日-15.3%很弱\n  🛡️ ATR5.66% 20日回撤-25.0%\n  🔴 0/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分35/100（非涨停概率）\n  🧮 机会五因子：结构0/25 企稳0/20 抛压10/20 相对强度5/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅17.67%；5日均量/前5日均量0.78；结构低点46.53、整理上沿61.80\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🟢 【华勤技术(603296)】👀 启动形态研究 | 机会评分:35/100\n  传统强势评分:20/100（D级，仅背景，不是入选或买入门槛）\n  价:69.27  涨跌:+2.73%  RSI14=26.2  量比=1.02\n  MA5=67.852 MA10=70.338 MA20=74.353 MA60=78.29\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.85%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘4.79% (标的-8.83% vs 大盘-4.04%)\n  📏 ATR波动率: 4.09%/日 (止损参考≈5.663)\n  布林:上83.736 中74.353 下64.97\n  🎯 支撑66.49  压力80.35\n  📈 价破MA60 MA20<MA60 MA60↓-0.8% 周线空头\n  ⚡ RSI26.2超卖(无动量) MACD零轴下死叉 20日-8.8%(弱)\n  💰 量比1.02温和放量涨 换手1.11% 主力净-1.4%\n  🏆 跑输上证-4.8% 跑输沪深300 -1.4% 20日-8.8%很弱\n  🛡️ ATR4.09% 20日回撤-17.2%\n  🔴 1/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分35/100（非涨停概率）\n  🧮 机会五因子：结构0/25 企稳10/20 抛压10/20 相对强度5/15 位置10/20\n  形态证据截至2026-10-19：近5日振幅9.98%；5日均量/前5日均量0.71；结构低点65.65、整理上沿75.99\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；现价已涨远或距失效位过远；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🟢 【翔鹭钨业(002842)】👀 启动形态研究 | 机会评分:30/100\n  传统强势评分:16/100（D级，仅背景，不是入选或买入门槛）\n  价:27.16  涨跌:+1.68%  RSI14=10.9  量比=1.05\n  MA5=27.298 MA10=28.604 MA20=31.355 MA60=34.149\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-1.59%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘15.03% (标的-19.07% vs 大盘-4.04%)\n  📏 ATR波动率: 4.39%/日 (止损参考≈2.386)\n  布林:上37.807 中31.355 下24.903\n  🎯 支撑26.71  压力36.6\n  📈 价破MA60 MA20<MA60 MA60↓-1.6% 周线空头\n  ⚡ RSI10.9超卖(无动量) MACD零轴下死叉 20日-19.1%(弱)\n  💰 量比1.05温和放量涨 换手4.54% 主力净+1.6%\n  🏆 大幅跑输上证-15.0% 跑输沪深300 -11.6% 20日-19.1%很弱\n  🛡️ ATR4.39% 20日回撤-27.0%\n  🔴 1/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分30/100（非涨停概率）\n  🧮 机会五因子：结构0/25 企稳0/20 抛压10/20 相对强度0/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅13.82%；5日均量/前5日均量1.02；结构低点25.97、整理上沿31.41\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🟢 【粤传媒(002181)】👀 启动形态研究 | 机会评分:35/100\n  传统强势评分:80/100（S级，仅背景，不是入选或买入门槛）\n  价:10.13  涨跌:+9.99%  RSI14=52.9  量比=0.39\n  MA5=9.778 MA10=9.54 MA20=9.421 MA60=9.04\n  📐 趋势三要件: ✅全满足 | MA60↑(+1.50%) 价在MA60 MA20↑MA60\n  🟢 RS强度: 20日跑赢大盘10.67% (标的+6.63% vs 大盘-4.04%)\n  📏 ATR波动率: 8.54%/日 (止损参考≈1.73)\n  布林:上10.334 中9.421 下8.508\n  🎯 支撑8.54  压力10.29\n  📈 价>MA20+3% 布林中轨上 MA20>MA60 MA60↑+1.5% 周线多头\n  ⚡ RSI52.9中性偏强 MACD零轴上金叉 20日+6.6%\n  💰 量比0.39 换手3.99% 主力净+56.8%\n  🏆 跑赢上证+10.7% 跑赢沪深300 +14.1% 20日+6.6%\n  🛡️ ATR8.54% 20日回撤-12.1%\n  ✅ 7/8项偏多 → 共振看多\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分35/100（非涨停概率）\n  🧮 机会五因子：结构15/25 企稳0/20 抛压10/20 相对强度0/15 位置10/20\n  形态证据截至2026-10-19：近5日振幅21.06%；5日均量/前5日均量1.38；结构低点8.88、整理上沿10.75\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；现价已涨远或距失效位过远；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🟢 【中国卫星(600118)】👀 启动形态研究 | 机会评分:35/100\n  传统强势评分:17/100（D级，仅背景，不是入选或买入门槛）\n  价:51.8  涨跌:+1.65%  RSI14=28.4  量比=0.83\n  MA5=50.88 MA10=52.577 MA20=55.16 MA60=59.215\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-2.54%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘5.54% (标的-9.58% vs 大盘-4.04%)\n  📏 ATR波动率: 4.35%/日 (止损参考≈4.507)\n  布林:上61.361 中55.16 下48.959\n  🎯 支撑49.4  压力59.6\n  📈 价破MA60 MA20<MA60 MA60↓-2.5% 周线空头\n  ⚡ RSI28.4超卖(无动量) MACD零轴下死叉 20日-9.6%(弱)\n  💰 量比0.83 换手1.28% 主力净+1.3%\n  🏆 大幅跑输上证-5.5% 跑输沪深300 -2.1% 20日-9.6%很弱\n  🛡️ ATR4.35% 20日回撤-17.1%\n  🔴 0/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分35/100（非涨停概率）\n  🧮 机会五因子：结构0/25 企稳10/20 抛压10/20 相对强度5/15 位置10/20\n  形态证据截至2026-10-19：近5日振幅8.28%；5日均量/前5日均量0.95；结构低点49.03、整理上沿58.55\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；现价已涨远或距失效位过远；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🟢 【永鼎股份(600105)】👀 启动形态研究 | 机会评分:25/100\n  传统强势评分:14/100（D级，仅背景，不是入选或买入门槛）\n  价:29.38  涨跌:+1.07%  RSI14=10.5  量比=1.05\n  MA5=28.954 MA10=30.898 MA20=37.087 MA60=37.66\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-3.07%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘24.61% (标的-28.65% vs 大盘-4.04%)\n  📏 ATR波动率: 7.75%/日 (止损参考≈4.553)\n  布林:上50.735 中37.087 下23.439\n  🎯 支撑27.9  压力46.72\n  📈 价破MA60 MA20<MA60 MA60↓-3.1% 周线空头\n  ⚡ RSI10.5超卖(无动量) MACD零轴下死叉 20日-28.6%(弱)\n  💰 量比1.05温和放量涨 换手6.59% 主力净-2.0%\n  🏆 大幅跑输上证-24.6% 跑输沪深300 -21.2% 20日-28.6%很弱\n  🛡️ ATR7.75% 20日回撤-40.3%\n  🔴 1/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分25/100（非涨停概率）\n  🧮 机会五因子：结构0/25 企稳0/20 抛压10/20 相对强度5/15 位置10/20\n  形态证据截至2026-10-19：近5日振幅16.34%；5日均量/前5日均量0.93；结构低点27.18、整理上沿37.62\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；现价已涨远或距失效位过远；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🔴 【华锡有色(600301)】👀 启动形态研究 | 机会评分:55/100\n  传统强势评分:47/100（C级，仅背景，不是入选或买入门槛）\n  价:46.32  涨跌:-1.19%  RSI14=32.9  量比=0.7\n  MA5=47.086 MA10=47.867 MA20=47.803 MA60=46.059\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.66%) 价在MA60 MA20↑MA60\n  🟢 RS强度: 20日跑赢大盘7.59% (标的+3.55% vs 大盘-4.04%)\n  📏 ATR波动率: 2.23%/日 (止损参考≈2.066)\n  布林:上50.072 中47.803 下45.534\n  🎯 支撑45.43  压力49.97\n  📈 价>MA60 MA20>MA60 MA60↓-0.7% 周线空头\n  ⚡ RSI32.9偏弱 MACD零轴下死叉 20日+3.5%\n  💰 量比0.7 换手2.22% 主力净-14.6%\n  🏆 跑赢上证+7.6% 跑赢沪深300 +11.0% 20日+3.5%\n  🛡️ ATR2.23% 20日回撤-7.3%\n  🔴 2/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分55/100（非涨停概率）\n  🧮 机会五因子：结构15/25 企稳0/20 抛压20/20 相对强度0/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅4.20%；5日均量/前5日均量0.81；结构低点46.43、整理上沿50.25\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🟢 【立霸股份(603519)】👀 启动形态研究 | 机会评分:35/100\n  传统强势评分:51/100（B级，仅背景，不是入选或买入门槛）\n  价:15.48  涨跌:+0.58%  RSI14=44.4  量比=0.69\n  MA5=15.924 MA10=16.408 MA20=16.257 MA60=15.799\n  📐 趋势三要件: ⚠️未全满足 | MA60↑(+0.11%) 价破MA60 MA20↑MA60\n  🟢 RS强度: 20日跑赢大盘9.35% (标的+5.31% vs 大盘-4.04%)\n  📏 ATR波动率: 6.05%/日 (止损参考≈1.873)\n  布林:上17.913 中16.257 下14.601\n  🎯 支撑14.48  压力17.58\n  📈 价破MA60 MA20>MA60 MA60微↑+0.1% 周线空头\n  ⚡ RSI44.4中性 MACD零轴上死叉 20日+5.3%\n  💰 量比0.69 换手1.38% 主力净-8.4%\n  🏆 跑赢上证+9.3% 跑赢沪深300 +12.8% 20日+5.3%\n  🛡️ ATR6.05% 20日回撤-12.5%\n  📊 3/8项偏多\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分35/100（非涨停概率）\n  🧮 机会五因子：结构5/25 企稳0/20 抛压10/20 相对强度0/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅14.83%；5日均量/前5日均量0.71；结构低点15.10、整理上沿17.56\n  判定：低点/重心或整理结构未稳定，缩量阴跌不算企稳；启动机会评分不足\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n\n🧺 【股票池 (10只逐只+0只简略, 生成2026-10-20 市场C级62分)】\n=======================================================\n\n🟢 【金山办公(688111)】👀 启动形态研究 | 机会评分:100/100\n  传统强势评分:62/100（B级，仅背景，不是入选或买入门槛）\n  价:233.88  涨跌:+0.88%  RSI14=53.0  量比=1.14\n  MA5=231.788 MA10=228.582 MA20=226.162 MA60=240.237\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.04%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘6.35% (标的+2.31% vs 大盘-4.04%)\n  📏 ATR波动率: 2.97%/日 (止损参考≈13.889)\n  布林:上236.224 中226.162 下216.1\n  🎯 支撑216.9  压力233.88\n  📈 价>MA20+3% 布林中轨上 MA20<MA60 MA60微↓-0.0% 周线偏多\n  ⚡ RSI53.0中性偏强 MACD金叉 20日+2.3%\n  💰 量比1.14温和放量涨 换手1.05% 主力净-5.8%\n  🏆 跑赢上证+6.3% 跑赢沪深300 +9.8% 20日+2.3%\n  🛡️ ATR2.97% 20日回撤-6.2%\n  📊 5/8项偏多\n  🌱 启动机会：超跌企稳型 | 候选待确认 | 机会评分100/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度15/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅4.68%；5日均量/前5日均量1.04；结构低点224.00、整理上沿234.48\n  📍 条件买入区间(支撑附近转强)：225.77~227.12；失效位222.23；参考压力234.48；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池core: 总分100.0 行业软件开发(100分) 入池1日 20日2.31% | 当日五因子选出，待外部AI裁决\n\n🔴 【福耀玻璃(600660)】👀 启动形态研究 | 机会评分:95/100\n  传统强势评分:61/100（B级，仅背景，不是入选或买入门槛）\n  价:55.25  涨跌:-0.38%  RSI14=57.2  量比=0.63\n  MA5=54.952 MA10=54.295 MA20=54.002 MA60=55.613\n  📐 趋势三要件: ⚠️未全满足 | MA60↑(+0.28%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘6.58% (标的+2.54% vs 大盘-4.04%)\n  📏 ATR波动率: 2.44%/日 (止损参考≈2.697)\n  布林:上55.866 中54.002 下52.138\n  🎯 支撑51.65  压力55.46\n  📈 价>MA20 布林中轨上 MA20<MA60 MA60微↑+0.3% 周线偏多\n  ⚡ RSI57.2健康多头 MACD金叉 20日+2.5%\n  💰 量比0.63 换手0.28% 主力净-1.9%\n  🏆 跑赢上证+6.6% 跑赢沪深300 +10.0% 20日+2.5%\n  🛡️ ATR2.44% 20日回撤-6.1%\n  📊 5/8项偏多\n  🌱 启动机会：整理启动型 | 候选待确认 | 机会评分95/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅3.87%；5日均量/前5日均量0.78；结构低点53.80、整理上沿55.88\n  📍 条件买入区间(支撑附近转强)：54.14~54.42；失效位53.46；参考压力55.88；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池core: 总分95.0 行业汽车零部件(95分) 入池2日 20日2.54% | 当日五因子选出，待外部AI裁决\n\n🔴 【农业银行(601288)】👀 启动形态研究 | 机会评分:100/100\n  传统强势评分:80/100（S级，仅背景，不是入选或买入门槛）\n  价:7.41  涨跌:-1.07%  RSI14=74.8  量比=1.31\n  MA5=7.316 MA10=7.199 MA20=7.038 MA60=6.845\n  📐 趋势三要件: ✅全满足 | MA60↑(+1.12%) 价在MA60 MA20↑MA60\n  🟢 RS强度: 20日跑赢大盘9.90% (标的+5.86% vs 大盘-4.04%)\n  📏 ATR波动率: 2.21%/日 (止损参考≈0.327)\n  布林:上7.438 中7.038 下6.638\n  🎯 支撑6.81  压力7.49\n  📈 价>MA20+3% 布林中轨上 MA20>MA60 MA60↑+1.1% 周线多头\n  ⚡ RSI74.8偏高(防超买) MACD零轴上金叉 20日+5.9%\n  💰 量比1.31放量跌 换手0.14% 主力净+1.0%\n  🏆 跑赢上证+9.9% 跑赢沪深300 +13.3% 20日+5.9%\n  🛡️ ATR2.21% 20日回撤-1.3%\n  ✅ 7/8项偏多 → 共振看多\n  🌱 启动机会：整理启动型 | 候选待确认 | 机会评分100/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度15/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅5.77%；5日均量/前5日均量1.07；结构低点7.11、整理上沿7.52\n  📍 条件买入区间(支撑附近转强)：7.15~7.22；失效位7.07；参考压力7.52；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池core: 总分90.7 行业国有大型银行Ⅱ(71分) 入池1日 20日5.86% | 当日五因子选出，待外部AI裁决\n\n🔴 【平安银行(000001)】👀 启动形态研究 | 机会评分:95/100\n  传统强势评分:50/100（B级，仅背景，不是入选或买入门槛）\n  价:11.44  涨跌:-1.80%  RSI14=43.2  量比=1.06\n  MA5=11.5 MA10=11.574 MA20=11.578 MA60=11.494\n  📐 趋势三要件: ⚠️未全满足 | MA60↑(+0.51%) 价破MA60 MA20↑MA60\n  🟢 RS强度: 20日跑赢大盘0.58% (标的-3.46% vs 大盘-4.04%)\n  📏 ATR波动率: 2.19%/日 (止损参考≈0.5)\n  布林:上11.883 中11.578 下11.273\n  🎯 支撑11.3  压力11.82\n  📈 价破MA60 MA20>MA60 MA60↑+0.5% 周线空头\n  ⚡ RSI43.2中性 MACD零轴下死叉 20日-3.5%\n  💰 量比1.06 换手0.64% 主力净-0.2%\n  🏆 跑赢上证+0.6% 跑赢沪深300 +4.0% 20日-3.5%弱\n  🛡️ ATR2.19% 20日回撤-4.4%\n  📊 3/8项偏多\n  🌱 启动机会：整理启动型 | 候选待确认 | 机会评分95/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅4.53%；5日均量/前5日均量1.09；结构低点11.26、整理上沿11.89\n  📍 条件买入区间(支撑附近转强)：11.32~11.43；失效位11.20；参考压力11.89；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池core: 总分89.9 行业股份制银行Ⅱ(61分) 入池1日 20日-3.46% | 当日五因子选出，待外部AI裁决\n\n🔴 【申万宏源(000166)】👀 启动形态研究 | 机会评分:95/100\n  传统强势评分:45/100（C级，仅背景，不是入选或买入门槛）\n  价:4.38  涨跌:-1.57%  RSI14=40.0  量比=0.97\n  MA5=4.438 MA10=4.417 MA20=4.413 MA60=4.515\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.36%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘2.69% (标的-1.35% vs 大盘-4.04%)\n  📏 ATR波动率: 1.70%/日 (止损参考≈0.149)\n  布林:上4.503 中4.413 下4.323\n  🎯 支撑4.33  压力4.49\n  📈 价破MA60 MA20<MA60 MA60微↓-0.4% 周线空头\n  ⚡ RSI40.0中性 MACD金叉 20日-1.4%\n  💰 量比0.97 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+2.7% 跑赢沪深300 +6.1% 20日-1.4%弱\n  🛡️ ATR1.7% 20日回撤-3.6%\n  🔴 2/8项偏多 → 偏空承压\n  🌱 启动机会：整理启动型 | 候选待确认 | 机会评分95/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅2.50%；5日均量/前5日均量1.17；结构低点4.40、整理上沿4.51\n  📍 条件买入区间(支撑附近转强)：4.42~4.42；失效位4.37；参考压力4.51；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强；当日低点缺失或已触及失效位，取消本轮触发\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池启动候选，等待价格条件: 总分89.9 行业证券Ⅱ(61分) 入池1日 20日-1.35% | 当日五因子选出，待外部AI裁决\n\n🟢 【润和软件(300339)】👀 启动形态研究 | 机会评分:95/100\n  传统强势评分:46/100（C级，仅背景，不是入选或买入门槛）\n  价:34.12  涨跌:+0.24%  RSI14=39.7  量比=1.0\n  MA5=34.006 MA10=34.257 MA20=34.339 MA60=35.699\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.38%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘2.65% (标的-1.39% vs 大盘-4.04%)\n  📏 ATR波动率: 2.25%/日 (止损参考≈1.536)\n  布林:上35.3 中34.339 下33.378\n  🎯 支撑33.62  压力35.14\n  📈 价破MA60 MA20<MA60 MA60微↓-0.4% 周线纠缠\n  ⚡ RSI39.7偏弱 MACD金叉 20日-1.4%\n  💰 量比1.0温和放量涨 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+2.6% 跑赢沪深300 +6.0% 20日-1.4%弱\n  🛡️ ATR2.25% 20日回撤-4.3%\n  🔴 2/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 候选待确认 | 机会评分95/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅4.56%；5日均量/前5日均量0.93；结构低点33.54、整理上沿35.10\n  📍 条件买入区间(支撑附近转强)：33.74~34.04；失效位33.34；参考压力35.10；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池启动候选，等待价格条件: 总分89.0 行业IT服务Ⅱ(55分) 入池1日 20日-1.39% | 当日五因子选出，待外部AI裁决\n\n🟢 【中国联通(600050)】👀 启动形态研究 | 机会评分:95/100\n  传统强势评分:76/100（A级，仅背景，不是入选或买入门槛）\n  价:4.47  涨跌:+0.45%  RSI14=78.3  量比=0.99\n  MA5=4.418 MA10=4.36 MA20=4.271 MA60=4.305\n  📐 趋势三要件: ⚠️未全满足 | MA60↑(+0.25%) 价在MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘9.96% (标的+5.92% vs 大盘-4.04%)\n  📏 ATR波动率: 1.58%/日 (止损参考≈0.141)\n  布林:上4.48 中4.271 下4.062\n  🎯 支撑4.13  压力4.47\n  📈 价>MA20+3% 布林中轨上 MA20≈MA60粘合 MA60微↑+0.2% 周线多头\n  ⚡ RSI78.3偏高(防超买) MACD零轴上金叉 20日+5.9%\n  💰 量比0.99 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+10.0% 跑赢沪深300 +13.4% 20日+5.9%\n  🛡️ ATR1.58% 20日回撤-2.4%\n  ✅ 6/8项偏多 → 共振看多\n  🌱 启动机会：整理启动型 | 候选待确认 | 机会评分95/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅3.48%；5日均量/前5日均量1.19；结构低点4.31、整理上沿4.46\n  判定：市场C级仅低吸，不做突破追涨；非连续交易时段，仅生成预案；历史压力空间不足，暂无合格买入区间\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池启动候选，等待价格条件: 总分88.5 行业通信服务(85分) 入池1日 20日5.92% | 当日五因子选出，待外部AI裁决\n\n🟢 【三一重工(600031)】👀 启动形态研究 | 机会评分:95/100\n  传统强势评分:39/100（C级，仅背景，不是入选或买入门槛）\n  价:18.2  涨跌:+2.13%  RSI14=57.3  量比=0.9\n  MA5=17.83 MA10=17.598 MA20=17.702 MA60=18.942\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.51%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘4.59% (标的-8.63% vs 大盘-4.04%)\n  📏 ATR波动率: 2.62%/日 (止损参考≈0.954)\n  布林:上18.792 中17.702 下16.612\n  🎯 支撑16.95  压力19.49\n  📈 价>MA20 布林中轨上 MA20<MA60 MA60↓-0.5% 周线纠缠\n  ⚡ RSI57.3健康多头 MACD金叉 20日-8.6%(弱)\n  💰 量比0.9 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑输上证-4.6% 跑输沪深300 -1.2% 20日-8.6%很弱\n  🛡️ ATR2.62% 20日回撤-13.0%\n  📊 3/8项偏多\n  🌱 启动机会：超跌企稳型 | 候选待确认 | 机会评分95/100（非涨停概率）\n  🧮 机会五因子：结构20/25 企稳20/20 抛压20/20 相对强度15/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅4.03%；5日均量/前5日均量1.06；结构低点17.39、整理上沿18.09\n  判定：市场C级仅低吸，不做突破追涨；非连续交易时段，仅生成预案；历史压力空间不足，暂无合格买入区间\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池启动候选，等待价格条件: 总分86.8 行业工程机械(40分) 入池1日 20日-8.63% | 当日五因子选出，待外部AI裁决\n\n🔴 【中创智领(601717)】👀 启动形态研究 | 机会评分:90/100\n  传统强势评分:50/100（B级，仅背景，不是入选或买入门槛）\n  价:13.78  涨跌:-0.14%  RSI14=52.6  量比=0.8\n  MA5=13.69 MA10=13.651 MA20=13.628 MA60=14.689\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.71%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘2.61% (标的-1.43% vs 大盘-4.04%)\n  📏 ATR波动率: 2.23%/日 (止损参考≈0.616)\n  布林:上14.161 中13.628 下13.095\n  🎯 支撑12.99  压力13.98\n  📈 价>MA20 布林中轨上 MA20<MA60 MA60↓-0.7% 周线纠缠\n  ⚡ RSI52.6中性偏强 MACD金叉 20日-1.4%\n  💰 量比0.8 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+2.6% 跑赢沪深300 +6.0% 20日-1.4%弱\n  🛡️ ATR2.23% 20日回撤-7.1%\n  📊 4/8项偏多\n  🌱 启动机会：超跌企稳型 | 候选待确认 | 机会评分90/100（非涨停概率）\n  🧮 机会五因子：结构20/25 企稳20/20 抛压20/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅3.58%；5日均量/前5日均量0.70；结构低点13.42、整理上沿13.96\n  📍 条件买入区间(支撑附近转强)：13.50~13.58；失效位13.34；参考压力13.96；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池启动候选，等待价格条件: 总分82.5 行业专用设备(40分) 入池1日 20日-1.43% | 当日五因子选出，待外部AI裁决\n\n🟢 【儒意电影(002739)】👀 启动形态研究 | 机会评分:80/100\n  传统强势评分:37/100（C级，仅背景，不是入选或买入门槛）\n  价:8.31  涨跌:+0.48%  RSI14=41.5  量比=0.71\n  MA5=8.298 MA10=8.296 MA20=8.385 MA60=8.703\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-1.12%) 价破MA60 MA20↓MA60\n  🔴 RS强度: 20日跑输大盘0.55% (标的-4.59% vs 大盘-4.04%)\n  📏 ATR波动率: 3.03%/日 (止损参考≈0.503)\n  布林:上8.732 中8.385 下8.038\n  🎯 支撑7.99  压力8.69\n  📈 价>MA10 MA20<MA60 MA60↓-1.1% 周线纠缠\n  ⚡ RSI41.5中性 MACD金叉 20日-4.6%\n  💰 量比0.71 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑输上证-0.6% 跑赢沪深300 +2.9% 20日-4.6%弱\n  🛡️ ATR3.03% 20日回撤-8.1%\n  🔴 1/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 候选待确认 | 机会评分80/100（非涨停概率）\n  🧮 机会五因子：结构20/25 企稳20/20 抛压20/20 相对强度0/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅5.18%；5日均量/前5日均量0.77；结构低点8.11、整理上沿8.58\n  📍 条件买入区间(支撑附近转强)：8.18~8.25；失效位8.04；参考压力8.58；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 股票池启动候选，等待价格条件: 总分82.4 行业影视院线(96分) 入池1日 20日-4.59% | 当日五因子选出，待外部AI裁决\n\n🎯 【次日监测名单 (7只)】\n=======================================================\n\n🔴 【泸州老窖(000568)】👀 启动形态研究 | 机会评分:80/100\n  传统强势评分:42/100（C级，仅背景，不是入选或买入门槛）\n  价:71.29  涨跌:-1.86%  RSI14=49.3  量比=0.93\n  MA5=71.508 MA10=71.626 MA20=71.498 MA60=79.901\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-1.19%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘1.06% (标的-2.98% vs 大盘-4.04%)\n  📏 ATR波动率: 2.70%/日 (止损参考≈3.849)\n  布林:上73.279 中71.498 下69.717\n  🎯 支撑69.38  压力72.64\n  📈 价破MA60 MA20<MA60 MA60↓-1.2% 周线空头\n  ⚡ RSI49.3中性偏强 MACD金叉 20日-3.0%\n  💰 量比0.93 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+1.1% 跑赢沪深300 +4.5% 20日-3.0%弱\n  🛡️ ATR2.7% 20日回撤-4.1%\n  🔴 2/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 候选待确认 | 机会评分80/100（非涨停概率）\n  🧮 机会五因子：结构20/25 企稳20/20 抛压10/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅6.21%；5日均量/前5日均量1.33；结构低点69.88、整理上沿74.22\n  📍 条件买入区间(支撑附近转强)：70.35~71.26；失效位69.41；参考压力74.22；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 监测来源：外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=20、momentum=20、capital=20、rs=15、risk=20。行业86分、振幅3.94%、均量比1.175，RS5为3.172较前期增强；结构稳定、企稳与抛压因子均满分。回撤22.43%仍有趋势损伤，快照价格盈亏比0.216，等待位置改善。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。（加入2026-10-19；未买入则次日自动移出）\n\n🟢 【恒瑞医药(600276)】👀 启动形态研究 | 机会评分:85/100\n  传统强势评分:72/100（A级，仅背景，不是入选或买入门槛）\n  价:47.45  涨跌:+2.97%  RSI14=59.9  量比=1.44\n  MA5=46.45 MA10=46.487 MA20=45.547 MA60=48.684\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-1.51%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘14.01% (标的+9.97% vs 大盘-4.04%)\n  📏 ATR波动率: 2.96%/日 (止损参考≈2.811)\n  布林:上48.113 中45.547 下42.981\n  🎯 支撑43.13  压力47.45\n  📈 价>MA20+3% 布林中轨上 MA20<MA60 MA60↓-1.5% 周线多头\n  ⚡ RSI59.9健康多头 MACD金叉 20日+10.0%\n  💰 量比1.44放量涨 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+14.0% 跑赢沪深300 +17.4% 20日+10.0%强\n  🛡️ ATR2.96% 20日回撤-3.6%\n  ✅ 6/8项偏多 → 共振看多\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分85/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置10/20\n  形态证据截至2026-10-19：近5日振幅6.25%；5日均量/前5日均量0.67；结构低点44.78、整理上沿47.58\n  判定：现价已涨远或距失效位过远\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 监测来源：外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。行业80分、振幅6.25%、均量比0.694显示抛压减弱，结构及企稳因子满分。RS5由6.354降至2.087、回撤17.45%，修复延续需确认，快照价格盈亏比0.904。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。（加入2026-10-19；未买入则次日自动移出）\n\n🔴 【东方财富(300059)】👀 启动形态研究 | 机会评分:85/100\n  传统强势评分:40/100（C级，仅背景，不是入选或买入门槛）\n  价:17.96  涨跌:-0.66%  RSI14=37.8  量比=0.83\n  MA5=18.09 MA10=17.937 MA20=18.121 MA60=19.009\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.78%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘2.61% (标的-1.43% vs 大盘-4.04%)\n  📏 ATR波动率: 2.28%/日 (止损参考≈0.82)\n  布林:上18.812 中18.121 下17.43\n  🎯 支撑17.28  压力18.77\n  📈 价>MA10 MA20<MA60 MA60↓-0.8% 周线空头\n  ⚡ RSI37.8偏弱 MACD金叉 20日-1.4%\n  💰 量比0.83 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+2.6% 跑赢沪深300 +6.0% 20日-1.4%弱\n  🛡️ ATR2.28% 20日回撤-7.9%\n  🔴 2/8项偏多 → 偏空承压\n  🌱 启动机会：超跌企稳型 | 不符合形态 | 机会评分85/100（非涨停概率）\n  🧮 机会五因子：结构20/25 企稳20/20 抛压10/20 相对强度15/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅4.70%；5日均量/前5日均量1.15；结构低点17.65、整理上沿18.48\n  判定：抛压尚未减弱\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 监测来源：外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=20、momentum=20、capital=20、rs=15、risk=20。行业71分、振幅4.70%、均量比1.111，RS5由0.113升至3.448；结构及抛压成立，但短期转强未确认、趋势仍在修复，快照价格盈亏比0.741。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。（加入2026-10-19；未买入则次日自动移出）\n\n🔴 【东方雨虹(002271)】👀 启动形态研究 | 机会评分:95/100\n  传统强势评分:52/100（B级，仅背景，不是入选或买入门槛）\n  价:10.64  涨跌:-1.66%  RSI14=48.4  量比=0.74\n  MA5=10.698 MA10=10.724 MA20=10.558 MA60=11.061\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.12%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘6.74% (标的+2.70% vs 大盘-4.04%)\n  📏 ATR波动率: 3.37%/日 (止损参考≈0.717)\n  布林:上11.065 中10.558 下10.051\n  🎯 支撑10.11  压力10.9\n  📈 价>MA20 布林中轨上 MA20<MA60 MA60微↓-0.1% 周线空头\n  ⚡ RSI48.4中性偏强 MACD金叉 20日+2.7%\n  💰 量比0.74 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+6.7% 跑赢沪深300 +10.1% 20日+2.7%\n  🛡️ ATR3.37% 20日回撤-5.7%\n  📊 3/8项偏多\n  🌱 启动机会：超跌企稳型 | 候选待确认 | 机会评分95/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅6.67%；5日均量/前5日均量0.91；结构低点10.35、整理上沿11.04\n  📍 条件买入区间(支撑附近转强)：10.44~10.57；失效位10.26；参考压力11.04；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 监测来源：外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。行业70分、振幅6.67%、均量比0.913，结构企稳和抛压因子满分；RS5由6.726降至2.190，快照价格盈亏比0.386，延续与位置仍需观察。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。（加入2026-10-19；未买入则次日自动移出）\n\n🟢 【迈瑞医疗(300760)】👀 启动形态研究 | 机会评分:95/100\n  传统强势评分:82/100（S级，仅背景，不是入选或买入门槛）\n  价:169.76  涨跌:+1.32%  RSI14=72.5  量比=0.9\n  MA5=167.232 MA10=164.742 MA20=161.039 MA60=158.908\n  📐 趋势三要件: ✅全满足 | MA60↑(+1.02%) 价在MA60 MA20↑MA60\n  🟢 RS强度: 20日跑赢大盘10.07% (标的+6.03% vs 大盘-4.04%)\n  📏 ATR波动率: 2.45%/日 (止损参考≈8.314)\n  布林:上170.254 中161.039 下151.824\n  🎯 支撑153.86  压力169.76\n  📈 价>MA20+3% 布林中轨上 MA20>MA60 MA60↑+1.0% 周线多头\n  ⚡ RSI72.5偏高(防超买) MACD零轴上金叉 20日+6.0%\n  💰 量比0.9 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+10.1% 跑赢沪深300 +13.5% 20日+6.0%\n  🛡️ ATR2.45% 20日回撤-4.0%\n  ✅ 7/8项偏多 → 共振看多\n  🌱 启动机会：整理启动型 | 候选待确认 | 机会评分95/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅5.42%；5日均量/前5日均量1.09；结构低点163.08、整理上沿171.92\n  📍 条件买入区间(支撑附近转强)：164.09~166.01；失效位162.07；参考压力171.92；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 监测来源：外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。整理启动型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。行业61分、振幅5.35%、均量比1.137，结构企稳和抛压因子满分；RS5为6.212较前期6.819略弱，快照价格盈亏比0.358，等待风险收益改善。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。（加入2026-10-19；未买入则次日自动移出）\n\n🔴 【上海银行(601229)】👀 启动形态研究 | 机会评分:85/100\n  传统强势评分:55/100（B级，仅背景，不是入选或买入门槛）\n  价:9.47  涨跌:-1.66%  RSI14=47.2  量比=1.4\n  MA5=9.608 MA10=9.667 MA20=9.611 MA60=9.522\n  📐 趋势三要件: ⚠️未全满足 | MA60↑(+0.44%) 价破MA60 MA20↑MA60\n  🟢 RS强度: 20日跑赢大盘0.97% (标的-3.07% vs 大盘-4.04%)\n  📏 ATR波动率: 1.66%/日 (止损参考≈0.314)\n  布林:上9.799 中9.611 下9.423\n  🎯 支撑9.47  压力9.81\n  📈 价破MA60 MA20>MA60 MA60↑+0.4% 周线空头\n  ⚡ RSI47.2中性偏强 MACD零轴上死叉 20日-3.1%\n  💰 量比1.4放量跌 换手缺失(中性) 资金流缺失(中性)\n  🏆 跑赢上证+1.0% 跑赢沪深300 +4.4% 20日-3.1%弱\n  🛡️ ATR1.66% 20日回撤-3.5%\n  📊 3/8项偏多\n  🌱 启动机会：整理启动型 | 不符合形态 | 机会评分85/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置10/20\n  形态证据截至2026-10-19：近5日振幅2.83%；5日均量/前5日均量0.96；结构低点9.53、整理上沿9.87\n  判定：跌破结构失效位\n  🔔 买点状态：失效｜结构失效位被跌破或形态不成立：本轮不形成买点结论\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 监测来源：外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。整理启动型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。振幅2.83%、均量比0.988，结构企稳和抛压因子满分，快照价格盈亏比1.600；行业55分支持一般，RS5由3.180降至2.349，转强未确认。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。（加入2026-10-19；未买入则次日自动移出）\n\n🔴 【华电新能(600930)】👀 启动形态研究 | 机会评分:95/100\n  传统强势评分:58/100（B级，仅背景，不是入选或买入门槛）\n  价:3.97  涨跌:-0.50%  RSI14=51.0  量比=0.73\n  MA5=3.978 MA10=3.968 MA20=3.942 MA60=4.038\n  📐 趋势三要件: ⚠️未全满足 | MA60↓(-0.98%) 价破MA60 MA20↓MA60\n  🟢 RS强度: 20日跑赢大盘4.80% (标的+0.76% vs 大盘-4.04%)\n  📏 ATR波动率: 1.76%/日 (止损参考≈0.14)\n  布林:上4.052 中3.942 下3.832\n  🎯 支撑3.81  压力3.99\n  📈 价>MA20 布林中轨上 MA20<MA60 MA60↓-1.0% 周线多头\n  ⚡ RSI51.0中性偏强 MACD金叉 20日+0.8%\n  💰 量比0.73 换手0.85% 主力净-10.0%\n  🏆 跑赢上证+4.8% 跑赢沪深300 +8.2% 20日+0.8%\n  🛡️ ATR1.76% 20日回撤-4.3%\n  📊 5/8项偏多\n  🌱 启动机会：超跌企稳型 | 候选待确认 | 机会评分95/100（非涨停概率）\n  🧮 机会五因子：结构25/25 企稳20/20 抛压20/20 相对强度10/15 位置20/20\n  形态证据截至2026-10-19：近5日振幅2.81%；5日均量/前5日均量0.99；结构低点3.91、整理上沿4.04\n  📍 条件买入区间(支撑附近转强)：3.93~3.95；失效位3.89；参考压力4.04；有效日2026-10-20\n  条件：区间内收复开盘价、昨收及已完成日线MA5，当日未触及失效位；价格盈亏比≥1.5（未扣费）\n  判定：非连续交易时段，仅生成预案；现价不在条件买入区间，不随现价上移区间；尚未收复开盘价、昨收和已完成日线MA5，等待转强\n  🔔 买点状态：等待｜非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核\n  限制：日线与报价快照不证明分钟级企稳；不预测涨停；价格盈亏比未扣手续费及滑点；不含下单数量\n  📌 监测来源：外部AI裁决；收盘包 2026-10-19 15:32:51（20261019153013_4bc41a80），源Git提交 29a2ee698cb0ac775507699b7a7ee560f902276f。超跌企稳型，startup/v1因子：trend=25、momentum=20、capital=20、rs=10、risk=20。振幅3.32%、均量比1.153，结构企稳和抛压因子满分；行业51分偏弱，RS5由4.238降至3.060，快照价格盈亏比0.500，保留候补观察。 形态证据截至2026-10-16，报价为2026-10-19盘后快照；均量比为近5日/前5日。市场D22禁止新增买入；仅供下一交易时段研究监测，原计划有效日2026-10-19，下一时段须重新核验。价格盈亏比未扣费和滑点，非净盈亏比；candidate不构成买入许可，quality亦非买入许可。（加入2026-10-19；未买入则次日自动移出）\n\n=======================================================\n💡 盘后预案总结\n  早盘趋势初显，观望为主\n  关注突发消息对持仓的影响\n  集合竞价已出：高开低开已定，挂单预案见各标的，勿追高开冲高\n\n🧾 【手续费硬性规则】佣金万2.5最低5元/笔(买卖双向) + 卖出印花税0.05%(个股) + 过户费万0.1\n   小额交易先核验双边费用和滑点；不为摊薄手续费扩大原定风险预算\n   成本档位(买入): 1000元≈5.1元(0.51%) | 2000元≈5.2元(0.26%) | 3000元≈5.3元(0.18%) | 5000元≈5.5元(0.11%) | 10000元≈6.0元(0.06%)\n   卖出个股另加0.05%印花税；做T一买一卖成本≥10元，价差必须覆盖，否则白做\n\n⚠️ 仅供参考，投资有风险！\n\n📊 【分析完整性】目标44只 成功44只 失败0只 覆盖率100.0% 市场数据完整\n  说明: 单只失败不影响其余标的结论；失败标的的价格区间不得作为买点依据\n",
+    "diagnostics": ""
+  },
+  "decision_contract": {
+    "opportunity_version": "startup/v1",
+    "candidate_paths": [
+      "整理启动型",
+      "超跌企稳型"
+    ],
+    "budget_independent_research": true,
+    "strength_grade_is_not_candidate_gate": true,
+    "quality_classification_is_time_independent": true,
+    "buy_state_is_point_in_time": true,
+    "buy_states": [
+      "条件满足",
+      "等待",
+      "失效"
+    ],
+    "must_reject_yes_on_invalidated_buy_state": true,
+    "max_new_actions": 3,
+    "must_reject_stale_data": true,
+    "must_reject_unknown_or_D_market_new_entries": true,
+    "must_check_price_risk_reward_for_research": true,
+    "must_check_net_risk_reward_for_orders": true,
+    "positions_are_context_only": true,
+    "note": "本数据包不包含AI结论；外部AI按opportunity形态证据裁决监测质量。core/watch 是质量分级（只看形态与行业），不随扫描时点变化——午休/盘后扫描出的 core 有效，不得因为非交易时段而降低其分类。每只候选的买点状态见 buy_state：条件满足=本轮闸门全过；等待=形态成立但未到区间/未收复开盘·昨收·MA5/非交易时段；失效=形态不成立或已触及结构失效位。buy_state=失效的候选不得给出 YES（仅记录）。两类候选不要求站上MA60或放量大涨，不因预设预算淘汰。D级可监测但禁止新买；UNKNOWN拒绝裁决。仅引用包中条件区间，不编造价格；持仓仅作背景。"
+  }
+}
