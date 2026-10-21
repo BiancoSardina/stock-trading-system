@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-tech_analysis_bundle.py — 盘中全量技术分析 → 数据包 → git 上传 → QQ 通知（2026-09-07 用户需求）
+tech_analysis_bundle.py — 分时段全量技术分析 → 数据包 → git 上传 → QQ 通知
 
 流程：
   1. pinned_current 钉住当前股票池快照（读批次指针；无指针回落根目录旧池）
@@ -15,8 +15,8 @@ tech_analysis_bundle.py — 盘中全量技术分析 → 数据包 → git 上�
      → 归档到 data_packages/technical_analysis_latest_<ts>.json → git push → QQ 提醒
      （该步持跨链公共发布锁 runtime.publish_lock()，与池链共用同一把锁）
 
-任务名按运行时段自动推断：09 点→"早盘技术分析" / 11 点→"收割后技术分析" /
-13 点→"午后技术分析" / 14 点→"尾盘技术分析"，也可 --task 手动覆盖。
+任务名按运行时段自动推断：09 点→"早盘技术分析" / 11、12 点→"午盘技术分析" /
+13 点→"午后技术分析" / 14 点→"尾盘技术分析" / 15点后→"收盘技术分析"，也可 --task 手动覆盖。
 
 重试：--retry-upload <ts> 只上传该轮快照（兼容已有历史归档），找不到则拒绝，不重新分析。
 
@@ -48,25 +48,17 @@ VALID_VERDICTS = ("完整", "部分缺失")
 
 
 def infer_task() -> str:
-    """按运行小时推断任务名（09:35 早盘 / 10:30 盘中观察 / 11:10 收割后 / 13:30 午后 / 14:45 尾盘）"""
-    hour = time.localtime().tm_hour
-    if hour == 9:
-        return "早盘技术分析"
-    if hour == 10:
-        return "盘中观察技术分析"
-    if hour == 11:
-        return "收割后技术分析"
-    if hour == 13:
-        return "午后技术分析"
-    if hour == 14:
-        return "尾盘技术分析"
-    return "盘中技术分析"
+    """与归档及重试共用时段名称，任务时段不等同于报价完整性。"""
+    return task_for_ts(time.strftime("%Y%m%d%H%M%S", time.localtime()))
 
 
 def task_for_ts(ts: str) -> str:
     """按归档时间戳的小时推断任务名（重试时用）"""
     try:
-        return {9: "早盘技术分析", 10: "盘中观察技术分析", 11: "收割后技术分析",
+        hour = int(ts[8:10])
+        if hour >= 15:
+            return "收盘技术分析"
+        return {9: "早盘技术分析", 10: "盘中观察技术分析", 11: "午盘技术分析", 12: "午盘技术分析",
                 13: "午后技术分析", 14: "尾盘技术分析"}.get(int(ts[8:10]), "盘中技术分析")
     except (TypeError, ValueError, IndexError):
         return "盘中技术分析"
@@ -182,7 +174,10 @@ def write_bundle(report: str, diagnostics: str, check: dict, ts: str = "") -> st
     bundle = {
         "schema": SCHEMA,
         "archive_ts": ts,
-        "kind": "盘中全量技术分析（无AI解读，原始数据）",
+        "kind": task_for_ts(ts) + "（无AI解读，原始数据）",
+        "analysis_session": "收盘" if int(ts[8:10]) >= 15 else (
+            "午盘" if int(ts[8:10]) in (11, 12) else "盘中"),
+        "session_basis": "归档生成时段；不表示逐标的报价时点或官方收盘价已核验",
         "generated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
         "analysis_only": True,
         "research_contract": {
@@ -252,7 +247,7 @@ def upload(task: str, ts: str) -> int:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="盘中全量技术分析→数据包→git上传→QQ通知")
+    parser = argparse.ArgumentParser(description="分时段全量技术分析→数据包→git上传→QQ通知")
     parser.add_argument("--task", default="", help="任务名（默认按小时推断）")
     parser.add_argument("--skip-upload", action="store_true", help="只生成分析包，不归档上传（测试用）")
     parser.add_argument("--retry-upload", default="",

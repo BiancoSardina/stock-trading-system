@@ -159,6 +159,15 @@ class AnalysisSnapshotTests(unittest.TestCase):
         self.assertEqual(self.sent, original)
         self.assertEqual(self.command[self.command.index("--ts") + 1], self.ts)
 
+    def test_close_bundle_label_survives_partial_market_data(self):
+        snapshot = Path(tab.write_bundle("盘后预案", "", tab.completeness(metrics(data_ok=False)),
+                                         "20261021154312"))
+        payload = json.loads(snapshot.read_text(encoding="utf-8"))
+        self.assertEqual(payload["analysis_session"], "收盘")
+        self.assertEqual(payload["kind"], "收盘技术分析（无AI解读，原始数据）")
+        self.assertEqual(payload["completeness"]["verdict"], "部分缺失")
+        self.assertIn("不表示", payload["session_basis"])
+
     def test_retry_legacy_archive_uses_exact_original_bytes(self):
         archive = self.root / "data_packages" / f"technical_analysis_latest_{self.ts}.json"
         archive.parent.mkdir()
@@ -226,9 +235,10 @@ class AnalysisSnapshotTests(unittest.TestCase):
 
 class TaskNameTests(unittest.TestCase):
     def test_every_scheduled_slot_has_an_explicit_name(self):
-        # 09:35 早盘 / 10:30 盘中观察 / 11:10 收割后 / 13:30 午后 / 14:45 尾盘 / 其它兜底
-        names = {9: "早盘技术分析", 10: "盘中观察技术分析", 11: "收割后技术分析",
-                 13: "午后技术分析", 14: "尾盘技术分析", 15: "盘中技术分析"}
+        # 生成、归档和重试必须共享午盘/收盘命名，缺行情字段不改变任务时段。
+        names = {9: "早盘技术分析", 10: "盘中观察技术分析", 11: "午盘技术分析",
+                 12: "午盘技术分析", 13: "午后技术分析", 14: "尾盘技术分析",
+                 15: "收盘技术分析", 16: "收盘技术分析", 18: "收盘技术分析"}
         for hour, expected in names.items():
             self.assertEqual(tab.task_for_ts(f"20260922{hour:02d}0000"), expected)
             with patch.object(tab.time, "localtime",
