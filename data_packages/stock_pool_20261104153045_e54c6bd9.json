@@ -1,0 +1,1561 @@
+{
+  "mode": "正式",
+  "batch_id": "20261104153045_e54c6bd9",
+  "scan_metrics": {
+    "source_count": 5577,
+    "basic_count": 5012,
+    "candidate_count": 4241,
+    "processed": 4241,
+    "success": 47,
+    "failed": 3,
+    "excluded": 4191,
+    "complete": true,
+    "cache": {
+      "hits": 2653,
+      "misses": 1591,
+      "write_failures": 0
+    },
+    "scan_seconds": 107.54,
+    "elapsed_seconds": 143.37,
+    "remaining_seconds": 1996.57,
+    "estimated_remaining_seconds": 0.0,
+    "short_history": 21
+  },
+  "score_basis": "startup/v1",
+  "date": "2026-11-04",
+  "market_status": "B",
+  "market_score": 67,
+  "generated_at": "2026-11-04 15:33:08",
+  "data_ok": true,
+  "source_count": 5577,
+  "scored_count": 4241,
+  "core_pool": [
+    {
+      "code": "600660",
+      "name": "福耀玻璃",
+      "stock_score": 100,
+      "level": "core",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 58,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "整理启动型",
+        "score": 100,
+        "factors": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 53.08,
+          "entry_high": 53.53,
+          "stop": 52.32,
+          "target": 55.36,
+          "min_price_rr": 1.5,
+          "price_rr": 0.165,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 52.7,
+          "pivot": 55.36,
+          "stop": 52.32,
+          "atr": 1.4807,
+          "width_pct": 5.05,
+          "volume_ratio_5v5": 0.582,
+          "drawdown_pct": -5.59,
+          "rs5": 5.54430904222607,
+          "previous_rs5": -1.9224599156235311
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:40",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 630981174.33,
+      "total_score": 99.2,
+      "factor": {
+        "trend": 25,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 2.52,
+        "distance_ma20": 2.21,
+        "rsi14": 52.2,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": false
+      },
+      "chg20": 2.52,
+      "price": 54.93,
+      "levels": {
+        "ma5": 54.126,
+        "ma10": 53.418,
+        "ma20": 53.741,
+        "ma60": 54.912,
+        "ma60_slope": -0.68,
+        "atr14": 1.4743,
+        "support": 52.7,
+        "resistance": 55.36,
+        "stop": 52.32
+      },
+      "quote_time": "2026-11-04 15:31:39",
+      "industry": "汽车零部件",
+      "industry_score": 95,
+      "reason": [
+        "整理启动型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业95分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+      ],
+      "first_seen": "2026-11-03",
+      "days_in_pool": 2,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "000786",
+      "name": "北新建材",
+      "stock_score": 100,
+      "level": "core",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 63,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "超跌企稳型",
+        "score": 100,
+        "factors": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 16.33,
+          "entry_high": 16.58,
+          "stop": 16.03,
+          "target": 17.41,
+          "min_price_rr": 1.5,
+          "price_rr": 0.394,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 16.18,
+          "pivot": 17.41,
+          "stop": 16.03,
+          "atr": 0.6,
+          "width_pct": 7.6,
+          "volume_ratio_5v5": 1.063,
+          "drawdown_pct": -10.89,
+          "rs5": 5.6858009437814605,
+          "previous_rs5": 2.572771718095901
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:45",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 321127132.85,
+      "total_score": 97.8,
+      "factor": {
+        "trend": 25,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 2.53,
+        "distance_ma20": 2.52,
+        "rsi14": 61.9,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": false
+      },
+      "chg20": 2.53,
+      "price": 17.02,
+      "levels": {
+        "ma5": 16.838,
+        "ma10": 16.718,
+        "ma20": 16.601,
+        "ma60": 16.918,
+        "ma60_slope": -1.38,
+        "atr14": 0.5971,
+        "support": 16.18,
+        "resistance": 17.41,
+        "stop": 16.03
+      },
+      "quote_time": "2026-11-04 15:31:45",
+      "industry": "装修建材",
+      "industry_score": 85,
+      "reason": [
+        "超跌企稳型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业85分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "000999",
+      "name": "华润三九",
+      "stock_score": 100,
+      "level": "core",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 74,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "整理启动型",
+        "score": 100,
+        "factors": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 24.67,
+          "entry_high": 24.97,
+          "stop": 24.35,
+          "target": 26.0,
+          "min_price_rr": 1.5,
+          "price_rr": 0.25,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 24.51,
+          "pivot": 26.0,
+          "stop": 24.35,
+          "atr": 0.6243,
+          "width_pct": 6.04,
+          "volume_ratio_5v5": 1.049,
+          "drawdown_pct": -2.74,
+          "rs5": 5.122873722229371,
+          "previous_rs5": -1.3110654755716933
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:48",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 340285917.77,
+      "total_score": 97.8,
+      "factor": {
+        "trend": 25,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 6.12,
+        "distance_ma20": 1.33,
+        "rsi14": 47.0,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 6.12,
+      "price": 25.67,
+      "levels": {
+        "ma5": 25.458,
+        "ma10": 25.19,
+        "ma20": 25.334,
+        "ma60": 24.702,
+        "ma60_slope": -0.12,
+        "atr14": 0.6314,
+        "support": 24.51,
+        "resistance": 26.0,
+        "stop": 24.35
+      },
+      "quote_time": "2026-11-04 15:31:30",
+      "industry": "中药Ⅱ",
+      "industry_score": 85,
+      "reason": [
+        "整理启动型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业85分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "601607",
+      "name": "上海医药",
+      "stock_score": 100,
+      "level": "core",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 74,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "整理启动型",
+        "score": 100,
+        "factors": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 16.4,
+          "entry_high": 16.53,
+          "stop": 16.2,
+          "target": 17.04,
+          "min_price_rr": 1.5,
+          "price_rr": 0.273,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 16.3,
+          "pivot": 17.04,
+          "stop": 16.2,
+          "atr": 0.365,
+          "width_pct": 4.54,
+          "volume_ratio_5v5": 1.044,
+          "drawdown_pct": -0.41,
+          "rs5": 3.701723158888881,
+          "previous_rs5": 2.878046211540919
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:57",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 232349400.6,
+      "total_score": 96.2,
+      "factor": {
+        "trend": 25,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 3.95,
+        "distance_ma20": 1.52,
+        "rsi14": 52.0,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 3.95,
+      "price": 16.86,
+      "levels": {
+        "ma5": 16.706,
+        "ma10": 16.57,
+        "ma20": 16.607,
+        "ma60": 16.437,
+        "ma60_slope": -0.01,
+        "atr14": 0.3671,
+        "support": 16.3,
+        "resistance": 17.04,
+        "stop": 16.2
+      },
+      "quote_time": "2026-11-04 15:31:55",
+      "industry": "医药商业",
+      "industry_score": 75,
+      "reason": [
+        "整理启动型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业75分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+      ],
+      "first_seen": "2026-11-03",
+      "days_in_pool": 2,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "601377",
+      "name": "兴业证券",
+      "stock_score": 95,
+      "level": "core",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 48,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "超跌企稳型",
+        "score": 95,
+        "factors": {
+          "trend": 20,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 5.34,
+          "entry_high": 5.39,
+          "stop": 5.28,
+          "target": 5.64,
+          "min_price_rr": 1.5,
+          "price_rr": 0.385,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 5.31,
+          "pivot": 5.64,
+          "stop": 5.28,
+          "atr": 0.1186,
+          "width_pct": 4.71,
+          "volume_ratio_5v5": 0.884,
+          "drawdown_pct": -9.06,
+          "rs5": 1.1019649968574408,
+          "previous_rs5": 0.5515743189298594
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:49",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 307363341.47,
+      "total_score": 94.4,
+      "factor": {
+        "trend": 20,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": -3.15,
+        "distance_ma20": -0.81,
+        "rsi14": 40.0,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": false,
+        "above_ma60": false,
+        "ma20_gt_ma60": false
+      },
+      "chg20": -3.15,
+      "price": 5.54,
+      "levels": {
+        "ma5": 5.45,
+        "ma10": 5.479,
+        "ma20": 5.585,
+        "ma60": 5.779,
+        "ma60_slope": -0.86,
+        "atr14": 0.1186,
+        "support": 5.31,
+        "resistance": 5.64,
+        "stop": 5.28
+      },
+      "quote_time": "2026-11-04 15:31:48",
+      "industry": "证券Ⅱ",
+      "industry_score": 91,
+      "reason": [
+        "超跌企稳型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业91分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    }
+  ],
+  "watch_pool": [
+    {
+      "code": "600941",
+      "name": "中国移动",
+      "stock_score": 100,
+      "level": "watch",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 83,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "整理启动型",
+        "score": 100,
+        "factors": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 99.7,
+          "entry_high": 100.74,
+          "stop": 98.4,
+          "target": 104.25,
+          "min_price_rr": 1.5,
+          "price_rr": 1.089,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 99.05,
+          "pivot": 104.25,
+          "stop": 98.4,
+          "atr": 2.6,
+          "width_pct": 5.25,
+          "volume_ratio_5v5": 0.742,
+          "drawdown_pct": -0.52,
+          "rs5": 4.091041461604195,
+          "previous_rs5": 1.279543359439539
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:26",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 1353336635.9,
+      "total_score": 93.2,
+      "factor": {
+        "trend": 25,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 5.64,
+        "distance_ma20": 0.71,
+        "rsi14": 49.3,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 5.64,
+      "price": 101.2,
+      "levels": {
+        "ma5": 102.27,
+        "ma10": 101.087,
+        "ma20": 100.483,
+        "ma60": 98.433,
+        "ma60_slope": 0.38,
+        "atr14": 2.7186,
+        "support": 99.05,
+        "resistance": 104.25,
+        "stop": 98.4
+      },
+      "quote_time": "2026-11-04 15:31:24",
+      "industry": "通信服务",
+      "industry_score": 55,
+      "reason": [
+        "整理启动型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业55分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "002223",
+      "name": "鱼跃医疗",
+      "stock_score": 95,
+      "level": "watch",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 80,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "整理启动型",
+        "score": 95,
+        "factors": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 27.64,
+          "entry_high": 27.84,
+          "stop": 27.16,
+          "target": 28.87,
+          "min_price_rr": 1.5,
+          "price_rr": 0.449,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 27.4,
+          "pivot": 28.87,
+          "stop": 27.16,
+          "atr": 0.9293,
+          "width_pct": 5.22,
+          "volume_ratio_5v5": 0.633,
+          "drawdown_pct": -1.0,
+          "rs5": 2.737811369545917,
+          "previous_rs5": 11.917839439324396
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:48",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 393073850.98,
+      "total_score": 92.9,
+      "factor": {
+        "trend": 25,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 10,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 7.88,
+        "distance_ma20": 5.66,
+        "rsi14": 70.0,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 7.88,
+      "price": 28.34,
+      "levels": {
+        "ma5": 28.09,
+        "ma10": 27.804,
+        "ma20": 26.823,
+        "ma60": 26.43,
+        "ma60_slope": 0.04,
+        "atr14": 0.9086,
+        "support": 27.4,
+        "resistance": 28.87,
+        "stop": 27.16
+      },
+      "quote_time": "2026-11-04 15:31:00",
+      "industry": "医疗器械",
+      "industry_score": 81,
+      "reason": [
+        "整理启动型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业81分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "601633",
+      "name": "长城汽车",
+      "stock_score": 100,
+      "level": "watch",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 57,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "超跌企稳型",
+        "score": 100,
+        "factors": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 14.0,
+          "entry_high": 14.07,
+          "stop": 13.84,
+          "target": 14.44,
+          "min_price_rr": 1.5,
+          "price_rr": 0.429,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 13.92,
+          "pivot": 14.44,
+          "stop": 13.84,
+          "atr": 0.2914,
+          "width_pct": 3.74,
+          "volume_ratio_5v5": 1.012,
+          "drawdown_pct": -13.95,
+          "rs5": 2.2991480954489996,
+          "previous_rs5": 2.1902867734448273
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:57",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 213953483.34,
+      "total_score": 92.5,
+      "factor": {
+        "trend": 25,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 3.86,
+        "distance_ma20": 1.84,
+        "rsi14": 58.0,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": false,
+        "ma20_gt_ma60": false
+      },
+      "chg20": 3.86,
+      "price": 14.26,
+      "levels": {
+        "ma5": 14.17,
+        "ma10": 14.1,
+        "ma20": 14.003,
+        "ma60": 14.614,
+        "ma60_slope": -1.39,
+        "atr14": 0.2907,
+        "support": 13.92,
+        "resistance": 14.44,
+        "stop": 13.84
+      },
+      "quote_time": "2026-11-04 15:31:55",
+      "industry": "乘用车",
+      "industry_score": 50,
+      "reason": [
+        "超跌企稳型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业50分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "600905",
+      "name": "三峡能源",
+      "stock_score": 95,
+      "level": "watch",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 54,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "超跌企稳型",
+        "score": 95,
+        "factors": {
+          "trend": 20,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 3.36,
+          "entry_high": 3.39,
+          "stop": 3.32,
+          "target": 3.5,
+          "min_price_rr": 1.5,
+          "price_rr": 0.2,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 3.34,
+          "pivot": 3.5,
+          "stop": 3.32,
+          "atr": 0.0686,
+          "width_pct": 4.79,
+          "volume_ratio_5v5": 1.143,
+          "drawdown_pct": -11.87,
+          "rs5": 4.3564028666799315,
+          "previous_rs5": 2.92617184477294
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:39",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 372147641.85,
+      "total_score": 92.2,
+      "factor": {
+        "trend": 20,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": -1.42,
+        "distance_ma20": 0.99,
+        "rsi14": 48.9,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": false,
+        "ma20_gt_ma60": false
+      },
+      "chg20": -1.42,
+      "price": 3.47,
+      "levels": {
+        "ma5": 3.42,
+        "ma10": 3.389,
+        "ma20": 3.436,
+        "ma60": 3.605,
+        "ma60_slope": -1.1,
+        "atr14": 0.0671,
+        "support": 3.34,
+        "resistance": 3.5,
+        "stop": 3.32
+      },
+      "quote_time": "2026-11-04 15:31:38",
+      "industry": "电力",
+      "industry_score": 76,
+      "reason": [
+        "超跌企稳型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业76分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "000703",
+      "name": "恒逸石化",
+      "stock_score": 95,
+      "level": "watch",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 27,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "超跌企稳型",
+        "score": 95,
+        "factors": {
+          "trend": 20,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 12.69,
+          "entry_high": 12.98,
+          "stop": 12.39,
+          "target": 13.91,
+          "min_price_rr": 1.5,
+          "price_rr": 2.619,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强",
+          "当日低点缺失或已触及失效位，取消本轮触发"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 12.54,
+          "pivot": 13.91,
+          "stop": 12.39,
+          "atr": 0.5879,
+          "width_pct": 5.9,
+          "volume_ratio_5v5": 0.806,
+          "drawdown_pct": -38.57,
+          "rs5": 3.163820666960526,
+          "previous_rs5": -5.355742677990783
+        }
+      },
+      "buy_state": {
+        "state": "失效",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强",
+          "当日低点缺失或已触及失效位，取消本轮触发"
+        ],
+        "note": "结构失效位被跌破或形态不成立：本轮不形成买点结论",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:31",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 931090807.43,
+      "total_score": 92.0,
+      "factor": {
+        "trend": 20,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": -18.04,
+        "distance_ma20": -6.43,
+        "rsi14": 31.5,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": false,
+        "above_ma60": false,
+        "ma20_gt_ma60": false
+      },
+      "chg20": -18.04,
+      "price": 12.81,
+      "levels": {
+        "ma5": 12.832,
+        "ma10": 12.779,
+        "ma20": 13.691,
+        "ma60": 16.462,
+        "ma60_slope": -1.55,
+        "atr14": 0.5729,
+        "support": 12.54,
+        "resistance": 13.91,
+        "stop": 12.39
+      },
+      "quote_time": "2026-11-04 15:31:00",
+      "industry": "炼化及贸易",
+      "industry_score": 75,
+      "reason": [
+        "超跌企稳型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业75分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强",
+        "当日低点缺失或已触及失效位，取消本轮触发"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "601018",
+      "name": "宁波港",
+      "stock_score": 100,
+      "level": "watch",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 68,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "整理启动型",
+        "score": 100,
+        "factors": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 15,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 3.49,
+          "entry_high": 3.51,
+          "stop": 3.45,
+          "target": 3.6,
+          "min_price_rr": 1.5,
+          "price_rr": 0.071,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 3.47,
+          "pivot": 3.6,
+          "stop": 3.45,
+          "atr": 0.08,
+          "width_pct": 3.75,
+          "volume_ratio_5v5": 1.063,
+          "drawdown_pct": -4.27,
+          "rs5": 2.514394375388518,
+          "previous_rs5": 1.2136153137806582
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:32:04",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 215900462.47,
+      "total_score": 91.8,
+      "factor": {
+        "trend": 25,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 15,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 1.7,
+        "distance_ma20": 0.08,
+        "rsi14": 42.9,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 1.7,
+      "price": 3.59,
+      "levels": {
+        "ma5": 3.57,
+        "ma10": 3.551,
+        "ma20": 3.587,
+        "ma60": 3.486,
+        "ma60_slope": 0.24,
+        "atr14": 0.0736,
+        "support": 3.47,
+        "resistance": 3.6,
+        "stop": 3.45
+      },
+      "quote_time": "2026-11-04 15:32:03",
+      "industry": "航运港口",
+      "industry_score": 45,
+      "reason": [
+        "整理启动型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业45分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "002920",
+      "name": "德赛西威",
+      "stock_score": 90,
+      "level": "watch",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 55,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "超跌企稳型",
+        "score": 90,
+        "factors": {
+          "trend": 20,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 77.06,
+          "entry_high": 77.96,
+          "stop": 75.54,
+          "target": 81.61,
+          "min_price_rr": 1.5,
+          "price_rr": 0.386,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 76.3,
+          "pivot": 81.61,
+          "stop": 75.54,
+          "atr": 3.0279,
+          "width_pct": 6.96,
+          "volume_ratio_5v5": 1.02,
+          "drawdown_pct": -20.09,
+          "rs5": 2.2127890733234734,
+          "previous_rs5": 3.3750475579399697
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:46",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 394586637.81,
+      "total_score": 91.5,
+      "factor": {
+        "trend": 20,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 10,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 0.81,
+        "distance_ma20": 3.87,
+        "rsi14": 66.2,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": false,
+        "ma20_gt_ma60": false
+      },
+      "chg20": 0.81,
+      "price": 79.92,
+      "levels": {
+        "ma5": 78.496,
+        "ma10": 78.038,
+        "ma20": 76.944,
+        "ma60": 83.792,
+        "ma60_slope": -1.2,
+        "atr14": 3.0343,
+        "support": 76.3,
+        "resistance": 81.61,
+        "stop": 75.54
+      },
+      "quote_time": "2026-11-04 15:31:00",
+      "industry": "软件开发",
+      "industry_score": 100,
+      "reason": [
+        "超跌企稳型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业100分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间"
+      ],
+      "first_seen": "2026-11-04",
+      "days_in_pool": 1,
+      "last_evaluated": "2026-11-04"
+    },
+    {
+      "code": "601006",
+      "name": "大秦铁路",
+      "stock_score": 95,
+      "level": "watch",
+      "grade": "S",
+      "score_basis": "startup/v1",
+      "strength_score": 69,
+      "opportunity": {
+        "version": "startup/v1",
+        "candidate": true,
+        "setup": "整理启动型",
+        "score": 95,
+        "factors": {
+          "trend": 25,
+          "momentum": 20,
+          "capital": 20,
+          "rs": 10,
+          "risk": 20
+        },
+        "status": "候选待确认",
+        "plan": {
+          "mode": "支撑附近转强",
+          "entry_low": 4.8,
+          "entry_high": 4.83,
+          "stop": 4.74,
+          "target": 4.97,
+          "min_price_rr": 1.5,
+          "price_rr": 0.278,
+          "basis": "仅已完成日线；区间上沿受价格盈亏比限制，非净盈亏比",
+          "valid_on": "2026-11-04"
+        },
+        "triggered": false,
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "limitations": [
+          "日线与报价快照不证明分钟级企稳；不预测涨停",
+          "价格盈亏比未扣手续费及滑点；不含下单数量"
+        ],
+        "analysis_only": true,
+        "evidence": {
+          "as_of": "2026-11-03",
+          "support": 4.77,
+          "pivot": 4.97,
+          "stop": 4.74,
+          "atr": 0.105,
+          "width_pct": 3.98,
+          "volume_ratio_5v5": 1.048,
+          "drawdown_pct": -2.75,
+          "rs5": 1.5076445100420388,
+          "previous_rs5": 2.7382657250949127
+        }
+      },
+      "buy_state": {
+        "state": "等待",
+        "reasons": [
+          "非连续交易时段，仅生成预案",
+          "现价不在条件买入区间，不随现价上移区间",
+          "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+        ],
+        "note": "非交易时段评估，仅生成预案；买点为时点量，下一交易时段复核",
+        "off_session": true,
+        "as_of": "2026-11-04 15:31:35",
+        "time_independent_note": "买点状态随时点变化；core/watch 分类只看形态质量与行业"
+      },
+      "historical_amount_20": 757353024.43,
+      "total_score": 90.5,
+      "factor": {
+        "trend": 25,
+        "momentum": 20,
+        "capital": 20,
+        "rs": 10,
+        "risk": 20
+      },
+      "position": {
+        "rise20": 3.8,
+        "distance_ma20": 0.22,
+        "rsi14": 45.7,
+        "deduct": 0,
+        "reasons": []
+      },
+      "trend": {
+        "above_ma20": true,
+        "above_ma60": true,
+        "ma20_gt_ma60": true
+      },
+      "chg20": 3.8,
+      "price": 4.92,
+      "levels": {
+        "ma5": 4.88,
+        "ma10": 4.877,
+        "ma20": 4.909,
+        "ma60": 4.806,
+        "ma60_slope": -0.15,
+        "atr14": 0.1021,
+        "support": 4.77,
+        "resistance": 4.97,
+        "stop": 4.74
+      },
+      "quote_time": "2026-11-04 15:31:34",
+      "industry": "铁路公路",
+      "industry_score": 65,
+      "reason": [
+        "整理启动型",
+        "启动潜力与位置评分，不以放量大涨为前提",
+        "行业65分",
+        "候选待确认",
+        "非连续交易时段，仅生成预案",
+        "现价不在条件买入区间，不随现价上移区间",
+        "尚未收复开盘价、昨收和已完成日线MA5，等待转强"
+      ],
+      "first_seen": "2026-11-03",
+      "days_in_pool": 2,
+      "last_evaluated": "2026-11-04"
+    }
+  ]
+}
